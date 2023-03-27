@@ -1,0 +1,187 @@
+[
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\sources\\NProgram.cpp.obj -c \"X:\\1.4 C++\\Vscode\\GLBasis\\sources\\NProgram.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\GLBasis\\sources\\NProgram.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NCLBuffer.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLBuffer.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLBuffer.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NCLCommandQueue.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLCommandQueue.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLCommandQueue.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NCLContext.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLContext.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLContext.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NCLDebug.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLDebug.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLDebug.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NCLDevice.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLDevice.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLDevice.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NCLEvent.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLEvent.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLEvent.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NCLImage.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLImage.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLImage.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NCLKernel.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLKernel.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLKernel.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NCLPlatform.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLPlatform.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLPlatform.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NCLProgram.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLProgram.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLProgram.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NCLSampler.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLSampler.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NCLSampler.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NFWDebug.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NFWDebug.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NFWDebug.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NFWErrorLog.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NFWErrorLog.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NFWErrorLog.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NFWMonitor.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NFWMonitor.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NFWMonitor.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NFWMonitors.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NFWMonitors.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NFWMonitors.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NFWWindow.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NFWWindow.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NFWWindow.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLBuffer.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLBuffer.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLBuffer.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLDebug.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLDebug.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLDebug.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLErrorLog.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLErrorLog.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLErrorLog.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLFramebuffer.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLFramebuffer.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLFramebuffer.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLInformation.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLInformation.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLInformation.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLProgram.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLProgram.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLProgram.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLQuery.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLQuery.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLQuery.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLRenderbuffer.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLRenderbuffer.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLRenderbuffer.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLRenderer.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLRenderer.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLRenderer.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLSampler.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLSampler.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLSampler.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLShader.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLShader.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLShader.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLStateManagment.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLStateManagment.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLStateManagment.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLSync.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLSync.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLSync.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLTexture.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLTexture.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLTexture.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLTransformFeedback.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLTransformFeedback.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLTransformFeedback.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\Wrappers\\NGLVertexArray.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLVertexArray.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\Wrappers\\NGLVertexArray.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui_draw.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui_draw.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui_draw.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui_impl_glfw_gl3.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui_impl_glfw_gl3.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui_impl_glfw_gl3.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/GLBasis/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/GLBasis/headers\" -I\"X:/1.4 C++/Vscode/Dependencies/Wrappers\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor/imgui\" -I\"X:/1.4 C++/Vscode/Dependencies/GLEW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/OpenCL/include\" -I\"X:/1.4 C++/Vscode/Dependencies/GLFW/include\" -I\"X:/1.4 C++/Vscode/Dependencies/vendor\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\main.cpp.obj -c \"X:\\1.4 C++\\Vscode\\GLBasis\\main.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\GLBasis\\main.cpp"
+}
+]

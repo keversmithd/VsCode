@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}\\headers",
+                "X:\\1.4 C++\\Vscode\\Dependencies\\GLFW\\include",
+                "X:\\1.4 C++\\Vscode\\Dependencies\\GLEW\\include",
+                "X:\\1.4 C++\\Vscode\\Dependencies\\OpenCL\\include",
+                "X:\\1.4 C++\\Vscode\\Dependencies\\vendor",
+                "X:/1.4 C++/Vscode/Dependencies/Wrappers/"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}
