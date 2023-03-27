@@ -48,17 +48,22 @@ uint32_t PPFF::Util::ReadTT(FILE* file)
 uint16_t PPFF::Util::ReadST(FILE* file)
 {
     uint16_t buffer = 0;
-    fread(&buffer, 2, 1, file);
-    
+    fread(&buffer, sizeof(unsigned char), 2, file);
     return PPFF::Util::LittleEndianST(buffer);
 }
-
+fpos_t PPFF::Util::GetPos(FILE* file)
+{
+    fpos_t NewPos = 0;
+    fgetpos(file, &NewPos);
+    return NewPos;
+}
 uint32_t PPFF::Util::ReadTF(FILE* file)
 {
     uint32_t buffer = 0;
-    fread(&buffer, 3, 1, file);
-    buffer = buffer & 0x00FFFFFF;
-    buffer = buffer >> 16 | buffer << 16 | buffer & 0x0000FF00;
+    fread(&buffer, sizeof(unsigned char), 3, file);
+
+    buffer = (buffer & 0x00FF0000) >> 16 | (buffer & 0x0000FF00) | (buffer & 0x000000FF) << 16;
+    buffer = buffer;
     return buffer;
 }
 

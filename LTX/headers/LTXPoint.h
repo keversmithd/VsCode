@@ -2,7 +2,7 @@
 #define LTXP
 
 #include "stdio.h"
-
+#include <math.h>
 struct LTXPoint
 {
   float x;
@@ -43,6 +43,10 @@ struct LTXPoint
       sub.y = T.y * i;
       return sub;
   }
+  LTXPoint operator /(const LTXPoint T, const LTXPoint U)
+  {
+    return {T.x/U.x, T.y/U.y};
+  }
   LTXPoint operator *(const LTXPoint T, float t)
   {
       return LTXPoint(T.x * t, T.y * t);
@@ -65,6 +69,10 @@ struct LTXPoint
       
   }
 
+double Magnitude(const LTXPoint P)
+{
+    return sqrt(pow(P.x,2) + pow(P.y,2));
+}
 void PrintLTXPoint(LTXPoint A)
 {
     printf("( %f , %f )\n", A.x, A.y);

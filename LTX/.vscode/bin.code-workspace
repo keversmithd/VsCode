@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"stdexcept": "cpp",
+			"iostream": "cpp",
+			"system_error": "cpp",
+			"xlocale": "cpp"
+		}
+	}
+}

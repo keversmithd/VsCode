@@ -1,0 +1,87 @@
+[
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\sources\\ADPAsioBuffers.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioBuffers.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioBuffers.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\sources\\ADPAsioCallbacks.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioCallbacks.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioCallbacks.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\sources\\ADPAsioChannels.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioChannels.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioChannels.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\sources\\ADPAsioDebug.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioDebug.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioDebug.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\sources\\ADPAsioDriverInfo.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioDriverInfo.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioDriverInfo.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\sources\\ADPAsioDriverList.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioDriverList.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioDriverList.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\sources\\ADPAsioEngine.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioEngine.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPAsioEngine.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\sources\\ADPDefaultAsioCallbacks.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPDefaultAsioCallbacks.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPDefaultAsioCallbacks.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\sources\\ADPSamplesAndTime.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPSamplesAndTime.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\sources\\ADPSamplesAndTime.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\ASIOSDK\\sources\\ASIOConvertSamples.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\ASIOConvertSamples.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\ASIOConvertSamples.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\ASIOSDK\\sources\\asio.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\asio.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\asio.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\ASIOSDK\\sources\\asiodrivers.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\asiodrivers.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\asiodrivers.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\ASIOSDK\\sources\\asiolist.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\asiolist.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\asiolist.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\ASIOSDK\\sources\\combase.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\combase.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\combase.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\ASIOSDK\\sources\\debugmessage.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\debugmessage.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\debugmessage.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\ASIOSDK\\sources\\register.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\register.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\ASIOSDK\\sources\\register.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\something.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\something.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\something.cpp"
+}
+]

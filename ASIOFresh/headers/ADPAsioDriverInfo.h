@@ -9,6 +9,7 @@ enum {
 
 struct ADPDriverInfo
 {
+	//Deprecated.
 	ASIODriverInfo driverInfo;
 	// ASIOGetChannels()
 	long           inputChannels;
@@ -19,9 +20,6 @@ struct ADPDriverInfo
 	long           maxSize;
 	long           preferredSize;
 	long           granularity;
-
-	// ASIOGetSampleRate()
-	ASIOSampleRate sampleRate;
 
 	// ASIOOutputReady()
 	bool           postOutput;

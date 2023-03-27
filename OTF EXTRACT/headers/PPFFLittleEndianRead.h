@@ -7,7 +7,7 @@ namespace PPFF::Util
 {
     FILE* OpenFile(int &Errcode, const char* path);
     uint32_t LittleEndianTT(uint32_t BigEndian);
-
+    fpos_t GetPos(FILE* file);
     uint16_t LittleEndianST(uint16_t BigEndian);
 
 

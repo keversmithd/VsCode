@@ -1,0 +1,6 @@
+#ifndef OCTREE_RENDER_THREAD
+#define OCTREE_RENDER_THREAD
+
+
+
+#endif
