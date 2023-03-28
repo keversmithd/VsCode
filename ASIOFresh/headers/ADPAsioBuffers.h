@@ -4,6 +4,7 @@
 #include "ADPAsioDebug.h"
 #include "ADPAsioChannels.h"
 #include "ADPSamplesAndTime.h"
+
 struct ADPAsioBuffers
 {
     long           minSize;

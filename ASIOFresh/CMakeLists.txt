@@ -16,7 +16,7 @@ file(GLOB_RECURSE ASIO_HEADER_FILES "${ASIO_DIR_HEAD}/*.h")
 file(GLOB_RECURSE ASIO_SOURCE_FILE "${ASIO_DIR_SOURCE}/*.cpp*")
 
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILE} ${HEADER_FILES} ${ASIO_SOURCE_FILE} ${ASIO_HEADER_FILES}  something.cpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILE} ${HEADER_FILES} ${ASIO_SOURCE_FILE} ${ASIO_HEADER_FILES}  hostsample.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE ${HEADER_DIR} ${ASIO_DIR_HEAD})
 target_link_libraries(${PROJECT_NAME} ole32 winmm uuid)
 

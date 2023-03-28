@@ -336,7 +336,6 @@ inline const SDFBoundingVolume CalculateBoundingVolumeOfMesh(const SDFMesh& Mode
 {
     
 }
-
 inline SDFBoundingVolume GetVolumeOfFace(const SDFFace face)
 {
         SDFBoundingVolume NewVolume;
@@ -402,6 +401,26 @@ inline bool IntersectsThisBoundingVolumeBooleanT(const SDFBoundingVolume T, cons
 
         return (XRange & YRange & ZRange);
 
+    }
+
+inline bool ContainedWithinThisBoundingVolumeBoolean(const SDFBoundingVolume T, const SDFBoundingVolume BoundingVolume)
+    {
+        bool Xrange = (T.TopLeftFront.x >= BoundingVolume.TopLeftFront.x && T.BottomRightBack.x <= BoundingVolume.BottomRightBack.x);
+        bool Yrange = (T.BottomRightBack.y >= BoundingVolume.BottomRightBack.y && T.TopLeftFront.y <= BoundingVolume.TopLeftFront.y);
+        bool Zrange = (T.TopLeftFront.z >= BoundingVolume.TopLeftFront.z && T.BottomRightBack.y <= BoundingVolume.TopLeftFront.z);
+        return (Xrange && Yrange && Zrange);
+        if(T.TopLeftFront.x >= BoundingVolume.TopLeftFront.x && T.BottomRightBack.x <= BoundingVolume.BottomRightBack.x)
+        {
+            //in xrange
+        }
+        if(T.BottomRightBack.y >= BoundingVolume.BottomRightBack.y && T.TopLeftFront.y <= BoundingVolume.TopLeftFront.y)
+        {
+            //in yrange
+        }
+        if(T.TopLeftFront.z >= BoundingVolume.TopLeftFront.z && T.BottomRightBack.y <= BoundingVolume.TopLeftFront.z)
+        {
+            //in zrange
+        }
     }
 
 #endif

@@ -25,7 +25,18 @@ int MaximumSceneBufferSize(const SceneVector& Scenes)
 
     return maxBytes;
 }
-//void LoadCurrentScene(const SceneVector& Scenes, NGLBuffer& StaticSceneBuffer, )
+
+int BytesInScene(const StaticScene& Scene)
+{
+    
+}
+
+void LoadCurrentScene(const SceneVector& Scenes, NGLBuffer& StaticSceneBuffer, int minimumSceneSize)
+{
+    const int CurrentSceneIndex = Scenes.currentScene;
+    const StaticScene& Retrieval = Scenes.Scenes[CurrentSceneIndex];
+
+}
 
 
 #endif

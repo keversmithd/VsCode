@@ -192,12 +192,14 @@ ASIOTime *bufferSwitchTimeInfo(ASIOTime *timeInfo, long index, ASIOBool processN
 		asioDriverInfo.samples = 0;
 
 	if (timeInfo->timeCode.flags & kTcValid)
-		asioDriverInfo.tcSamples = ASIO64toDouble(timeInfo->timeCode.timeCodeSamples);
+		//asioDriverInfo.tcSamples = ASIO64toDouble(timeInfo->timeCode.timeCodeSamples);
+		asioDriverInfo.tcSamples = ASIO64toDouble(timeInfo->timeInfo.samplePosition);
 	else
 		asioDriverInfo.tcSamples = 0;
 
 	// get the system reference time
 	asioDriverInfo.sysRefTime = get_sys_reference_time();
+
 
 #if WINDOWS && _DEBUG
 	// a few debug messages for the Windows device driver developer
@@ -300,7 +302,13 @@ void bufferSwitch(long index, ASIOBool processNow)
 	// get the time stamp of the buffer, not necessary if no
 	// synchronization to other media is required
 	if(ASIOGetSamplePosition(&timeInfo.timeInfo.samplePosition, &timeInfo.timeInfo.systemTime) == ASE_OK)
+	{
 		timeInfo.timeInfo.flags = kSystemTimeValid | kSamplePositionValid;
+	}
+
+	
+	
+	
 
 	bufferSwitchTimeInfo (&timeInfo, index, processNow);
 }
@@ -446,7 +454,7 @@ ASIOError create_asio_buffers (DriverInfo *asioDriverInfo)
 	return result;
 }
 
-int jmain()
+int main(int argc, char* argv[])
 {
 	// load the driver, this will setup all the necessary internal data structures
 	if (loadAsioDriver ("Focusrite USB ASIO"))
@@ -462,6 +470,7 @@ int jmain()
 					asioDriverInfo.driverInfo.name, asioDriverInfo.driverInfo.errorMessage);
 			if (init_asio_static_data (&asioDriverInfo) == 0)
 			{
+				
 				// ASIOControlPanel(); you might want to check wether the ASIOControlPanel() can open
 
 				// set up the asioCallback structure and create the ASIO data buffer
@@ -484,9 +493,9 @@ int jmain()
 							Delay (6, &dummy);
 #endif
 							fprintf (stdout, "%d ms / %d ms / %d samples", asioDriverInfo.sysRefTime, (long)(asioDriverInfo.nanoSeconds / 1000000.0), (long)asioDriverInfo.samples);
-
+							//ASIOGetSamplePosition()
 							// create a more readable time code format (the quick and dirty way)
-							double remainder = asioDriverInfo.tcSamples;
+							double remainder = asioDriverInfo.samples;
 							long hours = (long)(remainder / (asioDriverInfo.sampleRate * 3600));
 							remainder -= hours * asioDriverInfo.sampleRate * 3600;
 							long minutes = (long)(remainder / (asioDriverInfo.sampleRate * 60));
@@ -494,7 +503,7 @@ int jmain()
 							long seconds = (long)(remainder / asioDriverInfo.sampleRate);
 							remainder -= seconds * asioDriverInfo.sampleRate;
 							fprintf (stdout, " / TC: %2.2d:%2.2d:%2.2d:%5.5d", (long)hours, (long)minutes, (long)seconds, (long)remainder);
-
+							//fprintf(stdout, "remainder check: %f", asioDriverInfo.samples/asioDriverInfo.sampleRate * 3600);
 							fprintf (stdout, "     \r");
 							#if !MAC
 							fflush (stdout);

@@ -818,6 +818,7 @@ typedef struct ASIOBufferInfo
 	ASIOBool isInput;			// on input:  ASIOTrue: input, else output
 	long channelNum;			// on input:  channel index
 	void *buffers[2];			// on output: double buffer addresses
+	
 } ASIOBufferInfo;
 
 ASIOError ASIOCreateBuffers(ASIOBufferInfo *bufferInfos, long numChannels,

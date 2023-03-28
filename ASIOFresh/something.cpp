@@ -11,7 +11,7 @@ void SwitchAsioDevice()
     //dispose of buffers
 }
 
-int main()
+int jmain()
 {
     ADPAsioDriverList app;
     //int DriverLoadStatus = app.LoadDriver((char*)"Focusrite USB ASIO"); if(!DriverLoadStatus){return 0;}
@@ -55,6 +55,7 @@ int main()
     double SampleRate = 441000;
     
     if(!AsioEngine.AsioStart()){ buffers.DisposeBuffers(); app.CloseDevice(); return 0;}
+
     while(!samplesandtime.stopped)
     {
         
@@ -62,7 +63,7 @@ int main()
                             Sleep(100);	// goto sleep for 100 milliseconds
 							// create a more readable time code format (the quick and dirty way)
 
-							fprintf (stdout, "%d ms / %d ms / %d samples", samplesandtime.sysRefTime, (long)(samplesandtime.nanoSeconds / 1000000.0), (long)samplesandtime.samples);
+							//fprintf (stdout, "%d ms / %d ms / %d samples", samplesandtime.sysRefTime, (long)(samplesandtime.nanoSeconds / 1000000.0), (long)samplesandtime.samples);
 
 							// create a more readable time code format (the quick and dirty way)
 							// double remainder = samplesandtime.tcSamples;

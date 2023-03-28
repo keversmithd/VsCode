@@ -81,7 +81,7 @@
 },
 {
   "directory": "X:/1.4 C++/Vscode/ASIOFresh/build",
-  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\something.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\something.cpp\"",
-  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\something.cpp"
+  "command": "X:\\INCLUD~1\\mingw64\\bin\\G__~1.EXE -I\"X:/1.4 C++/Vscode/ASIOFresh/headers\" -I\"X:/1.4 C++/Vscode/ASIOFresh/ASIOSDK/headers\" -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\ASIOFresh.dir\\hostsample.cpp.obj -c \"X:\\1.4 C++\\Vscode\\ASIOFresh\\hostsample.cpp\"",
+  "file": "X:\\1.4 C++\\Vscode\\ASIOFresh\\hostsample.cpp"
 }
 ]

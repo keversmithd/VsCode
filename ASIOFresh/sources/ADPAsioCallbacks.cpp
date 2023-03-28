@@ -1,5 +1,7 @@
 #include "ADPAsioCallbacks.h"
 
+//externals set from context.
+
 ADPSamplesAndTime* g_adp_samplesandtime;
 ADPAsioBuffers*    g_adp_buffers;
 ADPAsioChannels*   g_adp_channels;
@@ -37,7 +39,8 @@ void bufferSwitch_i(long index, ASIOBool processNow)
 	memset (&timeInfo, 0, sizeof (timeInfo));
 
 	// get the time stamp of the buffer, not necessary if no
-	// synchronization to other media is required
+	// synchronization to other media is required.
+	
 	if(ASIOGetSamplePosition(&timeInfo.timeInfo.samplePosition, &timeInfo.timeInfo.systemTime) == ASE_OK)
 		timeInfo.timeInfo.flags = kSystemTimeValid | kSamplePositionValid;
 
@@ -164,7 +167,6 @@ ASIOTime *bufferSwitchTimeInfo_i(ASIOTime *timeInfo, long index, ASIOBool proces
 
 	return 0L;
 }
-
 
 void sampleRateChanged_i(ASIOSampleRate sRate)
 {

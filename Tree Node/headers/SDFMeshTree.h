@@ -288,7 +288,6 @@ struct SDFMeshTree
     }
     bool ContainedWithinThisBoundingVolumeBoolean(const SDFBoundingVolume T)
     {
-
         bool Xrange = (T.TopLeftFront.x >= BoundingVolume.TopLeftFront.x && T.BottomRightBack.x <= BoundingVolume.BottomRightBack.x);
         bool Yrange = (T.BottomRightBack.y >= BoundingVolume.BottomRightBack.y && T.TopLeftFront.y <= BoundingVolume.TopLeftFront.y);
         bool Zrange = (T.TopLeftFront.z >= BoundingVolume.TopLeftFront.z && T.BottomRightBack.y <= BoundingVolume.TopLeftFront.z);
@@ -305,8 +304,6 @@ struct SDFMeshTree
         {
             //in zrange
         }
-
-
     }
     bool PointContainedWithinBoundingVolumeBoolean(const SDFVec3 point)
     {

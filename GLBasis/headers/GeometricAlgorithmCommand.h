@@ -10,7 +10,6 @@
 
 struct Material
 {
-    std::string id;
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
@@ -18,7 +17,6 @@ struct Material
 
 struct SceneCamera
 {
-    std::string id;
     glm::vec3 viewDir;
     glm::vec3 camPos;
     glm::vec3 up;
@@ -28,9 +26,7 @@ struct SceneCamera
 
 struct SceneLight
 {
-    std::string id;
     glm::vec3 lightPos;
-
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
@@ -47,32 +43,61 @@ struct SceneObject
     Material material;
     const char* texture;
 
+
+    SceneObject() :  id("0"), vertices(), normals(), texcoord(), colors(), indexes(), material()
+    {
+
+    }
+
+    int AddVertex(){} //updates size,
+    int AddNormal(){} //updates size,
+
+    int SizeOfVertexData()
+    {
+        return (vertices.size() * (sizeof(float) * 3)) + (normals.size() * (sizeof(float) * 3)) + (texcoord.size() * (sizeof(float) * 2)) + (colors.size() * (sizeof(float) * 3));
+    }
     
 };
 
 struct StaticScene
 {
+    int SceneVertexBufferSize;
+
     std::vector<SceneObject> Objects;
     std::vector<SceneLight> Lights;
     std::vector<SceneCamera> Cameras;
 
-    StaticScene(const StaticScene& Scene)
+    StaticScene(){}
+
+    void PushObject(const SceneObject& Object)
+    {
+        Objects.push_back(Object);
+        
+    }
+
+    StaticScene(const StaticScene& Scene) : SceneVertexBufferSize(0)
     {
         Objects = Scene.Objects;
         Lights = Scene.Lights;
         Cameras = Scene.Cameras;
     }
-    StaticScene()
-    {
-
-    }
+    
 };
 
 struct SceneVector
 {
-    SceneVector(){}
-    int currentScene = 0;
+    SceneVector() :  endOfScenes(0), currentScene(0)
+    {
+
+    }
     std::vector<StaticScene> Scenes;
+    int endOfScenes;
+    int CreateNewScene()
+    {
+        Scenes.push_back(StaticScene());
+        return ++endOfScenes;
+    }
+    int currentScene = 0;
     int NextScene(){
         if(currentScene + 1 > Scenes.size())
         {
@@ -87,6 +112,16 @@ struct SceneVector
             return;
         }
         currentScene--;
+    }
+
+    StaticScene* operator[](int index)
+    {
+        if(index < 0 || index > Scenes.size())
+        {
+            throw("Index out of range.");
+            return nullptr;
+        }
+        return Scenes.data()+index;
     }
     ~SceneVector(){}
 };

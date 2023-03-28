@@ -198,7 +198,8 @@ int main()
 NGLBuffer SceneBuffer;
 SceneBuffer.GenerateBuffer();
 
-int MaximumStaticSceneBufferSize = MaximumSceneBufferSize(SceneCenter);
+int maximumSceneSize = MaximumSceneBufferSize(SceneCenter);
+LoadCurrentScene(SceneCenter, SceneBuffer, maximumSceneSize);
 
 #pragma endregion
 
