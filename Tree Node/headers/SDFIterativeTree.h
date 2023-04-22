@@ -2,23 +2,79 @@
 #define ITER_TREE_H
 
 #include <vector>
-#include "SDFArchive.h";
+#include "SDFArchive.h"
 #include <memory>
 #include <assert.h>
 #include <array>
+#include <stack>
 
-struct SDFChildMemoryPoolAcessor;
-struct SDFChildrenMemoryPool;
+
+
+template<typename T>
+struct SDFChildrenMemoryPool
+{
+    std::vector<T> IterativeTree;
+    
+    int currentIndex = 0;
+    T* RetrieveNewChildren()
+    {
+        //add aditional assumptive size realocation for preformance, leave simple for now.
+        IterativeTree.resize(IterativeTree.size()+8);
+        T* dataPtr = IterativeTree.data() + currentIndex;
+        currentIndex += 8;
+        return dataPtr;
+    }
+
+};
+
+template<typename T>
+struct SDFChildMemoryPoolAcessor
+{
+    SDFChildrenMemoryPool<T>* MemoryPool;
+    T* IterativeTreeEntry;
+    SDFChildMemoryPoolAcessor() : IterativeTreeEntry(nullptr), MemoryPool(nullptr) {}
+    SDFChildMemoryPoolAcessor(SDFChildrenMemoryPool<T>* memoryPool) : IterativeTreeEntry(nullptr), MemoryPool(memoryPool)
+    {
+        assert(MemoryPool != nullptr);
+    }
+    T* operator[] (int index)
+    {
+        if(index < 0 || index > 7)
+        {
+            throw("Index Out Of Bounds");
+            return nullptr;
+        }
+        EnsureChildren();
+        return IterativeTreeEntry+index;
+    }
+    void EnsureChildren()
+    {
+        assert(MemoryPool != nullptr);
+        
+        if(IterativeTreeEntry == nullptr)
+        {
+            IterativeTreeEntry = MemoryPool->RetrieveNewChildren();
+        }
+        
+    }
+};
+
+template<typename T>
+struct SDFStackBranchNode
+{
+    T* direction;
+    int childIndex;
+};
 
 struct SDFIterativeTree
 {
     public:
-        static std::array<int, 8> IntersectionBuffer;
-        static int IntersectionCount;
-
+        int MaximumFaces;
+        static std::stack<SDFStackBranchNode<SDFIterativeTree>> intersectionStack;
+        bool GeneratedChildBoundingBoxes;
     public:
-        SDFChildrenMemoryPool* ThisMemoryPool;
-        SDFChildMemoryPoolAcessor Children;
+        SDFChildrenMemoryPool<SDFIterativeTree>* ThisMemoryPool;
+        SDFChildMemoryPoolAcessor<SDFIterativeTree> Children;
         std::vector<SDFFace> ContainedFaces;
         SDFBoundingVolume BoundingVolume;
         bool LeafNode;
@@ -26,85 +82,96 @@ struct SDFIterativeTree
     public:
     //Problem #1: When generating a tree which only uses one child, eight must be allocated. Solution #1. There is no solution to this and must be included in this model. -Unsolved
     //Problem #2: When checking every child if intersection exists, the bounding volume may not be present, and there needs to be a specified period these children are generated. -Solved
-    //Problem #3: A possible optimization is to use one singular interseciton data buffer, rather than allocating new ones.
-    
-    SDFChildMemoryPoolAcessor ChildrenAccessor;
-    SDFIterativeTree(const SDFBoundingVolume Volume, SDFChildrenMemoryPool* MemoryPool) : ThisMemoryPool(MemoryPool), Children(MemoryPool), BoundingVolume(BoundingVolume), LeafNode(false)
+    //Problem #3: A possible optimization is to use one singular interseciton data buffer, rather than allocating new ones. Solution #3: Not possible. -Unsolved
+    //Problem #4: When using algorithm to redistribute, running traditional search for insertion generates an infinite string of children - Need to find a stopping point - Unsolved.
+    //Problem #5: Had to use indirection for my iterative tree stack, but could also maybe some how use a secondary index into the memory pool?
+
+    SDFIterativeTree()
+    {
+
+    }
+
+    SDFIterativeTree(const SDFBoundingVolume Volume, SDFChildrenMemoryPool<SDFIterativeTree>* MemoryPool) : ThisMemoryPool(MemoryPool), Children(MemoryPool), BoundingVolume(Volume), LeafNode(false), MaximumFaces(0), GeneratedChildBoundingBoxes(false)
     {
         assert(MemoryPool != nullptr);
     }
-    SDFIterativeTree(const SDFBoundingVolume Volume, SDFChildrenMemoryPool* MemoryPool, const bool leafNode) : ThisMemoryPool(MemoryPool), Children(MemoryPool), LeafNode(leafNode), BoundingVolume(Volume)
+    SDFIterativeTree(const SDFBoundingVolume Volume, SDFChildrenMemoryPool<SDFIterativeTree>* MemoryPool, const bool leafNode) : ThisMemoryPool(MemoryPool), Children(MemoryPool), LeafNode(leafNode), BoundingVolume(Volume), MaximumFaces(3), GeneratedChildBoundingBoxes(false)
     {
        assert(MemoryPool != nullptr);
     }
-    SDFIterativeTree(const SDFBoundingVolume Volume, SDFChildrenMemoryPool* MemoryPool, const SDFFace face) : ThisMemoryPool(MemoryPool), Children(MemoryPool), LeafNode(true), BoundingVolume(Volume)
+    SDFIterativeTree(const SDFBoundingVolume Volume, SDFChildrenMemoryPool<SDFIterativeTree>* MemoryPool, const SDFFace face) : ThisMemoryPool(MemoryPool), Children(MemoryPool), LeafNode(true), BoundingVolume(Volume), MaximumFaces(3), GeneratedChildBoundingBoxes(false)
     {
+        assert(MemoryPool != nullptr);
         ContainedFaces.push_back(face);
     }
+    SDFIterativeTree(const SDFBoundingVolume Volume, SDFChildrenMemoryPool<SDFIterativeTree>* MemoryPool, const bool leafNode, int maximumFaces) : ThisMemoryPool(MemoryPool), Children(MemoryPool), LeafNode(leafNode), BoundingVolume(Volume), GeneratedChildBoundingBoxes(false)
+    {
+       assert(MemoryPool != nullptr);
+        MaximumFaces = (maximumFaces > 0) ? maximumFaces : 3;
+    }
+    SDFIterativeTree(const SDFBoundingVolume Volume, SDFChildrenMemoryPool<SDFIterativeTree>* MemoryPool, const SDFFace face, int maximumFaces) : ThisMemoryPool(MemoryPool), Children(MemoryPool), LeafNode(true), BoundingVolume(Volume), GeneratedChildBoundingBoxes(false)
+    {
+        assert(MemoryPool != nullptr);
+        MaximumFaces = (maximumFaces > 0) ? maximumFaces : 3;
+        ContainedFaces.push_back(face);
+    }
+    
 
     void EveryotherIntersection(const SDFBoundingVolume facialBoundingVolume, int canceledIndex = -1)
     {
-        IntersectionCount = 0;
+
+        if(!GeneratedChildBoundingBoxes)
+        {
+            GenerateChildrenBoundingVolumes();
+        }
 
         for(int i = 0; i < 8; i++)
         {
-            if( i != canceledIndex)
+            if(i != canceledIndex && IntersectsThisBoundingVolumeBooleanT(facialBoundingVolume, Children[i]->BoundingVolume))
             {
-                
+                intersectionStack.push({this,  i});
             }
         }
     }
 
     bool RedistributedInsertion(const SDFFace face)
     {
-        //During this call the intersection list of the main insertion algorithm is overwritten.
-        //#Solution #1. Create a static backup for the pevious intersection list, and reinstantiate after re-inserting.
-        //#Solution #2. Creating another set of static intersection list information for this function in specific.
-        static std::array<int, 8> PreviousIntersectionBuffer = IntersectionBuffer;
-        static int PreviousIntersectionCount = IntersectionCount;
 
-        LeafNode = false;
+        SDFBoundingVolume volumeOfFace = GetVolumeOfFace(face);
+        EveryotherIntersection(volumeOfFace);
 
-        SDFBoundingVolume volumeOfFace;
-        //gather and insert every other insertion.
         for(int i = 0; i < ContainedFaces.size(); i++)
         {
             volumeOfFace = GetVolumeOfFace(ContainedFaces[i]);
-            
-            EveryotherIntersection(volumeOfFace);
 
-            for(int j = 0; j < IntersectionCount; j++)
+            for(int i = 0; i < 8; i++)
             {
-                bool InsertionCompleted = false;
-                while(!InsertionCompleted)
+                if(IntersectsThisBoundingVolumeBooleanT(volumeOfFace, Children[i]->BoundingVolume))
                 {
-                    //if intersection is not leaf node, make leaf node.
-                    //if intersection is leaf node and faces contains more than face per leaf then children[]->redistributed insertion.
-                    //if intersection is a navigation node, then set iteration aspect to node, and re run exact logic ad infintum. [expansion]
+                    Children[i]->ContainedFaces.push_back(face);
                 }
             }
         }
-
-        IntersectionBuffer = PreviousIntersectionBuffer;
-        IntersectionCount = PreviousIntersectionCount;
+        LeafNode = false;
+        
 
     }
 
     void GenerateChildrenBoundingVolumes()
     {
         
-
-
         const SDFVec3 centerOfParentVolume = CenterOfVolume(BoundingVolume);
 
-        *Children[0] = SDFIterativeTree({{BoundingVolume.TopLeftFront.x, BoundingVolume.BottomRightBack.y, BoundingVolume.TopLeftFront.z},centerOfParentVolume}, ThisMemoryPool);
-        *Children[1] = SDFIterativeTree({{BoundingVolume.TopLeftFront.x, centerOfParentVolume.y, BoundingVolume.TopLeftFront.z},{centerOfParentVolume.x, BoundingVolume.TopLeftFront.y, centerOfParentVolume.z}}, ThisMemoryPool);
-        *Children[2] = SDFIterativeTree({{centerOfParentVolume.x, BoundingVolume.BottomRightBack.y, BoundingVolume.TopLeftFront.z},{BoundingVolume.BottomRightBack.x, centerOfParentVolume.y, centerOfParentVolume.z}}, ThisMemoryPool);
-        *Children[3] = SDFIterativeTree({{centerOfParentVolume.x, centerOfParentVolume.y, BoundingVolume.TopLeftFront.z},{BoundingVolume.BottomRightBack.x, BoundingVolume.TopLeftFront.y, centerOfParentVolume.z}}, ThisMemoryPool);
-        *Children[4] = SDFIterativeTree({{BoundingVolume.TopLeftFront.x, BoundingVolume.BottomRightBack.y, centerOfParentVolume.z},{centerOfParentVolume.x, centerOfParentVolume.y, BoundingVolume.BottomRightBack.z}}, ThisMemoryPool);
-        *Children[5] = SDFIterativeTree({{BoundingVolume.TopLeftFront.x, centerOfParentVolume.y, centerOfParentVolume.z},{centerOfParentVolume.x, BoundingVolume.TopLeftFront.y, BoundingVolume.BottomRightBack.z}}, ThisMemoryPool);
-        *Children[6] = SDFIterativeTree({{centerOfParentVolume.x, BoundingVolume.BottomRightBack.y, centerOfParentVolume.z},{BoundingVolume.BottomRightBack.x, centerOfParentVolume.y, BoundingVolume.BottomRightBack.z}}, ThisMemoryPool);
+        *Children[0] = SDFIterativeTree({{BoundingVolume.TopLeftFront.x, BoundingVolume.BottomRightBack.y, BoundingVolume.TopLeftFront.z},centerOfParentVolume}, ThisMemoryPool, true);
+        *Children[1] = SDFIterativeTree({{BoundingVolume.TopLeftFront.x, centerOfParentVolume.y, BoundingVolume.TopLeftFront.z},{centerOfParentVolume.x, BoundingVolume.TopLeftFront.y, centerOfParentVolume.z}}, ThisMemoryPool, true);
+        *Children[2] = SDFIterativeTree({{centerOfParentVolume.x, BoundingVolume.BottomRightBack.y, BoundingVolume.TopLeftFront.z},{BoundingVolume.BottomRightBack.x, centerOfParentVolume.y, centerOfParentVolume.z}}, ThisMemoryPool, true);
+        *Children[3] = SDFIterativeTree({{centerOfParentVolume.x, centerOfParentVolume.y, BoundingVolume.TopLeftFront.z},{BoundingVolume.BottomRightBack.x, BoundingVolume.TopLeftFront.y, centerOfParentVolume.z}}, ThisMemoryPool, true);
+        *Children[4] = SDFIterativeTree({{BoundingVolume.TopLeftFront.x, BoundingVolume.BottomRightBack.y, centerOfParentVolume.z},{centerOfParentVolume.x, centerOfParentVolume.y, BoundingVolume.BottomRightBack.z}}, ThisMemoryPool, true);
+        *Children[5] = SDFIterativeTree({{BoundingVolume.TopLeftFront.x, centerOfParentVolume.y, centerOfParentVolume.z},{centerOfParentVolume.x, BoundingVolume.TopLeftFront.y, BoundingVolume.BottomRightBack.z}}, ThisMemoryPool, true);
+        *Children[6] = SDFIterativeTree({{centerOfParentVolume.x, BoundingVolume.BottomRightBack.y, centerOfParentVolume.z},{BoundingVolume.BottomRightBack.x, centerOfParentVolume.y, BoundingVolume.BottomRightBack.z}}, ThisMemoryPool, true);
         *Children[7] = SDFIterativeTree({centerOfParentVolume,{BoundingVolume.BottomRightBack.x, BoundingVolume.TopLeftFront.y, BoundingVolume.BottomRightBack.z}}, ThisMemoryPool);
+
+        GeneratedChildBoundingBoxes = true;
 
         return;
 
@@ -129,34 +196,61 @@ struct SDFIterativeTree
 
     bool InsertFaceIntoTree(const SDFFace face)
     {
-        const SDFBoundingVolume volumeOfFace = GetVolumeOfFace(face);
-        const SDFVec3 centerOfFace = CenterOfFace(face);
-        SDFIterativeTree* IterationZ0 = this;
-        bool BaseIntersection = IntersectsThisBoundingVolumeBooleanT(IterationZ0->BoundingVolume, volumeOfFace);
+        const SDFBoundingVolume volumeOfFace = GetVolumeOfFace(face); //Volume of face
+        //const SDFVec3 centerOfFace = CenterOfFace(face); //Center Point of face //irrellevant
+        bool BaseIntersection = IntersectsThisBoundingVolumeBooleanT(BoundingVolume, volumeOfFace); //Whether or not the bounding boxes even touch.
         if(!BaseIntersection){return false;}
 
         //At this point it is verified that we will need to be searching the bounding boxes of the children and need to calculate their bounding boxes.
-
-        GenerateChildrenBoundingVolumes();
-
+        if(!GeneratedChildBoundingBoxes)
+        {
+            GenerateChildrenBoundingVolumes();
+        }
         //So the children bounding volumes are generated.
 
         //Calculates list of intersections to be handled in regards to this current bounding container.
 
-        IterationZ0->EveryotherIntersection(volumeOfFace);
+        EveryotherIntersection(volumeOfFace); //adds to intersection queue/general vector
 
         //Iterate through list of intersections and run the iterative code.
+        SDFIterativeTree* calculatedIntersection;
+        bool insertionCompleted = false;
 
-        for(int i = 0; i < IntersectionCount; i++)
+        int intsersectionsContainedFaceAmount = 0;
+        int intersectionsMaximumFaces = 0;
+        bool intersectionsLeafNodeStatus = 0;
+        SDFBoundingVolume volumeOfIntersection;
+
+        SDFStackBranchNode<SDFIterativeTree> loadingIteration;
+
+        for(int i = 0; !intersectionStack.empty(); i++) //for all intersections inside of intersection queue run this algorithm
         {
-            bool InsertionCompleted = false;
+            loadingIteration = intersectionStack.top();
+            intersectionStack.pop();
 
-            while(!InsertionCompleted)
+            calculatedIntersection = loadingIteration.direction->Children[loadingIteration.childIndex]; //instead of being sent by index a stack could contain a pointer, and an index?
+
+            //could also possibly call "memoryPool[loadingIntersection.treeIndex]"
+
+            //retrieving information from intersections once.
+            
+            intsersectionsContainedFaceAmount = calculatedIntersection->ContainedFaces.size();
+            intersectionsMaximumFaces = calculatedIntersection->MaximumFaces;
+            intersectionsLeafNodeStatus = calculatedIntersection->LeafNode;
+            
+            
+            if(intersectionsLeafNodeStatus && intsersectionsContainedFaceAmount <= intersectionsMaximumFaces)
             {
-                //if intersection is not leaf node, make leaf node.
-                //if intersection is leaf node and faces contains more than face per leaf then children[]->redistributed insertion.
-                //if intersection is a navigation node, then set iteration aspect to node, and re run exact logic ad infintum. [expansion]
+                calculatedIntersection->ContainedFaces.push_back(face);
+
+            }else if (intersectionsLeafNodeStatus && intsersectionsContainedFaceAmount >= intersectionsMaximumFaces)
+            {
+                calculatedIntersection->RedistributedInsertion(face); 
+            }else
+            {
+                calculatedIntersection->EveryotherIntersection(volumeOfFace); 
             }
+
         }
 
     }
@@ -166,52 +260,8 @@ struct SDFIterativeTree
 };
 
 
-struct SDFChildMemoryPoolAcessor
-{
-    SDFChildrenMemoryPool* MemoryPool;
-    SDFIterativeTree* IterativeTreeEntry;
-    SDFChildMemoryPoolAcessor() : IterativeTreeEntry(nullptr), MemoryPool(nullptr) {}
-    SDFChildMemoryPoolAcessor(SDFChildrenMemoryPool* memoryPool) : IterativeTreeEntry(nullptr), MemoryPool(memoryPool)
-    {
-        assert(MemoryPool != nullptr);
-    }
-    SDFIterativeTree* operator[] (int index)
-    {
-        if(index < 0 || index > 7)
-        {
-            throw("Index Out Of Bounds");
-            return nullptr;
-        }
-        EnsureChildren();
-        return IterativeTreeEntry+index;
-    }
-    void EnsureChildren()
-    {
-        assert(MemoryPool != nullptr);
-        
-        if(IterativeTreeEntry == nullptr)
-        {
-            IterativeTreeEntry = MemoryPool->RetrieveNewChildren();
-        }
-        
-    }
-};
 
-struct SDFChildrenMemoryPool
-{
-    std::vector<SDFIterativeTree> IterativeTree;
-    int currentIndex = 0;
-    SDFIterativeTree* RetrieveNewChildren()
-    {
 
-        //add aditional assumptive size realocation for preformance, leave simple for now.
-        IterativeTree.resize(IterativeTree.size()+8);
-        SDFIterativeTree* dataPtr = IterativeTree.data() + currentIndex;
-        currentIndex += 8;
-        return dataPtr;
-    }
-
-};
 
 
 #endif

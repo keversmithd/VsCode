@@ -1,61 +1,83 @@
 #ifndef GEOM_ALG_COMMAND_H
 #define GEOM_ALG_COMMAND_H
 
-#include "NGL.h"
 #include <string>
 #include <vector>
 #include <chrono>
-#include <glm/glm.hpp>
 #include <string>
-
+#include "SDFArchive.h"
 struct Material
 {
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
+    SDFVec3 ambient;
+    SDFVec3 diffuse;
+    SDFVec3 specular;
 };
 
 struct SceneCamera
 {
-    glm::vec3 viewDir;
-    glm::vec3 camPos;
-    glm::vec3 up;
+    SDFVec3 viewDir;
+    SDFVec3 camPos;
+    SDFVec3 up;
     float fov;
     float zoom;
 };
 
 struct SceneLight
 {
-    glm::vec3 lightPos;
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
+    SDFVec3 lightPos;
+    SDFVec3 ambient;
+    SDFVec3 diffuse;
+    SDFVec3 specular;
 };
 
 struct SceneObject
 {
-    std::string id;
-    std::vector<glm::vec3> vertices;
-    std::vector<glm::vec3> normals;
-    std::vector<glm::vec2> texcoord;
-    std::vector<glm::vec3> colors;
-    std::vector<unsigned int> indexes;
+    unsigned int id;
+    std::string texture;
+    std::vector<SDFOVec4> vertices;
+    std::vector<SDFVec3> normals;
+    std::vector<SDFVec2> texcoords;
+    std::vector<SDFVec3> colors;
     Material material;
-    const char* texture;
 
+    int vertexCount;
 
-    SceneObject() :  id("0"), vertices(), normals(), texcoord(), colors(), indexes(), material()
+    SceneObject(int ID) :  id(ID), vertices(), normals(), texcoords(), colors(), material(), texture("no_texture"), vertexCount(0)
     {
-
+        assert(ID > 0);
     }
 
-    int AddVertex(){} //updates size,
-    int AddNormal(){} //updates size,
-
-    int SizeOfVertexData()
+    void AddCompleteVertex(const SDFVec3 vertex, const SDFVec3 normal, const SDFVec2 texcoord, const SDFVec3 color)
     {
-        return (vertices.size() * (sizeof(float) * 3)) + (normals.size() * (sizeof(float) * 3)) + (texcoord.size() * (sizeof(float) * 2)) + (colors.size() * (sizeof(float) * 3));
+        vertices.push_back({vertex.x, vertex.y, vertex.z, id});
+        normals.push_back(normal); 
+        texcoords.push_back(texcoord);
+        colors.push_back(color);
+        vertexCount++;
     }
+    void AddVertex(const SDFVec3 vertex)
+    {
+        vertices.push_back({vertex.x, vertex.y, vertex.z, id});
+        vertexCount++;
+    }
+    void AddNormal(const SDFVec3 normal)
+    {
+        normals.push_back(normal);   
+    }
+    void AddTexcoord(const SDFVec2 texcoord)
+    {
+        texcoords.push_back(texcoord);
+    }
+    void AddColor(const SDFVec3 color)
+    {
+        colors.push_back(color);
+    }
+
+    void AddMaterial(const Material objectMaterial)
+    {
+        material = objectMaterial;
+    }
+
     
 };
 
@@ -72,7 +94,6 @@ struct StaticScene
     void PushObject(const SceneObject& Object)
     {
         Objects.push_back(Object);
-        
     }
 
     StaticScene(const StaticScene& Scene) : SceneVertexBufferSize(0)
@@ -88,7 +109,7 @@ struct SceneVector
 {
     SceneVector() :  endOfScenes(0), currentScene(0)
     {
-
+        Scenes.push_back(StaticScene());
     }
     std::vector<StaticScene> Scenes;
     int endOfScenes;
@@ -101,7 +122,7 @@ struct SceneVector
     int NextScene(){
         if(currentScene + 1 > Scenes.size())
         {
-            return;
+            return -1;
         }
         currentScene++;
     }
@@ -109,22 +130,23 @@ struct SceneVector
     {
         if(currentScene - 1 < 0)
         {
-            return;
+            return -1;
         }
         currentScene--;
     }
 
-    StaticScene* operator[](int index)
+    StaticScene& operator[](int index)
     {
         if(index < 0 || index > Scenes.size())
         {
             throw("Index out of range.");
-            return nullptr;
+            return Scenes.at(0);
         }
-        return Scenes.data()+index;
+        return Scenes.at(index);
     }
     ~SceneVector(){}
 };
+
 
 
 SceneVector SceneCenter;

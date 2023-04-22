@@ -13,6 +13,361 @@
 #include <GeometricHelper.h>
 
 #include <thread>
+#include "SDFArchive.h"
+
+void AddQuadFrontFourCorners(const SDFVec3 c0, const SDFVec3 c1, const SDFVec3 c2, const SDFVec3 c3,  SceneObject& object){
+
+    object.AddVertex(c0);
+    object.AddVertex(c1);
+    object.AddVertex(c2);
+    
+    object.AddVertex(c0);
+    object.AddVertex(c2);
+    object.AddVertex(c3);
+
+    const SDFVec3 norm = Cross(Subtract(c1, c0), Subtract(c3, c0));
+
+    object.AddNormal(norm);
+    object.AddNormal(norm);
+    object.AddNormal(norm);
+
+    object.AddNormal(norm);
+    object.AddNormal(norm);
+    object.AddNormal(norm);
+
+
+    object.AddTexcoord({0.0, 0.0});
+    object.AddTexcoord({1.0, 0.0});
+    object.AddTexcoord({1.0, 1.0});
+
+    object.AddTexcoord({0.0, 0.0});
+    object.AddTexcoord({1.0, 1.0});
+    object.AddTexcoord({0.0, 1.0});
+
+    object.AddColor({0.0, 1.0, 0.0});
+    object.AddColor({0.0, 1.0, 0.0});
+    object.AddColor({0.0, 1.0, 0.0});
+
+    object.AddColor({0.0, 1.0, 0.0});
+    object.AddColor({0.0, 1.0, 0.0});
+    object.AddColor({0.0, 1.0, 0.0});
+}
+
+void AddRectangularLineSegment(const SDFVec3 inital, const SDFVec3 destination, float lineRadius, SceneObject& addedObject)
+{
+    
+    //calculate planar basis vectors : not entirely sure this works..
+    const SDFVec3 LineVector = Subtract(destination, inital);
+    const SDFVec3 SampleVector = Subtract(inital, {0.0,0.0,0.0});
+    
+    const SDFVec3 ARightAngle = Cross(LineVector,SampleVector);
+    const SDFVec3 XAxis = Normalize(Cross(ARightAngle, LineVector));
+    const SDFVec3 YAxis = Normalize(Cross(XAxis, LineVector));
+
+    const SDFVec3 TopLeftAdjustment = Add( Multiply(XAxis, -lineRadius), Multiply(YAxis, lineRadius) );
+    const SDFVec3 TopRightAdjustment = Add( Multiply(XAxis, lineRadius), Multiply(YAxis, lineRadius) );
+    const SDFVec3 BottomLeftAdjustment = Add(Multiply(XAxis, -lineRadius), Multiply(YAxis, -lineRadius));
+    const SDFVec3 BottomRightAdjustment = Add(Multiply(XAxis, lineRadius), Multiply(YAxis, -lineRadius));
+
+    const SDFVec3 InitalTopLeftCorner = Add(inital, TopLeftAdjustment);
+    const SDFVec3 InitalTopRightCorner = Add(inital, TopRightAdjustment);
+    const SDFVec3 InitalBottomLeftCorner = Add(inital, BottomLeftAdjustment);
+    const SDFVec3 InitalBottomRightCorner = Add(inital, BottomRightAdjustment);
+
+    
+    AddQuadFrontFourCorners(InitalBottomLeftCorner, InitalBottomRightCorner, InitalTopRightCorner, InitalTopLeftCorner, addedObject);
+
+    const SDFVec3 DestinationTopLeftCorner = Add(destination, TopLeftAdjustment);
+    const SDFVec3 DestinationTopRightCorner = Add(destination, TopRightAdjustment);
+    const SDFVec3 DestinationBottomLeftCorner = Add(destination, BottomLeftAdjustment);
+    const SDFVec3 DestinationBottomRightCorner = Add(destination, BottomRightAdjustment);
+
+    AddQuadFrontFourCorners(DestinationBottomLeftCorner, DestinationBottomRightCorner, DestinationTopRightCorner, DestinationTopLeftCorner, addedObject);
+
+    AddQuadFrontFourCorners(InitalBottomRightCorner, DestinationBottomRightCorner,  DestinationTopRightCorner, InitalTopRightCorner, addedObject);
+    AddQuadFrontFourCorners(InitalBottomLeftCorner, InitalBottomRightCorner, DestinationBottomRightCorner, DestinationBottomLeftCorner, addedObject);
+    AddQuadFrontFourCorners(InitalTopLeftCorner, InitalTopRightCorner, DestinationTopRightCorner, DestinationTopLeftCorner, addedObject);
+    AddQuadFrontFourCorners(DestinationBottomLeftCorner, InitalBottomLeftCorner, InitalTopLeftCorner, DestinationTopLeftCorner, addedObject);
+
+
+}
+
+
+void AddCuboidFromVolume(const SDFBoundingVolume volume, const int currentScene, int objectID)
+{
+    SceneObject CuboidVolume(objectID);
+
+    const SDFVec3 FrontNormal = Cross(Subtract({volume.BottomRightBack.x, volume.BottomRightBack.y, volume.TopLeftFront.z}, {volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z}), Subtract({volume.BottomRightBack.x, volume.TopLeftFront.y, volume.TopLeftFront.z},{volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z}));
+    
+    CuboidVolume.AddVertex({volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z});
+    CuboidVolume.AddVertex({volume.BottomRightBack.x, volume.BottomRightBack.y, volume.TopLeftFront.z});
+    
+    CuboidVolume.AddVertex({volume.BottomRightBack.x, volume.TopLeftFront.y, volume.TopLeftFront.z});
+    
+
+    CuboidVolume.AddVertex({volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z});
+    
+    CuboidVolume.AddVertex({volume.BottomRightBack.x, volume.TopLeftFront.y, volume.TopLeftFront.z});
+    
+    CuboidVolume.AddVertex({volume.TopLeftFront.x, volume.TopLeftFront.y, volume.TopLeftFront.z});
+    
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 1.0});
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({0.0, 1.0});
+
+    CuboidVolume.AddNormal(FrontNormal);
+    CuboidVolume.AddNormal(FrontNormal);
+    CuboidVolume.AddNormal(FrontNormal);
+
+    CuboidVolume.AddNormal(FrontNormal);
+    CuboidVolume.AddNormal(FrontNormal);
+    CuboidVolume.AddNormal(FrontNormal);
+
+    CuboidVolume.AddColor({0.5, 0.5, 0.0});
+    CuboidVolume.AddColor({0.5, 0.5, 0.0});
+    CuboidVolume.AddColor({0.5, 0.5, 0.0});
+
+    CuboidVolume.AddColor({0.5, 0.5, 0.0}); 
+    CuboidVolume.AddColor({0.5, 0.5, 0.0});
+    CuboidVolume.AddColor({0.5, 0.5, 0.0});
+
+    const SDFVec3 LeftBottomBack = {volume.TopLeftFront.x, volume.BottomRightBack.y, volume.BottomRightBack.z}, LeftBottomFront = {volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z}, LeftTopFront = {volume.TopLeftFront.x, volume.TopLeftFront.y, volume.TopLeftFront.z}, LeftTopBack = {volume.TopLeftFront.x, volume.TopLeftFront.y, volume.BottomRightBack.z};
+    const SDFVec3 RightBottomBack = {volume.BottomRightBack.x, volume.BottomRightBack.y, volume.BottomRightBack.z}, RightBottomFront = {volume.BottomRightBack.x, volume.BottomRightBack.y, volume.TopLeftFront.z}, RightTopFront = {volume.BottomRightBack.x, volume.TopLeftFront.y, volume.TopLeftFront.z}, RightTopBack = {volume.BottomRightBack.x, volume.TopLeftFront.y, volume.BottomRightBack.z}; 
+
+
+    const SDFVec3 LeftNormal = Cross(Subtract(LeftBottomFront,LeftBottomBack), Subtract(LeftTopBack, LeftBottomBack));
+
+    CuboidVolume.AddVertex(LeftBottomBack);
+    CuboidVolume.AddVertex(LeftBottomFront);
+    CuboidVolume.AddVertex(LeftTopFront);
+
+    CuboidVolume.AddVertex(LeftBottomBack);
+    CuboidVolume.AddVertex(LeftTopFront);
+    CuboidVolume.AddVertex(LeftTopBack);
+
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 1.0});
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({0.0, 1.0});
+
+    CuboidVolume.AddColor({0.5, 0.8, 0.0});
+    CuboidVolume.AddColor({0.5, 0.8, 0.0});
+    CuboidVolume.AddColor({0.5, 0.8, 0.0});
+
+    CuboidVolume.AddColor({0.5, 0.8, 0.0}); 
+    CuboidVolume.AddColor({0.5, 0.8, 0.0});
+    CuboidVolume.AddColor({0.5, 0.8, 0.0});
+
+    CuboidVolume.AddNormal(LeftNormal);
+    CuboidVolume.AddNormal(LeftNormal);
+    CuboidVolume.AddNormal(LeftNormal);
+
+    CuboidVolume.AddNormal(LeftNormal);
+    CuboidVolume.AddNormal(LeftNormal);
+    CuboidVolume.AddNormal(LeftNormal);
+
+    const SDFVec3 RightNormal = Cross(Subtract(RightBottomFront,RightBottomBack), Subtract(RightTopBack, RightBottomBack));
+
+    CuboidVolume.AddVertex(RightBottomFront);
+    CuboidVolume.AddVertex(RightBottomBack);
+    CuboidVolume.AddVertex(RightTopBack);
+
+    CuboidVolume.AddVertex(RightBottomFront);
+    CuboidVolume.AddVertex(RightTopBack);
+    CuboidVolume.AddVertex(RightTopFront);
+
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 1.0});
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({0.0, 1.0});
+
+    CuboidVolume.AddColor({0.5, 0.8, 0.0});
+    CuboidVolume.AddColor({0.5, 0.8, 0.0});
+    CuboidVolume.AddColor({0.5, 0.8, 0.0});
+
+    CuboidVolume.AddColor({0.5, 0.8, 0.0}); 
+    CuboidVolume.AddColor({0.5, 0.8, 0.0});
+    CuboidVolume.AddColor({0.5, 0.8, 0.0});
+
+    CuboidVolume.AddNormal(RightNormal);
+    CuboidVolume.AddNormal(RightNormal);
+    CuboidVolume.AddNormal(RightNormal);
+
+    CuboidVolume.AddNormal(RightNormal);
+    CuboidVolume.AddNormal(RightNormal);
+    CuboidVolume.AddNormal(RightNormal);
+
+    
+
+
+    const SDFVec3 BackNormal = Cross(Subtract(RightBottomBack, LeftBottomBack), Subtract(LeftTopBack, LeftBottomBack));
+
+
+    CuboidVolume.AddVertex(LeftBottomBack);
+    CuboidVolume.AddVertex(RightBottomBack);
+    CuboidVolume.AddVertex(RightTopBack);
+
+    CuboidVolume.AddVertex(LeftBottomBack);
+    CuboidVolume.AddVertex(RightTopBack);
+    CuboidVolume.AddVertex(LeftTopBack);
+
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 1.0});
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({0.0, 1.0});
+
+    CuboidVolume.AddColor({0, 0.8, 0.0});
+    CuboidVolume.AddColor({0, 0.8, 0.0});
+    CuboidVolume.AddColor({0, 0.8, 0.0});
+
+    CuboidVolume.AddColor({0, 0.8, 0.0}); 
+    CuboidVolume.AddColor({0, 0.8, 0.0});
+    CuboidVolume.AddColor({0, 0.8, 0.0});
+
+    CuboidVolume.AddNormal(BackNormal);
+    CuboidVolume.AddNormal(BackNormal);
+    CuboidVolume.AddNormal(BackNormal);
+
+    CuboidVolume.AddNormal(BackNormal);
+    CuboidVolume.AddNormal(BackNormal);
+    CuboidVolume.AddNormal(BackNormal);
+
+    //const SDFVec3 LeftTopFront = {volume.TopLeftFront.x, volume.TopLeftFront.y, volume.TopLeftFront.z};
+    const SDFVec3 TopNormal = Cross(Subtract(RightTopFront, LeftTopFront), Subtract(LeftTopBack, LeftTopFront) );
+
+    CuboidVolume.AddVertex(LeftTopFront);
+    CuboidVolume.AddVertex(RightTopFront);
+    CuboidVolume.AddVertex(RightTopBack);
+
+    CuboidVolume.AddVertex(LeftTopFront);
+    CuboidVolume.AddVertex(RightTopBack);
+    CuboidVolume.AddVertex(LeftTopBack);
+
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 1.0});
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({0.0, 1.0});
+
+    CuboidVolume.AddNormal(TopNormal);
+    CuboidVolume.AddNormal(TopNormal);
+    CuboidVolume.AddNormal(TopNormal);
+    CuboidVolume.AddNormal(TopNormal);
+    CuboidVolume.AddNormal(TopNormal);
+    CuboidVolume.AddNormal(TopNormal);
+
+    CuboidVolume.AddColor({1, 0.0, 1.0});
+    CuboidVolume.AddColor({1, 0.8, 1.0});
+    CuboidVolume.AddColor({1, 0.8, 1.0});
+
+    CuboidVolume.AddColor({1, 0.8, 0.0}); 
+    CuboidVolume.AddColor({1, 0.8, 1.0});
+    CuboidVolume.AddColor({0, 0.8, 0.0});
+
+    const SDFVec3 BottomNormal = Cross(Subtract(RightBottomFront, LeftBottomFront), Subtract(LeftBottomBack, LeftBottomFront));
+
+    CuboidVolume.AddVertex(LeftBottomFront);
+    CuboidVolume.AddVertex(RightBottomFront);
+    CuboidVolume.AddVertex(RightBottomBack);
+
+    CuboidVolume.AddVertex(LeftBottomFront);
+    CuboidVolume.AddVertex(RightBottomBack);
+    CuboidVolume.AddVertex(LeftBottomBack);
+
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 1.0});
+    CuboidVolume.AddTexcoord({0.0, 0.0});
+    CuboidVolume.AddTexcoord({1.0, 0.0});
+    CuboidVolume.AddTexcoord({0.0, 1.0});
+
+    CuboidVolume.AddNormal(BottomNormal);
+    CuboidVolume.AddNormal(BottomNormal);
+    CuboidVolume.AddNormal(BottomNormal);
+    CuboidVolume.AddNormal(BottomNormal);
+    CuboidVolume.AddNormal(BottomNormal);
+    CuboidVolume.AddNormal(BottomNormal);
+
+    SceneCenter[currentScene].Objects.push_back(CuboidVolume);
+}
+
+void AddCuboidFrame(const SDFBoundingVolume volume, const int currentScene, int objectID)
+{
+    SceneObject cuboidFrame(objectID);
+    
+    const SDFVec3 RightBottomFront = {volume.BottomRightBack.x, volume.BottomRightBack.y, volume.TopLeftFront.z};
+    const SDFVec3 LeftBottomFront = {volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z};
+    const SDFVec3 RightTopFront = {volume.BottomRightBack.x, volume.TopLeftFront.y, volume.TopLeftFront.z};
+    const SDFVec3 LeftTopFront = {volume.TopLeftFront.x, volume.TopLeftFront.y, volume.TopLeftFront.z};
+    
+
+    const SDFVec3 LeftBottomBack = {volume.TopLeftFront.x, volume.BottomRightBack.y, volume.BottomRightBack.z};
+    const SDFVec3 RightBottomBack =  {volume.BottomRightBack.x, volume.BottomRightBack.y, volume.BottomRightBack.z};
+    const SDFVec3 LeftTopBack = {volume.TopLeftFront.x, volume.TopLeftFront.y, volume.BottomRightBack.z};
+    const SDFVec3 RightTopBack = {volume.BottomRightBack.x, volume.TopLeftFront.y, volume.BottomRightBack.z};
+
+    //front
+    AddRectangularLineSegment(LeftTopFront, RightTopFront, 0.05, cuboidFrame);
+    AddRectangularLineSegment(LeftTopFront, LeftBottomFront, 0.05, cuboidFrame);
+    AddRectangularLineSegment(LeftBottomFront, RightBottomFront, 0.05, cuboidFrame);
+    AddRectangularLineSegment(RightBottomFront, RightTopFront, 0.05, cuboidFrame);
+
+    //right
+    AddRectangularLineSegment(RightBottomFront, RightBottomBack,0.05, cuboidFrame);
+    AddRectangularLineSegment(RightBottomFront, RightTopFront,0.05, cuboidFrame);
+    AddRectangularLineSegment(RightTopFront, RightTopBack,0.05, cuboidFrame);
+    AddRectangularLineSegment(RightBottomBack, RightTopBack,0.05, cuboidFrame);
+
+    //left
+    AddRectangularLineSegment(LeftBottomBack, LeftBottomFront,0.05, cuboidFrame);
+    AddRectangularLineSegment(LeftBottomBack, LeftTopBack,0.05, cuboidFrame);
+    AddRectangularLineSegment(LeftTopBack, RightTopFront,0.05, cuboidFrame);
+    AddRectangularLineSegment(LeftBottomFront, LeftTopFront,0.05, cuboidFrame);
+
+    //back
+    AddRectangularLineSegment(LeftBottomBack, RightBottomBack,0.05, cuboidFrame);
+    AddRectangularLineSegment(LeftBottomBack, LeftTopBack,0.05, cuboidFrame);
+    AddRectangularLineSegment(LeftTopBack, RightTopBack,0.05, cuboidFrame);
+    AddRectangularLineSegment(RightBottomBack, RightTopBack,0.05, cuboidFrame);
+
+    //top
+    AddRectangularLineSegment(LeftTopFront, RightTopFront,0.05, cuboidFrame);
+    AddRectangularLineSegment(LeftTopFront, LeftTopBack,0.05, cuboidFrame);
+    AddRectangularLineSegment(LeftTopBack, RightTopBack,0.05, cuboidFrame);
+    AddRectangularLineSegment(RightTopBack, RightTopFront,0.05, cuboidFrame);
+
+    //bottom
+    AddRectangularLineSegment(LeftBottomFront, RightBottomFront,0.05, cuboidFrame);
+    AddRectangularLineSegment(LeftBottomFront, LeftBottomBack,0.05, cuboidFrame);
+    AddRectangularLineSegment(LeftBottomBack, RightBottomBack,0.05, cuboidFrame);
+    AddRectangularLineSegment(RightBottomBack, RightBottomFront,0.05, cuboidFrame);
+
+    SceneCenter[currentScene].Objects.push_back(cuboidFrame);
+
+}
+
+
+inline SDFVec3 CenterOfVolumeStaticVisualizer(const SDFBoundingVolume volume)
+{
+    int currentScene = SceneCenter.CreateNewScene();
+    
+    //problem, this system only supports one primitive type, has memory transfer based inefficencnies and is just the beginning prototype.
+
+    float ZDepth = volume.BottomRightBack.z - volume.TopLeftFront.z;
+    float XDepth = volume.BottomRightBack.x - volume.TopLeftFront.x;
+    float YDepth = volume.TopLeftFront.y - volume.BottomRightBack.y;
+    return {XDepth/2, YDepth/2, ZDepth/2};
+}
 
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
@@ -129,10 +484,16 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     // if (fov > 45.0f)
     //     fov = 45.0f; 
 }
-#define WS "X:\\1.4 C++\\Vscode\\Class CMAKE Template - Copy\\"
+#define WS "X:\\1.4 C++\\Vscode\\GLBasis\\"
+
+glm::vec3 sm(SDFVec3 e)
+{
+    return {e.x, e.y, e.z};
+}
 
 int main()
 {
+
 
 #pragma region Init
     if(!glfwInit()){return 0;}
@@ -187,19 +548,33 @@ int main()
 #pragma region Shaders
 
     int error = 0;
-    NGLProgram StaticSceneRenderer = CreateShader(WS "vertex.glsl", WS "fragment.glsl");
+    NGLProgram StaticSceneRenderer = CreateShader(WS "shaders\\staticSceneShader.vs", WS "shaders\\staticSceneShader.fs");
+    
 
 #pragma endregion
 
 #pragma region UnpackInitalScene
 
- 
+int currentScene = SceneCenter.currentScene;
+AddCuboidFrame({{0,0,0}, {0.25,0.25,0.25}}, currentScene, 69);
 
-NGLBuffer SceneBuffer;
-SceneBuffer.GenerateBuffer();
 
-int maximumSceneSize = MaximumSceneBufferSize(SceneCenter);
-LoadCurrentScene(SceneCenter, SceneBuffer, maximumSceneSize);
+NGLVertexArray SceneSystemAttributes;
+SceneSystemAttributes.GenerateVertexArray();
+
+NGLBuffer SceneVertexBuffer;
+NGLBuffer SceneNormalBuffer;
+NGLBuffer SceneTexcoordBuffer;
+NGLBuffer SceneColorBuffer;
+
+SceneVertexBuffer.GenerateBuffer();
+SceneNormalBuffer.GenerateBuffer();
+SceneTexcoordBuffer.GenerateBuffer();
+SceneColorBuffer.GenerateBuffer();
+
+LoadCurrentScene(SceneCenter, SceneVertexBuffer, SceneNormalBuffer, SceneTexcoordBuffer, SceneColorBuffer, SceneSystemAttributes);
+
+
 
 #pragma endregion
 
@@ -230,13 +605,8 @@ LoadCurrentScene(SceneCenter, SceneBuffer, maximumSceneSize);
     float lastFrame = 0.0f; // Time of last frame
     float currentFrame = 0.0f;
 
-    glm::vec3 lightPos(3.0f, 0.0f, 0.0f);
-    glm::vec3 lightambient = glm::vec3(0.2f, 0.2f, 0.2f), lightdiffuse = glm::vec3(0.5f, 0.5f, 0.5f), lightspecular = glm::vec3(1.0f, 1.0f, 1.0f);
-    float shininess = 32.0f;;
-
     while (!glfwWindowShouldClose(window))
     {
-        //set camera
         
 #pragma region proccessInput
 
@@ -261,6 +631,9 @@ LoadCurrentScene(SceneCenter, SceneBuffer, maximumSceneSize);
         glClearColor(1.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+        SceneSystemAttributes.BindVertexArray();
+        //glDrawArrays(GL_TRIANGLES, 0, )
 
         glfwSwapBuffers(window);
         glfwPollEvents();

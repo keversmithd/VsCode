@@ -363,11 +363,15 @@ inline bool IntersectsThisBoundingVolumeBooleanT(const SDFBoundingVolume T, cons
         float HThisVolume = BoundingVolume.TopLeftFront.y - BoundingVolume.BottomRightBack.y;
         float DThisVolume = BoundingVolume.BottomRightBack.z - BoundingVolume.TopLeftFront.z;
 
-        bool XRange = (T.TopLeftFront.x < BoundingVolume.BottomRightBack.x && T.BottomRightBack.x > BoundingVolume.TopLeftFront.x) || (T.BottomRightBack.x < BoundingVolume.BottomRightBack.x && T.TopLeftFront.x > BoundingVolume.TopLeftFront.x);
-        bool YRange = (T.TopLeftFront.y > BoundingVolume.BottomRightBack.y && T.BottomRightBack.y < BoundingVolume.TopLeftFront.y) || (T.BottomRightBack.y > BoundingVolume.BottomRightBack.y && T.TopLeftFront.y < BoundingVolume.TopLeftFront.y);
-        bool ZRange = (T.TopLeftFront.z < BoundingVolume.BottomRightBack.z && T.BottomRightBack.z > BoundingVolume.TopLeftFront.z) || (T.BottomRightBack.z < BoundingVolume.BottomRightBack.z && T.TopLeftFront.z > BoundingVolume.TopLeftFront.z);
+        //More of a containment boolean array
+        // bool XRange = (T.TopLeftFront.x < BoundingVolume.BottomRightBack.x && T.BottomRightBack.x > BoundingVolume.TopLeftFront.x) || (T.BottomRightBack.x < BoundingVolume.BottomRightBack.x && T.TopLeftFront.x > BoundingVolume.TopLeftFront.x);
+        // bool YRange = (T.TopLeftFront.y > BoundingVolume.BottomRightBack.y && T.BottomRightBack.y < BoundingVolume.TopLeftFront.y) || (T.BottomRightBack.y > BoundingVolume.BottomRightBack.y && T.TopLeftFront.y < BoundingVolume.TopLeftFront.y);
+        // bool ZRange = (T.TopLeftFront.z < BoundingVolume.BottomRightBack.z && T.BottomRightBack.z > BoundingVolume.TopLeftFront.z) || (T.BottomRightBack.z < BoundingVolume.BottomRightBack.z && T.TopLeftFront.z > BoundingVolume.TopLeftFront.z);
 
-
+        bool XRange = (T.TopLeftFront.x < BoundingVolume.BottomRightBack.x && T.TopLeftFront.x > BoundingVolume.TopLeftFront.x) || (T.BottomRightBack.x < BoundingVolume.BottomRightBack.x && T.BottomRightBack.x > BoundingVolume.TopLeftFront.x);
+        bool YRange = (T.BottomRightBack.y > BoundingVolume.BottomRightBack.y && T.BottomRightBack.y < BoundingVolume.TopLeftFront.y) || (T.TopLeftFront.y < BoundingVolume.TopLeftFront.y && T.TopLeftFront.y > BoundingVolume.BottomRightBack.y);
+        bool ZRange = (T.TopLeftFront.z > BoundingVolume.TopLeftFront.z && T.TopLeftFront.z < BoundingVolume.BottomRightBack.z) || (T.BottomRightBack.z < BoundingVolume.BottomRightBack.z && T.BottomRightBack.z > BoundingVolume.TopLeftFront.z);
+        return (XRange && YRange && ZRange);
         if(T.TopLeftFront.x < BoundingVolume.BottomRightBack.x && T.BottomRightBack.x > BoundingVolume.TopLeftFront.x)
         {
             //In X Range

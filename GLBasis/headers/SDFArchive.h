@@ -2,10 +2,22 @@
 #define SDFARCH_H
 #include <vector>
 #include <math.h>
+
+struct SDFVec2
+{
+    float x,y;
+};
+
 struct SDFVec3
 {
     float x,y,z;
 };
+
+struct SDFOVec4{
+    float x,y,z;
+    unsigned int w;
+};
+
 
 struct SDFFace
 {

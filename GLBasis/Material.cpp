@@ -126,7 +126,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     // if (fov > 45.0f)
     //     fov = 45.0f; 
 }
-#define WS "X:\\1.4 C++\\Vscode\\Class CMAKE Template - Copy\\"
+#define WS "X:\\1.4 C++\\Vscode\\GLBasis\\"
 
 int main()
 {

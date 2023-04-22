@@ -85,7 +85,7 @@ struct LTXCubicBezier
     }
     LTXPoint Sample(float t)
     {
-        
+        return pow((1-t),3)*P0 + 3*pow((1-t),2)*t*P1 + 3*(1-t)*pow(t,2)*P2 + pow(t,3)*P3;
     }
     void Read()
     {

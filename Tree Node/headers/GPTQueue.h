@@ -14,6 +14,7 @@ struct GPTQueue
     int size;
     std::vector<T> elements;
     GPTQueue(){ front = 0; rear = -1; size = 0; }
+    
     void enqueue(T v)
     {
         rear++;

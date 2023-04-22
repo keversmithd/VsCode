@@ -30,7 +30,6 @@ bool FaceEquality(const SDFFace f0, const SDFFace f1)
 
 }
 
-
 bool SameSign(float a, float b)
 {
     return (a < 0 && b < 0) || (a > 0 && b > 0);
@@ -395,8 +394,6 @@ struct SDFMeshTree
         bool BoundingIntersection = IntersectsThisBoundingVolumeBoolean(BoundingVolumeOfFace);
         if(!BoundingIntersection){return;}
 
-
-
         //GatherCenterOfOctane
         int CenterOctane = OctaneOfPoint(centerOfFace);
         bool ContainedWithinOctane = ContainedWithinThisBoundingVolumeBoolean(BoundingVolumeOfFace);
@@ -424,7 +421,6 @@ struct SDFMeshTree
             Children[CenterOctane]->SplitAndRedistribute(face);
         }
 
-        //Basiccaly compoelte?
     }
 
     bool FindFaceInContainedFaces(const SDFFace face)

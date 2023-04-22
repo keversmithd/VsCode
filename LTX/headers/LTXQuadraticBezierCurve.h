@@ -6,9 +6,9 @@
 
 LTXPoint LTXQuadraticCalculation(LTXPoint* Coef, float t)
 {
-    printf("\n");
+    //printf("\n");
     LTXPoint X = pow((1-t),2) * Coef[0] +  2*(1-t)*t*Coef[1] + pow(t,2)*Coef[2];
-    PrintLTXPoint(X);
+    //PrintLTXPoint(X);
     return X;
 }
 
@@ -32,11 +32,7 @@ struct LTXQuadraticBezier
     }
     LTXPoint Sample(float t)
     {
-        LTXPoint Coefs[3];
-        Coefs[0] = P0;
-        Coefs[1] = P1;
-        Coefs[2] = P2;
-        return LTXQuadraticCalculation(Coefs, t);
+        return pow((1-t),2)*P0 + 2*(1-t)*t*P1 + pow(t,2)*P2;
     }
     LTXQuadraticBezier(float p0x, float p0y, float p1x, float p1y, float p2x, float p2y)
     {
@@ -49,6 +45,18 @@ struct LTXQuadraticBezier
         PrintLTXPoint(P0);
         PrintLTXPoint(P1);
         PrintLTXPoint(P2);
+    }
+
+    void ReadNamed()
+    {
+        char r1[2] = {(char)(rand() % 26 + 'a'), (char)(rand() % 26 + 'a')};
+        char r2[2] = {(char)(rand() % 26 + 'a'), (char)(rand() % 26 + 'a')};
+        char r3[2] = {(char)(rand() % 26 + 'a'), (char)(rand() % 26 + 'a')};
+        
+        PrintLTXLatexPoint(P0, r1);
+        PrintLTXLatexPoint(P1, r2);
+        PrintLTXLatexPoint(P2, r3);
+        printf("\\draw (%c%c) to[quadratic={(%c%c)}] (%c%c);\n", r1[0], r1[1], r2[0],r2[1],r3[0],r3[1]);
     }
     ~LTXQuadraticBezier(){}
 };

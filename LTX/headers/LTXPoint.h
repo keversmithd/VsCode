@@ -16,25 +16,40 @@ struct LTXPoint
       x = X;
       y = Y;
   }
-  LTXPoint operator -(const LTXPoint B)
-  {
-      LTXPoint sub;
-      sub.x = x - B.x;
-      sub.y = y - B.y;
-      return sub;
-  }
   
+  void ReadNamed()
+  {
+    char r1[2] = {(char)(rand() % 26 + 'a'), (char)(rand() % 26 + 'a')};
+    printf("\\coordinate (%s) at ( %f, %f);\n", r1, x, y);
+    printf("\\draw (%s) circle (2pt);\n", r1);
+  }
   
   ~LTXPoint(){}
     
 };
 
+  LTXPoint pow(const LTXPoint A, int B)
+  {
+    return {pow(A.x,B), pow(A.y, B)};
+  }
+  LTXPoint sqrt(const LTXPoint A)
+  {
+    return {sqrt(A.x), sqrt(A.y)};
+  }
   LTXPoint operator *(int i, const LTXPoint T)
   {
       LTXPoint sub;
       sub.x = T.x * i;
       sub.y = T.y * i;
       return sub;
+  }
+  LTXPoint operator -(const LTXPoint A, const LTXPoint B)
+  {
+    return {A.x - B.x, A.y - B.y};
+  }
+  LTXPoint operator *(const LTXPoint A, const LTXPoint B)
+  {
+    return {A.x - B.x, A.y - B.y};
   }
   LTXPoint operator *(const LTXPoint T, int i)
   {
@@ -72,6 +87,12 @@ struct LTXPoint
 double Magnitude(const LTXPoint P)
 {
     return sqrt(pow(P.x,2) + pow(P.y,2));
+}
+
+inline LTXPoint Normalize(const LTXPoint P)
+{
+  double mag = Magnitude(P);
+  return {P.x / mag, P.y / mag};
 }
 void PrintLTXPoint(LTXPoint A)
 {

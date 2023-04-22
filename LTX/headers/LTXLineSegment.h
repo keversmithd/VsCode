@@ -18,6 +18,17 @@ struct LTXLineSegment
     }
     
     void Read() { PrintLTXPoint(P); PrintLTXPoint(Q); }
+
+    void ReadNamed()
+    {
+        char r1[2] = {(char)(rand() % 26 + 'a'), (char)(rand() % 26 + 'a')};
+        char r2[2] = {(char)(rand() % 26 + 'a'), (char)(rand() % 26 + 'a')};
+
+        PrintLTXLatexPoint(P, r1);
+        PrintLTXLatexPoint(Q, r2);
+        
+        printf("\\draw (%c%c) -- (%c%c);", r1[0], r1[1], r2[0], r2[1]);
+    }
     ~LTXLineSegment(){}
     
 };
