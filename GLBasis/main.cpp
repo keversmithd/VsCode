@@ -15,359 +15,24 @@
 #include <thread>
 #include "SDFArchive.h"
 
-void AddQuadFrontFourCorners(const SDFVec3 c0, const SDFVec3 c1, const SDFVec3 c2, const SDFVec3 c3,  SceneObject& object){
-
-    object.AddVertex(c0);
-    object.AddVertex(c1);
-    object.AddVertex(c2);
-    
-    object.AddVertex(c0);
-    object.AddVertex(c2);
-    object.AddVertex(c3);
-
-    const SDFVec3 norm = Cross(Subtract(c1, c0), Subtract(c3, c0));
-
-    object.AddNormal(norm);
-    object.AddNormal(norm);
-    object.AddNormal(norm);
-
-    object.AddNormal(norm);
-    object.AddNormal(norm);
-    object.AddNormal(norm);
+// struct vec4
+// {
+//     float x,y,z,w;
+// };
 
 
-    object.AddTexcoord({0.0, 0.0});
-    object.AddTexcoord({1.0, 0.0});
-    object.AddTexcoord({1.0, 1.0});
-
-    object.AddTexcoord({0.0, 0.0});
-    object.AddTexcoord({1.0, 1.0});
-    object.AddTexcoord({0.0, 1.0});
-
-    object.AddColor({0.0, 1.0, 0.0});
-    object.AddColor({0.0, 1.0, 0.0});
-    object.AddColor({0.0, 1.0, 0.0});
-
-    object.AddColor({0.0, 1.0, 0.0});
-    object.AddColor({0.0, 1.0, 0.0});
-    object.AddColor({0.0, 1.0, 0.0});
-}
-
-void AddRectangularLineSegment(const SDFVec3 inital, const SDFVec3 destination, float lineRadius, SceneObject& addedObject)
+struct wav4
 {
-    
-    //calculate planar basis vectors : not entirely sure this works..
-    const SDFVec3 LineVector = Subtract(destination, inital);
-    const SDFVec3 SampleVector = Subtract(inital, {0.0,0.0,0.0});
-    
-    const SDFVec3 ARightAngle = Cross(LineVector,SampleVector);
-    const SDFVec3 XAxis = Normalize(Cross(ARightAngle, LineVector));
-    const SDFVec3 YAxis = Normalize(Cross(XAxis, LineVector));
+    float l;
+    float a;
+    float s;
+    float dx;
+    float dy;
+    float z0;
+    float z1;
+    float z2;
+};
 
-    const SDFVec3 TopLeftAdjustment = Add( Multiply(XAxis, -lineRadius), Multiply(YAxis, lineRadius) );
-    const SDFVec3 TopRightAdjustment = Add( Multiply(XAxis, lineRadius), Multiply(YAxis, lineRadius) );
-    const SDFVec3 BottomLeftAdjustment = Add(Multiply(XAxis, -lineRadius), Multiply(YAxis, -lineRadius));
-    const SDFVec3 BottomRightAdjustment = Add(Multiply(XAxis, lineRadius), Multiply(YAxis, -lineRadius));
-
-    const SDFVec3 InitalTopLeftCorner = Add(inital, TopLeftAdjustment);
-    const SDFVec3 InitalTopRightCorner = Add(inital, TopRightAdjustment);
-    const SDFVec3 InitalBottomLeftCorner = Add(inital, BottomLeftAdjustment);
-    const SDFVec3 InitalBottomRightCorner = Add(inital, BottomRightAdjustment);
-
-    
-    AddQuadFrontFourCorners(InitalBottomLeftCorner, InitalBottomRightCorner, InitalTopRightCorner, InitalTopLeftCorner, addedObject);
-
-    const SDFVec3 DestinationTopLeftCorner = Add(destination, TopLeftAdjustment);
-    const SDFVec3 DestinationTopRightCorner = Add(destination, TopRightAdjustment);
-    const SDFVec3 DestinationBottomLeftCorner = Add(destination, BottomLeftAdjustment);
-    const SDFVec3 DestinationBottomRightCorner = Add(destination, BottomRightAdjustment);
-
-    AddQuadFrontFourCorners(DestinationBottomLeftCorner, DestinationBottomRightCorner, DestinationTopRightCorner, DestinationTopLeftCorner, addedObject);
-
-    AddQuadFrontFourCorners(InitalBottomRightCorner, DestinationBottomRightCorner,  DestinationTopRightCorner, InitalTopRightCorner, addedObject);
-    AddQuadFrontFourCorners(InitalBottomLeftCorner, InitalBottomRightCorner, DestinationBottomRightCorner, DestinationBottomLeftCorner, addedObject);
-    AddQuadFrontFourCorners(InitalTopLeftCorner, InitalTopRightCorner, DestinationTopRightCorner, DestinationTopLeftCorner, addedObject);
-    AddQuadFrontFourCorners(DestinationBottomLeftCorner, InitalBottomLeftCorner, InitalTopLeftCorner, DestinationTopLeftCorner, addedObject);
-
-
-}
-
-
-void AddCuboidFromVolume(const SDFBoundingVolume volume, const int currentScene, int objectID)
-{
-    SceneObject CuboidVolume(objectID);
-
-    const SDFVec3 FrontNormal = Cross(Subtract({volume.BottomRightBack.x, volume.BottomRightBack.y, volume.TopLeftFront.z}, {volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z}), Subtract({volume.BottomRightBack.x, volume.TopLeftFront.y, volume.TopLeftFront.z},{volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z}));
-    
-    CuboidVolume.AddVertex({volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z});
-    CuboidVolume.AddVertex({volume.BottomRightBack.x, volume.BottomRightBack.y, volume.TopLeftFront.z});
-    
-    CuboidVolume.AddVertex({volume.BottomRightBack.x, volume.TopLeftFront.y, volume.TopLeftFront.z});
-    
-
-    CuboidVolume.AddVertex({volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z});
-    
-    CuboidVolume.AddVertex({volume.BottomRightBack.x, volume.TopLeftFront.y, volume.TopLeftFront.z});
-    
-    CuboidVolume.AddVertex({volume.TopLeftFront.x, volume.TopLeftFront.y, volume.TopLeftFront.z});
-    
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 1.0});
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({0.0, 1.0});
-
-    CuboidVolume.AddNormal(FrontNormal);
-    CuboidVolume.AddNormal(FrontNormal);
-    CuboidVolume.AddNormal(FrontNormal);
-
-    CuboidVolume.AddNormal(FrontNormal);
-    CuboidVolume.AddNormal(FrontNormal);
-    CuboidVolume.AddNormal(FrontNormal);
-
-    CuboidVolume.AddColor({0.5, 0.5, 0.0});
-    CuboidVolume.AddColor({0.5, 0.5, 0.0});
-    CuboidVolume.AddColor({0.5, 0.5, 0.0});
-
-    CuboidVolume.AddColor({0.5, 0.5, 0.0}); 
-    CuboidVolume.AddColor({0.5, 0.5, 0.0});
-    CuboidVolume.AddColor({0.5, 0.5, 0.0});
-
-    const SDFVec3 LeftBottomBack = {volume.TopLeftFront.x, volume.BottomRightBack.y, volume.BottomRightBack.z}, LeftBottomFront = {volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z}, LeftTopFront = {volume.TopLeftFront.x, volume.TopLeftFront.y, volume.TopLeftFront.z}, LeftTopBack = {volume.TopLeftFront.x, volume.TopLeftFront.y, volume.BottomRightBack.z};
-    const SDFVec3 RightBottomBack = {volume.BottomRightBack.x, volume.BottomRightBack.y, volume.BottomRightBack.z}, RightBottomFront = {volume.BottomRightBack.x, volume.BottomRightBack.y, volume.TopLeftFront.z}, RightTopFront = {volume.BottomRightBack.x, volume.TopLeftFront.y, volume.TopLeftFront.z}, RightTopBack = {volume.BottomRightBack.x, volume.TopLeftFront.y, volume.BottomRightBack.z}; 
-
-
-    const SDFVec3 LeftNormal = Cross(Subtract(LeftBottomFront,LeftBottomBack), Subtract(LeftTopBack, LeftBottomBack));
-
-    CuboidVolume.AddVertex(LeftBottomBack);
-    CuboidVolume.AddVertex(LeftBottomFront);
-    CuboidVolume.AddVertex(LeftTopFront);
-
-    CuboidVolume.AddVertex(LeftBottomBack);
-    CuboidVolume.AddVertex(LeftTopFront);
-    CuboidVolume.AddVertex(LeftTopBack);
-
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 1.0});
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({0.0, 1.0});
-
-    CuboidVolume.AddColor({0.5, 0.8, 0.0});
-    CuboidVolume.AddColor({0.5, 0.8, 0.0});
-    CuboidVolume.AddColor({0.5, 0.8, 0.0});
-
-    CuboidVolume.AddColor({0.5, 0.8, 0.0}); 
-    CuboidVolume.AddColor({0.5, 0.8, 0.0});
-    CuboidVolume.AddColor({0.5, 0.8, 0.0});
-
-    CuboidVolume.AddNormal(LeftNormal);
-    CuboidVolume.AddNormal(LeftNormal);
-    CuboidVolume.AddNormal(LeftNormal);
-
-    CuboidVolume.AddNormal(LeftNormal);
-    CuboidVolume.AddNormal(LeftNormal);
-    CuboidVolume.AddNormal(LeftNormal);
-
-    const SDFVec3 RightNormal = Cross(Subtract(RightBottomFront,RightBottomBack), Subtract(RightTopBack, RightBottomBack));
-
-    CuboidVolume.AddVertex(RightBottomFront);
-    CuboidVolume.AddVertex(RightBottomBack);
-    CuboidVolume.AddVertex(RightTopBack);
-
-    CuboidVolume.AddVertex(RightBottomFront);
-    CuboidVolume.AddVertex(RightTopBack);
-    CuboidVolume.AddVertex(RightTopFront);
-
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 1.0});
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({0.0, 1.0});
-
-    CuboidVolume.AddColor({0.5, 0.8, 0.0});
-    CuboidVolume.AddColor({0.5, 0.8, 0.0});
-    CuboidVolume.AddColor({0.5, 0.8, 0.0});
-
-    CuboidVolume.AddColor({0.5, 0.8, 0.0}); 
-    CuboidVolume.AddColor({0.5, 0.8, 0.0});
-    CuboidVolume.AddColor({0.5, 0.8, 0.0});
-
-    CuboidVolume.AddNormal(RightNormal);
-    CuboidVolume.AddNormal(RightNormal);
-    CuboidVolume.AddNormal(RightNormal);
-
-    CuboidVolume.AddNormal(RightNormal);
-    CuboidVolume.AddNormal(RightNormal);
-    CuboidVolume.AddNormal(RightNormal);
-
-    
-
-
-    const SDFVec3 BackNormal = Cross(Subtract(RightBottomBack, LeftBottomBack), Subtract(LeftTopBack, LeftBottomBack));
-
-
-    CuboidVolume.AddVertex(LeftBottomBack);
-    CuboidVolume.AddVertex(RightBottomBack);
-    CuboidVolume.AddVertex(RightTopBack);
-
-    CuboidVolume.AddVertex(LeftBottomBack);
-    CuboidVolume.AddVertex(RightTopBack);
-    CuboidVolume.AddVertex(LeftTopBack);
-
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 1.0});
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({0.0, 1.0});
-
-    CuboidVolume.AddColor({0, 0.8, 0.0});
-    CuboidVolume.AddColor({0, 0.8, 0.0});
-    CuboidVolume.AddColor({0, 0.8, 0.0});
-
-    CuboidVolume.AddColor({0, 0.8, 0.0}); 
-    CuboidVolume.AddColor({0, 0.8, 0.0});
-    CuboidVolume.AddColor({0, 0.8, 0.0});
-
-    CuboidVolume.AddNormal(BackNormal);
-    CuboidVolume.AddNormal(BackNormal);
-    CuboidVolume.AddNormal(BackNormal);
-
-    CuboidVolume.AddNormal(BackNormal);
-    CuboidVolume.AddNormal(BackNormal);
-    CuboidVolume.AddNormal(BackNormal);
-
-    //const SDFVec3 LeftTopFront = {volume.TopLeftFront.x, volume.TopLeftFront.y, volume.TopLeftFront.z};
-    const SDFVec3 TopNormal = Cross(Subtract(RightTopFront, LeftTopFront), Subtract(LeftTopBack, LeftTopFront) );
-
-    CuboidVolume.AddVertex(LeftTopFront);
-    CuboidVolume.AddVertex(RightTopFront);
-    CuboidVolume.AddVertex(RightTopBack);
-
-    CuboidVolume.AddVertex(LeftTopFront);
-    CuboidVolume.AddVertex(RightTopBack);
-    CuboidVolume.AddVertex(LeftTopBack);
-
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 1.0});
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({0.0, 1.0});
-
-    CuboidVolume.AddNormal(TopNormal);
-    CuboidVolume.AddNormal(TopNormal);
-    CuboidVolume.AddNormal(TopNormal);
-    CuboidVolume.AddNormal(TopNormal);
-    CuboidVolume.AddNormal(TopNormal);
-    CuboidVolume.AddNormal(TopNormal);
-
-    CuboidVolume.AddColor({1, 0.0, 1.0});
-    CuboidVolume.AddColor({1, 0.8, 1.0});
-    CuboidVolume.AddColor({1, 0.8, 1.0});
-
-    CuboidVolume.AddColor({1, 0.8, 0.0}); 
-    CuboidVolume.AddColor({1, 0.8, 1.0});
-    CuboidVolume.AddColor({0, 0.8, 0.0});
-
-    const SDFVec3 BottomNormal = Cross(Subtract(RightBottomFront, LeftBottomFront), Subtract(LeftBottomBack, LeftBottomFront));
-
-    CuboidVolume.AddVertex(LeftBottomFront);
-    CuboidVolume.AddVertex(RightBottomFront);
-    CuboidVolume.AddVertex(RightBottomBack);
-
-    CuboidVolume.AddVertex(LeftBottomFront);
-    CuboidVolume.AddVertex(RightBottomBack);
-    CuboidVolume.AddVertex(LeftBottomBack);
-
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 1.0});
-    CuboidVolume.AddTexcoord({0.0, 0.0});
-    CuboidVolume.AddTexcoord({1.0, 0.0});
-    CuboidVolume.AddTexcoord({0.0, 1.0});
-
-    CuboidVolume.AddNormal(BottomNormal);
-    CuboidVolume.AddNormal(BottomNormal);
-    CuboidVolume.AddNormal(BottomNormal);
-    CuboidVolume.AddNormal(BottomNormal);
-    CuboidVolume.AddNormal(BottomNormal);
-    CuboidVolume.AddNormal(BottomNormal);
-
-    SceneCenter[currentScene].Objects.push_back(CuboidVolume);
-}
-
-void AddCuboidFrame(const SDFBoundingVolume volume, const int currentScene, int objectID)
-{
-    SceneObject cuboidFrame(objectID);
-    
-    const SDFVec3 RightBottomFront = {volume.BottomRightBack.x, volume.BottomRightBack.y, volume.TopLeftFront.z};
-    const SDFVec3 LeftBottomFront = {volume.TopLeftFront.x, volume.BottomRightBack.y, volume.TopLeftFront.z};
-    const SDFVec3 RightTopFront = {volume.BottomRightBack.x, volume.TopLeftFront.y, volume.TopLeftFront.z};
-    const SDFVec3 LeftTopFront = {volume.TopLeftFront.x, volume.TopLeftFront.y, volume.TopLeftFront.z};
-    
-
-    const SDFVec3 LeftBottomBack = {volume.TopLeftFront.x, volume.BottomRightBack.y, volume.BottomRightBack.z};
-    const SDFVec3 RightBottomBack =  {volume.BottomRightBack.x, volume.BottomRightBack.y, volume.BottomRightBack.z};
-    const SDFVec3 LeftTopBack = {volume.TopLeftFront.x, volume.TopLeftFront.y, volume.BottomRightBack.z};
-    const SDFVec3 RightTopBack = {volume.BottomRightBack.x, volume.TopLeftFront.y, volume.BottomRightBack.z};
-
-    //front
-    AddRectangularLineSegment(LeftTopFront, RightTopFront, 0.05, cuboidFrame);
-    AddRectangularLineSegment(LeftTopFront, LeftBottomFront, 0.05, cuboidFrame);
-    AddRectangularLineSegment(LeftBottomFront, RightBottomFront, 0.05, cuboidFrame);
-    AddRectangularLineSegment(RightBottomFront, RightTopFront, 0.05, cuboidFrame);
-
-    //right
-    AddRectangularLineSegment(RightBottomFront, RightBottomBack,0.05, cuboidFrame);
-    AddRectangularLineSegment(RightBottomFront, RightTopFront,0.05, cuboidFrame);
-    AddRectangularLineSegment(RightTopFront, RightTopBack,0.05, cuboidFrame);
-    AddRectangularLineSegment(RightBottomBack, RightTopBack,0.05, cuboidFrame);
-
-    //left
-    AddRectangularLineSegment(LeftBottomBack, LeftBottomFront,0.05, cuboidFrame);
-    AddRectangularLineSegment(LeftBottomBack, LeftTopBack,0.05, cuboidFrame);
-    AddRectangularLineSegment(LeftTopBack, RightTopFront,0.05, cuboidFrame);
-    AddRectangularLineSegment(LeftBottomFront, LeftTopFront,0.05, cuboidFrame);
-
-    //back
-    AddRectangularLineSegment(LeftBottomBack, RightBottomBack,0.05, cuboidFrame);
-    AddRectangularLineSegment(LeftBottomBack, LeftTopBack,0.05, cuboidFrame);
-    AddRectangularLineSegment(LeftTopBack, RightTopBack,0.05, cuboidFrame);
-    AddRectangularLineSegment(RightBottomBack, RightTopBack,0.05, cuboidFrame);
-
-    //top
-    AddRectangularLineSegment(LeftTopFront, RightTopFront,0.05, cuboidFrame);
-    AddRectangularLineSegment(LeftTopFront, LeftTopBack,0.05, cuboidFrame);
-    AddRectangularLineSegment(LeftTopBack, RightTopBack,0.05, cuboidFrame);
-    AddRectangularLineSegment(RightTopBack, RightTopFront,0.05, cuboidFrame);
-
-    //bottom
-    AddRectangularLineSegment(LeftBottomFront, RightBottomFront,0.05, cuboidFrame);
-    AddRectangularLineSegment(LeftBottomFront, LeftBottomBack,0.05, cuboidFrame);
-    AddRectangularLineSegment(LeftBottomBack, RightBottomBack,0.05, cuboidFrame);
-    AddRectangularLineSegment(RightBottomBack, RightBottomFront,0.05, cuboidFrame);
-
-    SceneCenter[currentScene].Objects.push_back(cuboidFrame);
-
-}
-
-
-inline SDFVec3 CenterOfVolumeStaticVisualizer(const SDFBoundingVolume volume)
-{
-    int currentScene = SceneCenter.CreateNewScene();
-    
-    //problem, this system only supports one primitive type, has memory transfer based inefficencnies and is just the beginning prototype.
-
-    float ZDepth = volume.BottomRightBack.z - volume.TopLeftFront.z;
-    float XDepth = volume.BottomRightBack.x - volume.TopLeftFront.x;
-    float YDepth = volume.TopLeftFront.y - volume.BottomRightBack.y;
-    return {XDepth/2, YDepth/2, ZDepth/2};
-}
 
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
@@ -409,12 +74,12 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
     case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: notification"; break;
     } std::cout << std::endl;
     std::cout << std::endl;
+    throw("bad");
 }
 
 void refreshCallback(GLFWwindow* window)
 {
     std::cout << "refreshed" << std::endl;
-
 }
 
 void focusCallback(GLFWwindow* window, int focused)
@@ -486,9 +151,63 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 }
 #define WS "X:\\1.4 C++\\Vscode\\GLBasis\\"
 
-glm::vec3 sm(SDFVec3 e)
+std::vector<vec4> SubdividedPlane(float gap, double width, double height)
 {
-    return {e.x, e.y, e.z};
+    std::vector<vec4> mesh;
+
+    double wstep = width/gap;
+    double hstep = height/gap;
+
+    for(int i = 0; i < wstep; i++)
+    {
+        
+        for(int j = 0; j < hstep; j++)
+        {
+            vec4 bottomLet = {j*gap, 0.0, i*gap, 1.0};
+            vec4 bottomRight = {(j+1)*gap, 0.0, i*gap, 1.0};
+            vec4 TopRight = {(j+1)*gap, 0.0, (i+1)*gap, 1.0};
+            vec4 TopLeft = {(j)*gap, 0.0, (i+1)*gap, 1.0};
+             mesh.push_back(bottomLet);
+            mesh.push_back(bottomRight);
+            mesh.push_back(TopRight);
+            mesh.push_back(bottomLet);
+            mesh.push_back(TopRight);
+            mesh.push_back(TopLeft);
+        }
+        
+
+       
+
+
+    }
+
+
+    return mesh;
+
+}
+
+
+void TriangulateQuad(vec3 A, vec3 B, vec3 C, vec3 D, std::vector<vec3>& Verticies, std::vector<vec2>& UVs)
+{
+
+    Verticies.push_back(A);
+    Verticies.push_back(B);
+    Verticies.push_back(C);
+
+    Verticies.push_back(A);
+    Verticies.push_back(C);
+    Verticies.push_back(D);
+
+
+    vec2 AUV = {1.0, 1.0};
+    UVs.push_back(AUV);
+    UVs.push_back(AUV);
+    UVs.push_back(AUV);
+
+    UVs.push_back(AUV);
+    UVs.push_back(AUV);
+    UVs.push_back(AUV);
+
 }
 
 int main()
@@ -496,15 +215,19 @@ int main()
 
 
 #pragma region Init
+
+    bool debugO = true;
+
     if(!glfwInit()){return 0;}
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE,GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+    if(debugO)
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     
     /* Create a windowed mode window and its OpenGL context */
-    GLFWwindow* window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1024, 768, "Hello World", nullptr, nullptr);
     if (!window)
     {
         glfwTerminate();
@@ -523,17 +246,20 @@ int main()
         printf("%s\n", "GLEW not initialized correctly.");
     }
 
-    int flags;
-    glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+    if(debugO)
     {
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        int flags;
+        glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+        if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+        {
+            glEnable(GL_DEBUG_OUTPUT);
+            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-        glDebugMessageCallback(glDebugOutput, nullptr);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+            glDebugMessageCallback(glDebugOutput, nullptr);
+            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
-    }
+        }
+     }
 
 
     ImGui::CreateContext();
@@ -546,36 +272,158 @@ int main()
 
 
 #pragma region Shaders
-
-    int error = 0;
-    NGLProgram StaticSceneRenderer = CreateShader(WS "shaders\\staticSceneShader.vs", WS "shaders\\staticSceneShader.fs");
-    
-
+    NGLProgram program = CreateShader(WS "shaders/wavewater.vs", WS "shaders/wavewater.fs");
 #pragma endregion
+
+#pragma region
+
 
 #pragma region UnpackInitalScene
 
-int currentScene = SceneCenter.currentScene;
-AddCuboidFrame({{0,0,0}, {0.25,0.25,0.25}}, currentScene, 69);
+    float uvpackage[] =
+    {
+       0.0, 0.0,
+       1.0, 0.0,
+       1.0, 1.0,
+       0.0, 0.0,
+       1.0, 1.0,
+       0.0, 1.0,
+    };
+
+    NGLProgram FrameBufferProgram = CreateShader(WS "shaders/WaveToTexture.vs",WS "shaders/WaveToTexture.fs");
+    
+    std::vector<vec3> QuadVertex;
+    std::vector<vec2> QuadUV;
+
+    TriangulateQuad({-1,-1,0}, {1,-1,0}, {1,1,0}, {-1,1,0}, QuadVertex, QuadUV);
+
+    NGLVertexArray FramebufferRenderVertexArray;
+    FramebufferRenderVertexArray.GenerateVertexArray();
+    FramebufferRenderVertexArray.BindVertexArray();
+    NGLBuffer FrameBufferVertexBuffer;
+    FrameBufferVertexBuffer.GenerateBuffer();
+    FrameBufferVertexBuffer.BindBuffer(GL_ARRAY_BUFFER);
+    FrameBufferVertexBuffer.BufferData(sizeof(vec3) * QuadVertex.size(), QuadVertex.data(), GL_STATIC_DRAW);
+    FramebufferRenderVertexArray.EnableVertexAttribArray(0);
+    FramebufferRenderVertexArray.VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+    NGLBuffer FrameBuferUVBuffer;
+    FrameBuferUVBuffer.GenerateBuffer();
+    FrameBuferUVBuffer.BindBuffer(GL_ARRAY_BUFFER);
+    FrameBuferUVBuffer.BufferData(sizeof(vec2) * 6, uvpackage, GL_STATIC_DRAW);
+    FramebufferRenderVertexArray.EnableVertexAttribArray(1);
+    FramebufferRenderVertexArray.VertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+
+    // NGLTexture WaveNormalMap;
+    // WaveNormalMap.GenerateTexture();
+    // WaveNormalMap.BindTexture(GL_TEXTURE_2D);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // WaveNormalMap.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_FLOAT, NULL);
+
+    //COSINE LOOK UP TABLE
+    NGLTexture CosineLookupTable;
+    CosineLookupTable.GenerateTexture();
+    CosineLookupTable.BindTexture(GL_TEXTURE_1D);
+    
+    CosineLookupTable.TexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 256, 0, GL_RGB, GL_FLOAT, 0);
+
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    //FRAME BUFFER OBJECT
+    unsigned int CosineFrameBuffer;
+    glGenFramebuffers(1, &CosineFrameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, CosineFrameBuffer);
+    
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, CosineLookupTable.ReferenceTexture(), 0);
+    GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+    glDrawBuffers(1, DrawBuffers);
+
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        printf("\nWent Wrong\n");
+    }
+
+    //RENDERING LOOKUP TABLE
+    NGLProgram CosinFrameBufferProgram = CreateShader(WS "shaders/WaveToTextureLookupTable.vs",WS "shaders/WaveToTextureLookupTable.fs");
+    NGLProgram TableLookup = CreateShader(WS "shaders/WaveToWaterTextureLookup.vs",WS "shaders/WaveToWaterTextureLookup.fs");
+
+    glViewport(0,0,256,1);
+    CosinFrameBufferProgram.UseProgram();
+    FramebufferRenderVertexArray.BindVertexArray();
+    glBindFramebuffer(GL_FRAMEBUFFER, CosineFrameBuffer);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0,0,1024,768);
 
 
-NGLVertexArray SceneSystemAttributes;
-SceneSystemAttributes.GenerateVertexArray();
+    //RenderingDone
 
-NGLBuffer SceneVertexBuffer;
-NGLBuffer SceneNormalBuffer;
-NGLBuffer SceneTexcoordBuffer;
-NGLBuffer SceneColorBuffer;
+    std::vector<vec4> PlanarMesh = SubdividedPlane(0.05, 1.0, 1.0);
+    int vertices = PlanarMesh.size();
 
-SceneVertexBuffer.GenerateBuffer();
-SceneNormalBuffer.GenerateBuffer();
-SceneTexcoordBuffer.GenerateBuffer();
-SceneColorBuffer.GenerateBuffer();
+    NGLVertexArray vertexarray;
+    vertexarray.GenerateVertexArray();
 
-LoadCurrentScene(SceneCenter, SceneVertexBuffer, SceneNormalBuffer, SceneTexcoordBuffer, SceneColorBuffer, SceneSystemAttributes);
+    NGLBuffer vertex;
+    vertex.GenerateBuffer();
+
+    vertexarray.BindVertexArray();
+    vertex.BindBuffer(GL_ARRAY_BUFFER);
+    vertex.BufferData(PlanarMesh.size()  * sizeof(vec4), PlanarMesh.data(), GL_STATIC_DRAW);
+    vertexarray.VertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+    vertexarray.EnableVertexAttribArray(0);
+
+    vertex.Unbind(GL_ARRAY_BUFFER);
+    vertexarray.UnbindVertexArray();
 
 
 
+    double ai = 0.0; //height from the water plane to the wave crest
+    double L = 0.0; //the crest-to-crest distance between waves in world space. Wavelength L relates to frequency w as w = 2pi/L.
+    double w =  (2*3.14)/L;
+    double S = 0.0; //the distance the crest moves forward per second. It is convenient to express speed as phase-constant. phi swirl
+    double phiswirl = S * w;
+    double D = 0.0; //the horizontal vector perpendicular to the wave front along which the crest travels
+    
+    NGLBuffer waveInformation;
+    
+    std::vector<wav4> waveData;
+    waveData.push_back({1.0, 0.0, 0.1, 0.0, 1.0, 0.0, 0.0, 0.0});
+    waveData.push_back({0.4, 0.4, 0.7, 0.0, 1.0, 0.0, 0.0, 0.0});
+    waveData.push_back({0.1, 0.1, 0.1, 0.0, 1.0, 0.0, 0.0, 0.0});
+
+    wav4 wavedata[] =
+    {
+        {1.0, 0, 0.1, 0.0, 1.0, 0.0, 0.0, 0.0},
+        {1.0, 0, 0.1, 0.0, 1.0, 0.0, 0.0, 0.0},
+        {1.0, 0, 0.1, 0.0, 1.0, 0.0, 0.0, 0.0}
+    };
+
+    int NumberOfWaves = 3;
+
+
+    unsigned int m_program;
+    const char* m = "michael";
+
+    waveInformation.GenerateBuffer();
+    waveInformation.BindBuffer(GL_UNIFORM_BUFFER);
+    waveInformation.BufferData(sizeof(wav4)*NumberOfWaves, wavedata, GL_STATIC_DRAW);
+    waveInformation.Unbind(GL_UNIFORM_BUFFER);
+
+
+
+    setUniformBlock(program, "WaveBuffer", 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_1D, CosineLookupTable.ReturnTexture());
+    setInt(FrameBufferProgram, "table", 0);
+    setInt(TableLookup, "WaveTexture", 0);
+
+    setUniformBlock(FrameBufferProgram, "WaveBuffer", 0);
+    
+    waveInformation.BindBufferBase(GL_UNIFORM_BUFFER, 0);
 #pragma endregion
 
 
@@ -605,6 +453,7 @@ LoadCurrentScene(SceneCenter, SceneVertexBuffer, SceneNormalBuffer, SceneTexcoor
     float lastFrame = 0.0f; // Time of last frame
     float currentFrame = 0.0f;
 
+
     while (!glfwWindowShouldClose(window))
     {
         
@@ -628,12 +477,65 @@ LoadCurrentScene(SceneCenter, SceneVertexBuffer, SceneNormalBuffer, SceneTexcoor
        
 #pragma endregion
 
-        glClearColor(1.0, 0.0, 0.0, 1.0);
+        glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // projection = glm::perspective(glm::radians(fov), 640.0f / 480.0f, 0.1f, 100.0f);
+        // view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        // setFloat(program, "time", currentFrame);
+        // setInt(program, "numberofwaves", NumberOfWaves);
+        
+        // setMat4(program, "model", model);
+        // setMat4(program, "view", view);
+        // setMat4(program, "projection", projection);
 
-        SceneSystemAttributes.BindVertexArray();
-        //glDrawArrays(GL_TRIANGLES, 0, )
+        // program.UseProgram();
+        // vertexarray.BindVertexArray();
+        // glDrawArrays(GL_TRIANGLES, 0, vertices);
+
+        
+
+
+        // TableLookup.UseProgram();
+        // FramebufferRenderVertexArray.BindVertexArray();
+        // glDrawArrays(GL_TRIANGLES, 0, vertices);
+        
+        FrameBufferProgram.UseProgram();
+        setFloat(FrameBufferProgram, "time", currentFrame);
+        FramebufferRenderVertexArray.BindVertexArray();
+        glDrawArrays(GL_TRIANGLES, 0,6);
+
+        // CosinFrameBufferProgram.UseProgram();
+        // FramebufferRenderVertexArray.BindVertexArray();
+        // glDrawArrays(GL_TRIANGLES, 0,6);
+
+        ImGui_ImplGlfwGL3_NewFrame();
+        {
+                
+                float e[4][4];
+                ImGui::Begin("Salad");
+
+                for(int i = 0; i < NumberOfWaves; i++)
+                {
+                    std::string Title = "Length, Amplitude, Speed, dx " + i;
+                    ImGui::InputFloat4t(Title.c_str(), &wavedata[i].l, &wavedata[i].a, &wavedata[i].s, &wavedata[i].dx);
+                    std::string SecondTitle = "dy, z0, z1, z2" + i;
+                    ImGui::InputFloat4t(SecondTitle.c_str(), &wavedata[i].dy, &wavedata[i].z0, &wavedata[i].z1, &wavedata[i].z2);
+                }
+                
+                bool Clicked = ImGui::Button("Change");
+
+                if(Clicked)
+                {
+                   
+                    waveInformation.BindBuffer(GL_UNIFORM_BUFFER);
+                    waveInformation.BufferSubData(0, sizeof(wav4)*NumberOfWaves, wavedata);
+                    
+                }
+                ImGui::End();
+        }
+        ImGui::Render();
+        ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
         glfwPollEvents();

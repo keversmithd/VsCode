@@ -6,8 +6,20 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <SDFArchive.h>
+struct vec4
+{
+    float x,y,z,w;
+};
 
-
+struct vec2
+{
+    float x, y;
+};
+struct vec3
+{
+    float x,y,z;
+};
 
 NGLProgram CreateShader(const char* vs, const char* fs)
 {
@@ -65,11 +77,42 @@ void setMat4(NGLProgram& program, const char* name, glm::mat4 mat)
     program.ProgramUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
-void setVec3(NGLProgram& program, const char* name, glm::vec3 vec)
+void setVec2(NGLProgram& program, const char* name, glm::vec2 vec)
 {
     int modelLoc;
     program.GetUniformLocation(name, &modelLoc);
-    program.ProgramUniform3f(modelLoc, vec.x, vec.y, vec.z);
+    program.ProgramUniform2f(modelLoc, vec.x, vec.y);
+}
+
+void setVec3(NGLProgram& program, const char* name, float* a)
+{
+    int modelLoc;
+    program.GetUniformLocation(name, &modelLoc);
+    program.ProgramUniform3f(modelLoc, a[0], a[1], a[2]);
+
+}
+
+void setVec3(NGLProgram& program, const char* name, glm::vec3 X)
+{
+    int modelLoc;
+    program.GetUniformLocation(name, &modelLoc);
+    program.ProgramUniform3f(modelLoc, X.x, X.y, X.z);
+
+}
+
+
+void set2Vec3Array(NGLProgram& program, const char* name, float* array)
+{
+    int modelLoc;
+    program.GetUniformLocation(name, &modelLoc);
+    program.ProgramUniform3fv(modelLoc, 2, array);
+}
+
+void setVec4(NGLProgram& program, const char* name, glm::vec4 vec)
+{
+    int modelLoc;
+    program.GetUniformLocation(name, &modelLoc);
+    program.ProgramUniform4f(modelLoc, vec.x, vec.y, vec.z, vec.w);
 }
 
 void setFloat(NGLProgram& program, const char* name, float value)
@@ -79,6 +122,8 @@ void setFloat(NGLProgram& program, const char* name, float value)
     program.ProgramUniform1f(modelLoc, value);
 }
 
+
+
 void setInt(NGLProgram& program, const char* name, GLint value)
 {
     int modelLoc;
@@ -86,5 +131,11 @@ void setInt(NGLProgram& program, const char* name, GLint value)
     program.ProgramUniform1i(modelLoc, value);
 }
 
+void setUniformBlock(NGLProgram& program, const char* name, int binding)
+{
+    GLuint index;
+    program.GetUniformBlockIndex(name, &index);
+    program.UniformBlockBinding(index, binding);
+}
 #endif
 

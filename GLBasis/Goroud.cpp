@@ -503,6 +503,7 @@ model2 = glm::rotate(model2, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         setMat4(lightSourceProgram, "view", view);
         setMat4(lightSourceProgram, "projection", projection);
         setMat4(lightSourceProgram, "model", model2);
+        
 
         LSVertexArra.BindVertexArray();
         glDrawArrays(GL_TRIANGLES, 0, sizeof(CubicVerticies)/sizeof(GLfloat));
