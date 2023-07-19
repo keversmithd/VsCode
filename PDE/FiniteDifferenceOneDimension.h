@@ -8,6 +8,24 @@ struct vec2
     double y;
 };
 
+void DrawResults(double** mat, int TimeSteps, int SpaceSteps, float dt, float dx, int specialT)
+{
+    printf("\\draw[help lines, step=%f] (%f, %f) grid (%f, %f);\n", dx, 0, 0, SpaceSteps*dx, 1.0f);
+    printf("\\draw[->] (%f, %f) -- (%f, %d);\n", 0,0,SpaceSteps*dx, 0);
+    printf("\\draw[->] (%f, %f) -- (%f, %f);\n", 0,0, 0, 1.0f);
+    printf("\\foreach\\x in {%f, %f, ..., %f}\n \\draw (%s, %f) [anchor=north] node {\\pgfmathprintnumber[fixed, precision=3]{\\x}};\n", 0.0f, dx*2, SpaceSteps*dx, "\\x", 0.0f);
+    printf("\\foreach\\x in {%f, %f, ..., %f}\n \\draw (%f, %s) [anchor=east] node {\\pgfmathprintnumber[fixed, precision=3]{\\x}};\n", 0.0f, dx*2, SpaceSteps*dx, 0.0f, "\\x");
+
+
+    for(int x = 0; x < SpaceSteps;  x++)
+    {
+
+        printf("\\draw [fill=black] (%f,%f) circle (0.5pt);", x*dx, mat[specialT][x]);
+
+    }
+
+}
+
 void ExplicitFiniteDifferenceOneDimensionalExample()
 {
     int NumberOfSpacialOneDimensionalNodes = 5;
@@ -97,7 +115,6 @@ void ExplicitFiniteDifferenceOneDimensionalExample()
     fclose(pipe);
     system("python movieizedata.py");
 }
-
 
 void ExplicitFiniteDifferenceOneDimensionBook()
 {
@@ -255,4 +272,131 @@ void AnotherAttemptFiniteDifferenceOneDimension()
 
 
     printf("bad");
+}
+
+void SecondCentralDifferences()
+{
+    vec2 Domain = {0,1};
+    double SpaceStepsRequired = 20; //Meters
+    double TimeFinish = 0.05; //1 Hour
+
+    double dt = 0.0013; //Seconds
+    double dx = 1.0/SpaceStepsRequired; //Centimeters
+
+    double t0 = 0.0; 
+    double x0 = 0;
+    double x1 = 0;
+
+    double epsilon = (dt)/(dx*dx);
+
+
+    int TDimension = (TimeFinish/dt);
+    int XDimension = SpaceStepsRequired;
+
+    double** results = new double*[TDimension];
+    for (int i = 0; i < TDimension; i++) {
+        results[i] = new double[XDimension];
+    }
+
+
+    for(int t = 0; t < TDimension; t++)
+    {
+        for(int s = 0; s < XDimension; s++)
+        {
+            if(s == 0)
+            {
+                results[t][s] = x0;
+            }else if(s == (XDimension-1))
+            {
+                results[t][s] = x1;
+
+            }else if(t == 0)
+            {   
+                double js = s/(float)XDimension;
+                if(js >= 0 && js <= 1.0/2.0)
+                {
+                    results[t][s] = (2*js);
+                }else if(js >= 1.0/2.0 && js <= 1.0)
+                {
+                    results[t][s] = (2-(2*js));
+                }
+            }else
+            {
+                double rightvalue = results[t-1][s+1];
+                double leftvalue = results[t-1][s-1];
+                double currentvalue = results[t-1][s];
+
+                //centered differences for dt = dxx
+                //How to get half deltaT
+
+
+                
+                results[t][s] = currentvalue + (epsilon *(rightvalue - (2*currentvalue) + leftvalue ));
+                
+            }
+        }
+    }
+    
+
+    DrawResults(results, TDimension, XDimension, dt, dx, 25);
+}
+
+int FirstCentralDifferences()
+{
+    double tf = (0.012)*20;
+    double dt = 0.012;
+
+    int TDimension = tf/dt;
+    int XDimension = 20;
+
+    double dx = 1.0/XDimension;
+
+    double** results = new double*[TDimension];
+    for (int i = 0; i < TDimension; i++) {
+        results[i] = new double[XDimension];
+    }
+
+    double x0 = 0;
+    double x1 = 0;
+
+    double epsilon = (dt)/(dx*dx);
+
+    for(int t = 0; t < TDimension; t++)
+    {
+        for(int s = 0; s < XDimension; s++)
+        {
+            if(s == 0)
+            {
+                results[t][s] = x0;
+            }else if(s == (XDimension-1))
+            {
+                results[t][s] = x1;
+
+            }else if(t == 0)
+            {   
+                double js = s/(float)XDimension;
+                if(js >= 0 && js <= 1.0/2.0)
+                {
+                    results[t][s] = (2*js);
+                }else if(js >= 1.0/2.0 && js <= 1.0)
+                {
+                    results[t][s] = (2-(2*js));
+                }
+            }else
+            {
+                double rightvalue = results[t-1][s+1];
+                double leftvalue = results[t-1][s-1];
+                double currentvalue = results[t-1][s];
+
+                results[t][s] = currentvalue + (rightvalue - leftvalue)/(2);
+            }
+        }
+    }
+
+    DrawResults(results, TDimension, XDimension, dt, dx, 2);
+    DrawResults(results, TDimension, XDimension, dt, dx, 3);
+    DrawResults(results, TDimension, XDimension, dt, dx, 4);
+
+
+    return 0;
 }

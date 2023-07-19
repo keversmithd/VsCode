@@ -8,11 +8,15 @@
 #include "StatusStructure.hpp"
 #include "LIEventPoint.hpp"
 #include <unordered_map>
+#include <map>
+#include <set>
 
 struct StatusSegment
 {
     line whole;
 };
+
+#pragma region OLD_COMPARE
 
 bool EdgeCompare(const EventPoint A, const EventPoint B)
 {
@@ -138,13 +142,10 @@ int statuscompare(const EventPoint p, const EventPoint q, float sweepLineY)
     
 }
 
-int equalityCompare(const vec2 a, const vec2 b)
+int equalityCompare(const EventPoint a, const EventPoint b)
 {
-    if(a.x == b.x && a.y == b.y)
-    {
-        return 0;
-    }
-    return 1;
+    
+    return ((a.whole.start == b.whole.start) && (a.whole.end == b.whole.end));
 }
 
 bool interiorCompare(const line a, const vec2 b)
@@ -164,6 +165,10 @@ bool IsUpperEndPoint(const EventPoint X)
     return (X.part.x == X.whole.start.x && X.part.y == X.whole.start.y);
 }
 
+#pragma endregion
+
+
+
 std::vector<EventPoint> FindIntersectionNonDegenerate(line* edges, int N)
 {
     EventPoint* EventPoints = edgeToEventPoints(edges, (N*2));
@@ -175,7 +180,7 @@ std::vector<EventPoint> FindIntersectionNonDegenerate(line* edges, int N)
         Q.insert(EventPoints[i]);
     }
 
-    std::unordered_map<vec2, doubleline, vec2Hash, vec2Equal> IntersectionList;
+    std::map<vec2, EventPoint> IntersectionList;
 
     while(!Q.empty())
     {
@@ -193,14 +198,64 @@ std::vector<EventPoint> FindIntersectionNonDegenerate(line* edges, int N)
             T.remove(nextEventPoint, IntersectionList);
         }
         
-        printf("State Of Tree\n");
-        T.texorder();
-        printf("\n");
+    }
 
+
+    for(auto it = IntersectionList.begin(); it != IntersectionList.end(); ++it)
+    {
+        SpellPoint(it->first);
     }
 
 
 }
+
+int EventQueueCompares(EventPoint p, EventPoint q)
+{
+    if (p.part.y > q.part.y)
+    {
+        return -1;
+    }
+    else if (p.part.y < q.part.y)
+    {
+        return 1;
+    }
+    else
+    {
+        if(p.part.x < q.part.y)
+        {
+            return -1;
+        }
+        else if(p.part.x > q.part.y)
+        {
+            return 1;
+        }
+    }
+
+    return 0;
+
+}
+
+std::vector<vec2> FindIntersectionsBook(line* edges, int N)
+{
+    EventPoint* EventPoints = edgeToEventPoints(edges, (N*2));
+    avl_tree<EventPoint> Q(eventcompare);
+    //avl_tree<EventPoint> T()
+    for(int i = 0; i < (N*2); i++)
+    {   
+        Q.insert(EventPoints[i]);
+    }
+    while(!Q.empty())
+    {
+        EventPoint T = Q.peek();
+
+
+
+        Q.removeTop();
+
+
+    }
+
+} 
 
 
 
@@ -215,8 +270,7 @@ int main()
 
     line* EdgeSetRailroads = EdgeSetInPlane(Domain, NumberOfLines);
     DisplayEdgeSet(EdgeSetRailroads, NumberOfLines);
-    line* EdgeSetRivers = EdgeSetInPlane(Domain, NumberOfLines);
-
+    
     FindIntersectionNonDegenerate(EdgeSetRailroads, NumberOfLines);
     
 

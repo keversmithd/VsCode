@@ -2,6 +2,7 @@
 #define GEMAT2_h
 
 #include "stdio.h"
+#include "utils.h"
 
 struct GEmat2
 {
@@ -153,13 +154,6 @@ GEmat2 gaussjordan(GEmat2 m2)
     return m2;
 }
 
-void swap(float& a, float& b)
-{
-    const float temp = a;
-
-    a = b;
-    b = temp;
-}
 
 GEmat2 gaussJordanF(GEmat2 m2, GEvec2 v2)
 {

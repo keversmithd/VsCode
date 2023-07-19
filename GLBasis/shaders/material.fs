@@ -26,9 +26,6 @@ uniform sampler2D ourTexture;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 
-
-
-
 void main()
 {
     vec3 ambient = light.ambient * (material.ambient);
@@ -39,8 +36,6 @@ void main()
     float diff = max(dot(norm, lightDir),0.0);
     vec3 diffuse = (diff*material.diffuse) * light.diffuse;
 
-    
-    
     //specular
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);

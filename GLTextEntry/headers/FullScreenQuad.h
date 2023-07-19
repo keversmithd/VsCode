@@ -8,7 +8,7 @@ struct FullQuadController
     unsigned int texture;
     NGLProgram program;
 
-    FullQuadController() : vertexBuffer(-1), uvBuffer(-1), FullScreenQuadVertexArray(-1), texture(-1), program(CreateShaderPrefix("shaders/FullScreenQuad.vs", "shaders/FullScreenQuad.fs"))
+    FullQuadController() : vertexBuffer(-1), uvBuffer(-1), FullScreenQuadVertexArray(-1), texture(-1), program(CreateShader("shaders/FullScreenQuad.vs", "shaders/FullScreenQuad.fs"))
     {
         FullScreenQuad();
     }
@@ -82,7 +82,7 @@ struct QuickRender
     unsigned int texture;
     NGLProgram program;
 
-    QuickRender() : vertexBuffer(-1), uvBuffer(-1), FullScreenQuadVertexArray(-1), texture(-1), program(CreateShaderPrefix("shaders/AtlasTester.vs", "shaders/AtlasTester.fs"))
+    QuickRender() : vertexBuffer(-1), uvBuffer(-1), FullScreenQuadVertexArray(-1), texture(-1), program(CreateShader("shaders/AtlasTester.vs", "shaders/AtlasTester.fs"))
     {
     }
 

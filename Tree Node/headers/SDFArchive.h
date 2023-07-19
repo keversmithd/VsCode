@@ -2,27 +2,135 @@
 #define SDFARCH_H
 #include <vector>
 #include <math.h>
+#include <initializer_list>
 
 
-inline float GetMin(float x1, float x2, float x3)
+struct SDFVec2
 {
-        float minX;
-        minX = (x1 < x2) ? x1 : x2;
-        minX = (x3 < minX) ? x3 : minX;
-        return minX;
-}
-inline float GetMax(float x1, float x2, float x3)
+    float x,y;
+
+    void normalize()
+    {
+        float m = sqrt((x*x + y*y));
+        if(m == 0)
+        {
+            x = 0;
+            y = 0;
+        }else
+        {
+            x /= m;
+            y /= m;
+        }
+    }
+
+    SDFVec2 operator-(const SDFVec2 A)
+    {
+        return {x-A.x, y - A.y};
+    }
+};
+
+inline float cross(const SDFVec2 A, const SDFVec2 B)
 {
-        float maxX;
-        maxX = (x1 > x2) ? x1 : x2;
-        maxX = (x3 > maxX) ? x3 : maxX;
-        return maxX;
+    return ((A.x * B.y) - (B.x * A.y));
 }
+
+
+
 
 struct SDFVec3
 {
     float x,y,z;
+
+    SDFVec3()
+    {
+        x = 0;
+        y = 0;
+        z = 0;
+    }
+
+    SDFVec3(std::initializer_list<float> it)
+    {
+        x = *(it.begin());
+        y = *(it.begin()+1);
+        z = *(it.begin()+2);
+    }
+
+    SDFVec3(float p_x, float p_y, float p_z)
+    {
+        x = p_x;
+        y = p_y;
+        z = p_z;
+    }
+
+    SDFVec3 operator*(const float c)
+    {
+        return SDFVec3(x * c, y * c, z * c);
+    }
+
+    void operator *=(const SDFVec3 A)
+    {
+        x *= A.x;
+        y *= A.y;
+        z *= A.z;
+    }
+
+    void operator =(const SDFVec3 A)
+    {
+        x = A.x;
+        y = A.y;
+        z = A.z;
+    }
+
+    void operator *=(const float c)
+    {
+        x *= c;
+        y *= c;
+        z *= c;
+    }
+    
+    void operator +=(const SDFVec3 A)
+    {
+        x += A.x;
+        y += A.y;
+        z += A.z;
+    }
+
+
+
+    void normalize()
+    {
+        float m = sqrt((x*x) + (y*y) + (z*z));
+        if( m == 0)
+        {
+            x = 0;
+            y = 0;
+            z = 0;
+        }else
+        {
+            x /= m;
+            y /= m;
+            z /= m;
+        }
+        
+    }
+
+    void rotateFrame(const SDFVec3 Normal, const SDFVec3 Binormal, float theta)
+    {
+        x = (cos(theta)*Normal.x) + (sin(theta)*Binormal.x);
+        y = (cos(theta)*Normal.y) + (sin(theta)*Binormal.y);
+        z = (cos(theta)*Normal.z) + (sin(theta)*Binormal.z);
+    }
 };
+
+
+
+
+
+struct SDFOVec4{
+    float x,y,z;
+    unsigned int w;
+};
+
 
 struct SDFFace
 {
@@ -78,16 +186,20 @@ struct SDFPlaneEquation
 
     inline SDFVec3 CenterOfVolume(const SDFBoundingVolume volume)
     {
-        float ZDepth = volume.BottomRightBack.z - volume.TopLeftFront.z;
-        float XDepth = volume.BottomRightBack.x - volume.TopLeftFront.x;
+        float ZDepth = abs(volume.BottomRightBack.z - volume.TopLeftFront.z);
+        float XDepth = abs(volume.BottomRightBack.x - volume.TopLeftFront.x);
         float YDepth = volume.TopLeftFront.y - volume.BottomRightBack.y;
-        return {XDepth/2, YDepth/2, ZDepth/2};
+        return {volume.TopLeftFront.x + (XDepth/2), volume.BottomRightBack.y + (YDepth/2), volume.TopLeftFront.z + (ZDepth/2)};
     }
 inline float Mag(const SDFVec3 vec)
 {
     return sqrt(pow(vec.x,2) + pow(vec.y,2) + pow(vec.z,2));
 }
 inline float Dot(const SDFVec3 vec1, const SDFVec3 vec2)
+{
+    return (vec1.x * vec2.x) + (vec1.y * vec2.y) + (vec1.z * vec2.z);
+}
+inline float dot(const SDFVec3 vec1, const SDFVec3 vec2)
 {
     return (vec1.x * vec2.x) + (vec1.y * vec2.y) + (vec1.z * vec2.z);
 }
@@ -125,7 +237,12 @@ inline SDFVec3 Divide(const SDFVec3 P, SDFVec3 Q)
 }
 inline SDFVec3 Cross(const SDFVec3 vec1, const SDFVec3 vec2)
 {
-    return {(vec1.y * vec2.z) - (vec2.y * vec2.z),-((vec1.x * vec2.z) - (vec2.x * vec1.z)), (vec1.x * vec2.y) - (vec2.x * vec1.y)};
+    SDFVec3 Cross = {(vec1.y * vec2.z) - (vec2.y * vec1.z),((vec1.x * vec2.z) - (vec2.x * vec1.z)), (vec1.x * vec2.y) - (vec2.x * vec1.y)};
+    if(Cross.y != 0)
+    {
+        Cross.y *= -1;
+    }
+    return Cross;
 }
 inline SDFVec3 FinitePlaneNormal(const SDFPlane nPlane)
 {
@@ -134,6 +251,10 @@ inline SDFVec3 FinitePlaneNormal(const SDFPlane nPlane)
 inline SDFVec3 Normalize(const SDFVec3 n)
 {
     float mag = Mag(n);
+    if(mag == 0)
+    {
+        return {0,0,0};
+    }
     return {n.x /mag, n.y/mag, n.z/mag};
 }
 inline SDFVec3 ParametricLineSample(const SDFVec3 Direction, const SDFVec3 Start, float t)
@@ -291,141 +412,11 @@ inline const SDFVec3 IntersectionOfLineAndPlane(SDFRay Ray, SDFPlane plane)
     return Add(Ray.Origin, Multiply(Ray.Direction, t));
 }
 
-inline bool PointContainedWithinBoundingVolumeBoolean(const SDFBoundingVolume BoundingVolume,const SDFVec3 point)
-    {
-        bool xrange = (point.x >= BoundingVolume.TopLeftFront.x && point.x <= BoundingVolume.BottomRightBack.x);
-        bool yrange = (point.y >= BoundingVolume.BottomRightBack.y && point.y <= BoundingVolume.TopLeftFront.y);
-        bool zrange = (point.z >= BoundingVolume.TopLeftFront.z && point.y <= BoundingVolume.BottomRightBack.z);
-        return (xrange && yrange && zrange);
-        if(point.x >= BoundingVolume.TopLeftFront.x && point.x <= BoundingVolume.BottomRightBack.x)
-        {
-            //inxrange
-        }
-        if(point.y >= BoundingVolume.BottomRightBack.y && point.y <= BoundingVolume.TopLeftFront.y)
-        {
-            //inyrange
-        }
-        if(point.z >= BoundingVolume.TopLeftFront.z && point.y <= BoundingVolume.BottomRightBack.z)
-        {
-            //inzrange
-        }
-    }
-
-inline int OctaneOfPoint(const SDFBoundingVolume BoundingVolume, const SDFVec3 point)
-    {
-        const SDFVec3 centerOfVolume = CenterOfVolume(BoundingVolume);
-        // 0 : BottomLeftFront, 1 : TopLeftFront, 2 : BottomRightFront, 3 : TopRightFront, 4 : BottomLeftBack, 5 : TopLeftBack, 6 : BottomRightBack, 7 : TopRightBack, 8 : Outside
-        if(!PointContainedWithinBoundingVolumeBoolean(BoundingVolume, point)){ return 8; }
-        return ((4 * (point.z > centerOfVolume.z)) + (2 * (point.x > centerOfVolume.x)) + (point.y > centerOfVolume.y));
-        int ReturnIndex = 0;
-        if(point.z > centerOfVolume.z)
-        {
-            ReturnIndex += 4;
-        }
-        if(point.x > centerOfVolume.x)
-        {
-            ReturnIndex += 2;
-        }
-        if(point.y > centerOfVolume.y)
-        {
-            ReturnIndex += 1;
-        }
-    }
 
 inline const SDFBoundingVolume CalculateBoundingVolumeOfMesh(const SDFMesh& Model)
 {
     
 }
-inline SDFBoundingVolume GetVolumeOfFace(const SDFFace face)
-{
-        SDFBoundingVolume NewVolume;
-        float minX = 2147483647, maxX = -2147483647;
-        float minY = 2147483647, maxY = -2147483647;
-        float minZ = 2147483647, maxZ = -2147483647;
-
-        minX = GetMin(face.v0.x, face.v1.x, face.v2.x);
-        maxX = GetMax(face.v0.x, face.v1.x, face.v2.x);
-
-        minY = GetMin(face.v0.y, face.v1.y, face.v2.y);
-        maxY = GetMax(face.v0.y, face.v1.y, face.v2.y);
-
-        minZ = GetMin(face.v0.z, face.v1.z, face.v2.z);
-        maxZ = GetMax(face.v0.z, face.v1.z, face.v2.z);
-
-        NewVolume.TopLeftFront = {minX, maxY, minZ};
-        NewVolume.BottomRightBack = {maxX, minY, maxZ};
-        return NewVolume;
-}
-
-inline bool IntersectsThisBoundingVolumeBooleanT(const SDFBoundingVolume T, const SDFBoundingVolume BoundingVolume)
-    {
-        float WThisVolume = BoundingVolume.BottomRightBack.x - BoundingVolume.TopLeftFront.x;
-        float HThisVolume = BoundingVolume.TopLeftFront.y - BoundingVolume.BottomRightBack.y;
-        float DThisVolume = BoundingVolume.BottomRightBack.z - BoundingVolume.TopLeftFront.z;
-
-        //More of a containment boolean array
-        // bool XRange = (T.TopLeftFront.x < BoundingVolume.BottomRightBack.x && T.BottomRightBack.x > BoundingVolume.TopLeftFront.x) || (T.BottomRightBack.x < BoundingVolume.BottomRightBack.x && T.TopLeftFront.x > BoundingVolume.TopLeftFront.x);
-        // bool YRange = (T.TopLeftFront.y > BoundingVolume.BottomRightBack.y && T.BottomRightBack.y < BoundingVolume.TopLeftFront.y) || (T.BottomRightBack.y > BoundingVolume.BottomRightBack.y && T.TopLeftFront.y < BoundingVolume.TopLeftFront.y);
-        // bool ZRange = (T.TopLeftFront.z < BoundingVolume.BottomRightBack.z && T.BottomRightBack.z > BoundingVolume.TopLeftFront.z) || (T.BottomRightBack.z < BoundingVolume.BottomRightBack.z && T.TopLeftFront.z > BoundingVolume.TopLeftFront.z);
-
-        bool XRange = (T.TopLeftFront.x < BoundingVolume.BottomRightBack.x && T.TopLeftFront.x > BoundingVolume.TopLeftFront.x) || (T.BottomRightBack.x < BoundingVolume.BottomRightBack.x && T.BottomRightBack.x > BoundingVolume.TopLeftFront.x);
-        bool YRange = (T.BottomRightBack.y > BoundingVolume.BottomRightBack.y && T.BottomRightBack.y < BoundingVolume.TopLeftFront.y) || (T.TopLeftFront.y < BoundingVolume.TopLeftFront.y && T.TopLeftFront.y > BoundingVolume.BottomRightBack.y);
-        bool ZRange = (T.TopLeftFront.z > BoundingVolume.TopLeftFront.z && T.TopLeftFront.z < BoundingVolume.BottomRightBack.z) || (T.BottomRightBack.z < BoundingVolume.BottomRightBack.z && T.BottomRightBack.z > BoundingVolume.TopLeftFront.z);
-        return (XRange && YRange && ZRange);
-        if(T.TopLeftFront.x < BoundingVolume.BottomRightBack.x && T.BottomRightBack.x > BoundingVolume.TopLeftFront.x)
-        {
-            //In X Range
-        }
-
-        if(T.BottomRightBack.x < BoundingVolume.BottomRightBack.x && T.TopLeftFront.x > BoundingVolume.TopLeftFront.x)
-        {
-            //In X Range
-        }
-
-        if(T.TopLeftFront.y > BoundingVolume.BottomRightBack.y && T.BottomRightBack.y < BoundingVolume.TopLeftFront.y)
-        {
-            //In Y Range
-        }
-
-        if(T.BottomRightBack.y > BoundingVolume.BottomRightBack.y && T.TopLeftFront.y < BoundingVolume.TopLeftFront.y)
-        {
-            //In Y Range
-        }
-        
-
-        if(T.TopLeftFront.z < BoundingVolume.BottomRightBack.z && T.BottomRightBack.z > BoundingVolume.TopLeftFront.z)
-        {
-            //In Z Range
-        }
-
-        if(T.BottomRightBack.z < BoundingVolume.BottomRightBack.z && T.TopLeftFront.z > BoundingVolume.TopLeftFront.z)
-        {
-            //In Z Range
-        }
-
-        return (XRange & YRange & ZRange);
-
-    }
-
-inline bool ContainedWithinThisBoundingVolumeBoolean(const SDFBoundingVolume T, const SDFBoundingVolume BoundingVolume)
-    {
-        bool Xrange = (T.TopLeftFront.x >= BoundingVolume.TopLeftFront.x && T.BottomRightBack.x <= BoundingVolume.BottomRightBack.x);
-        bool Yrange = (T.BottomRightBack.y >= BoundingVolume.BottomRightBack.y && T.TopLeftFront.y <= BoundingVolume.TopLeftFront.y);
-        bool Zrange = (T.TopLeftFront.z >= BoundingVolume.TopLeftFront.z && T.BottomRightBack.y <= BoundingVolume.TopLeftFront.z);
-        return (Xrange && Yrange && Zrange);
-        if(T.TopLeftFront.x >= BoundingVolume.TopLeftFront.x && T.BottomRightBack.x <= BoundingVolume.BottomRightBack.x)
-        {
-            //in xrange
-        }
-        if(T.BottomRightBack.y >= BoundingVolume.BottomRightBack.y && T.TopLeftFront.y <= BoundingVolume.TopLeftFront.y)
-        {
-            //in yrange
-        }
-        if(T.TopLeftFront.z >= BoundingVolume.TopLeftFront.z && T.BottomRightBack.y <= BoundingVolume.TopLeftFront.z)
-        {
-            //in zrange
-        }
-    }
 
 #endif
 

@@ -6,22 +6,14 @@
 #include "FiniteDifferenceOneDimension.h"
 
 
-struct vec3
-{
-    double x,y,t;
-};
-
-
-
-
 int main()
 {
-    
+
     vec2 Domain = {0,1};
     double SpaceStepsRequired = 20; //Meters
-    double TimeFinish = 1.0; //1 Hour
+    double TimeFinish = 0.05; //1 Hour
 
-    double dt = 0.05; //Seconds
+    double dt = 0.0013; //Seconds
     double dx = 1.0/SpaceStepsRequired; //Centimeters
 
     double t0 = 0.0; 
@@ -34,8 +26,10 @@ int main()
     int TDimension = (TimeFinish/dt);
     int XDimension = SpaceStepsRequired;
 
-    double results[XDimension][TDimension];
-
+    double** results = new double*[TDimension];
+    for (int i = 0; i < TDimension; i++) {
+        results[i] = new double[XDimension];
+    }
 
     for(int t = 0; t < TDimension; t++)
     {
@@ -50,6 +44,7 @@ int main()
 
             }else if(t == 0)
             {   
+
                 double js = s/(float)XDimension;
                 if(js >= 0 && js <= 1.0/2.0)
                 {
@@ -65,17 +60,14 @@ int main()
                 double currentvalue = results[t-1][s];
 
                 results[t][s] = currentvalue + (epsilon *(rightvalue - (2*currentvalue) + leftvalue ));
+                
             }
-
-
-
         }
     }
     
+    //forier expansion of the forward difference scheme using the formula,
+    //add together the backward difference scheme with respect to x
+    //delta 2x
 
-
-    
-
-
-    return 0;
+    DrawResults(results, TDimension, XDimension, dt, dx, 25);
 }

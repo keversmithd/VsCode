@@ -7,6 +7,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <SDFArchive.h>
+#include <filesystem>
+
+
+
 struct vec4
 {
     float x,y,z,w;
@@ -21,15 +25,18 @@ struct vec3
     float x,y,z;
 };
 
-NGLProgram CreateShader(const char* vs, const char* fs)
+NGLProgram CreateShader(std::string vs, std::string fs)
 {
+    std::filesystem::path systemPath = std::filesystem::current_path();
+    vs = systemPath.string() + '\\' + vs;
+    fs = systemPath.string() + '\\' + fs;
     int error = 0;
     NGLProgram nglProgram;
     error = nglProgram.CreateProgram();
     NGLShader nglVertexShader; error = nglVertexShader.CreateShader(GL_VERTEX_SHADER);
     NGLShader nglFragmentShader; error = nglFragmentShader.CreateShader(GL_FRAGMENT_SHADER);
-    char* vertexSource = NGLParseShader(vs);
-    char* fragmentSource = NGLParseShader(fs);
+    char* vertexSource = NGLParseShader(vs.c_str());
+    char* fragmentSource = NGLParseShader(fs.c_str());
     error = nglVertexShader.ShaderSource(1, (const char**)&vertexSource, NULL);
     error = nglFragmentShader.ShaderSource(1, (const char**)&fragmentSource, NULL);
     error = nglVertexShader.CompileShader();
@@ -70,6 +77,17 @@ NGLProgram CreateShader(const char* vs, const char* fs)
     return nglProgram;
 }
 
+NGLBuffer CreateUniformBuffer(int size, void* data, int index)
+{
+    NGLBuffer waveInformation;
+    waveInformation.GenerateBuffer();
+    waveInformation.BindBuffer(GL_UNIFORM_BUFFER);
+    waveInformation.BufferData(size, data, GL_STATIC_DRAW);
+    waveInformation.Unbind(GL_UNIFORM_BUFFER);
+    waveInformation.BindBufferBase(GL_UNIFORM_BUFFER, 0);
+    return waveInformation;
+}
+
 void setMat4(NGLProgram& program, const char* name, glm::mat4 mat)
 {
     int modelLoc;
@@ -99,7 +117,6 @@ void setVec3(NGLProgram& program, const char* name, glm::vec3 X)
     program.ProgramUniform3f(modelLoc, X.x, X.y, X.z);
 
 }
-
 
 void set2Vec3Array(NGLProgram& program, const char* name, float* array)
 {

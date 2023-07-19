@@ -189,6 +189,37 @@ float DistanceFromPointToFace(const SDFVec3 point, const SDFFace face)
 
 
 
+SDFBoundingVolume GetVolumeOfFace(const SDFFace face)
+{
+    float minx = face.v0.x, miny = face.v0.y, minz = face.v0.z;
+    float maxx = face.v0.x, maxy = face.v0.y, maxz = face.v0.z;
+
+
+    minx = (face.v1.x < minx) ? face.v1.x : minx;
+    minx = (face.v2.x < minx) ? face.v2.x : minx;
+
+    maxx = (face.v1.x > maxx) ? face.v1.x : maxx;
+    maxx = (face.v2.x > maxx) ? face.v2.x : maxx;
+
+
+    miny = (face.v1.y < miny) ? face.v1.y : miny;
+    miny = (face.v2.y < miny) ? face.v2.y : miny;
+
+    maxy = (face.v1.y > maxy) ? face.v1.y : maxy;
+    maxy = (face.v2.y > maxy) ? face.v2.y : maxy;
+
+
+    minz = (face.v1.z < minz) ? face.v1.z : minz;
+    minz = (face.v2.z < minz) ? face.v2.z : minz;
+
+    maxz = (face.v1.z > maxz) ? face.v1.z : maxz;
+    maxz = (face.v2.z > maxz) ? face.v2.z : maxz;
+
+
+    return {{minx, miny, minz}, {maxx, maxy, maxz}};
+
+}
+
 struct SDFMeshTree
 {
     SDFMeshTree* Children[8];
@@ -200,6 +231,8 @@ struct SDFMeshTree
     {
         ContainedFaces.push_back(face);
     }
+
+
 
     bool IntersectsThisBoundingVolumeVectorComplication(const SDFBoundingVolume T)
     {
@@ -345,9 +378,28 @@ struct SDFMeshTree
     }
     SDFBoundingVolume VolumeOfChild(int childIndex)
     {
-        
-    }
+        const SDFVec3 centerOfParentVolume = CenterOfVolume(BoundingVolume);
 
+        switch(childIndex)
+        {
+            case 0:
+                return  {{BoundingVolume.TopLeftFront.x, BoundingVolume.BottomRightBack.y, BoundingVolume.TopLeftFront.z},centerOfParentVolume};
+            case 1:
+                return {{BoundingVolume.TopLeftFront.x, centerOfParentVolume.y, BoundingVolume.TopLeftFront.z},{centerOfParentVolume.x, BoundingVolume.TopLeftFront.y, centerOfParentVolume.z}};
+            case 2:
+                return {{centerOfParentVolume.x, BoundingVolume.BottomRightBack.y, BoundingVolume.TopLeftFront.z},{BoundingVolume.BottomRightBack.x, centerOfParentVolume.y, centerOfParentVolume.z}};
+            case 3:
+                return {{centerOfParentVolume.x, centerOfParentVolume.y, BoundingVolume.TopLeftFront.z},{BoundingVolume.BottomRightBack.x, BoundingVolume.TopLeftFront.y, centerOfParentVolume.z}};
+            case 4:
+                return{{BoundingVolume.TopLeftFront.x, BoundingVolume.BottomRightBack.y, centerOfParentVolume.z},{centerOfParentVolume.x, centerOfParentVolume.y, BoundingVolume.BottomRightBack.z}};
+            case 5:
+                return {{BoundingVolume.TopLeftFront.x, centerOfParentVolume.y, centerOfParentVolume.z},{centerOfParentVolume.x, BoundingVolume.TopLeftFront.y, BoundingVolume.BottomRightBack.z}};
+            case 6:
+                return {{centerOfParentVolume.x, BoundingVolume.BottomRightBack.y, centerOfParentVolume.z},{BoundingVolume.BottomRightBack.x, centerOfParentVolume.y, BoundingVolume.BottomRightBack.z}};
+            case 7:
+                return {centerOfParentVolume,{BoundingVolume.BottomRightBack.x, BoundingVolume.TopLeftFront.y, BoundingVolume.BottomRightBack.z}};
+        }
+    }
     void SplitAndRedistribute(const SDFFace face)
     {
         for(int i = 0; i < ContainedFaces.size(); i++)
@@ -355,7 +407,6 @@ struct SDFMeshTree
             InsertionOfFaceIntoOctreeAlgorithm1(ContainedFaces.at(i));
         }
     }
-
     void SearchNeighbors(const SDFFace face, const SDFBoundingVolume BoundingVolumeOfFace, const SDFVec3 centerOfFace, int CenterOctane)
     {
 
@@ -365,7 +416,7 @@ struct SDFMeshTree
             if(i != CenterOctane)
             {
                 const SDFBoundingVolume volumeOfChild = VolumeOfChild(i);
-                VolumeIntersection = IntersectsThisBoundingVolumeBooleanT(BoundingVolumeOfFace, volumeOfChild);
+                VolumeIntersection = IntersectsThisBoundingVolumeBoolean(volumeOfChild);
                 if(VolumeIntersection)
                 {
                     if(Children[i] == nullptr)

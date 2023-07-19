@@ -9,6 +9,8 @@
 #include <SDFArchive.h>
 #include <filesystem>
 
+
+
 struct vec4
 {
     float x,y,z,w;
@@ -23,15 +25,18 @@ struct vec3
     float x,y,z;
 };
 
-NGLProgram CreateShader(const char* vs, const char* fs)
+NGLProgram CreateShader(std::string vs, std::string fs)
 {
+    std::filesystem::path systemPath = std::filesystem::current_path();
+    vs = systemPath.string() + '\\' + vs;
+    fs = systemPath.string() + '\\' + fs;
     int error = 0;
     NGLProgram nglProgram;
     error = nglProgram.CreateProgram();
     NGLShader nglVertexShader; error = nglVertexShader.CreateShader(GL_VERTEX_SHADER);
     NGLShader nglFragmentShader; error = nglFragmentShader.CreateShader(GL_FRAGMENT_SHADER);
-    char* vertexSource = NGLParseShader(vs);
-    char* fragmentSource = NGLParseShader(fs);
+    char* vertexSource = NGLParseShader(vs.c_str());
+    char* fragmentSource = NGLParseShader(fs.c_str());
     error = nglVertexShader.ShaderSource(1, (const char**)&vertexSource, NULL);
     error = nglFragmentShader.ShaderSource(1, (const char**)&fragmentSource, NULL);
     error = nglVertexShader.CompileShader();
@@ -72,60 +77,15 @@ NGLProgram CreateShader(const char* vs, const char* fs)
     return nglProgram;
 }
 
-
-NGLProgram CreateShaderPrefix(const char* vs, const char* fs)
+NGLBuffer CreateUniformBuffer(int size, void* data, int index)
 {
-    std::filesystem::path currentPath = std::filesystem::current_path();
-    std::filesystem::path vsc = currentPath / vs;
-    std::filesystem::path fsc = currentPath / fs;
-    
-    
-
-    int error = 0;
-    NGLProgram nglProgram;
-    error = nglProgram.CreateProgram();
-    NGLShader nglVertexShader; error = nglVertexShader.CreateShader(GL_VERTEX_SHADER);
-    NGLShader nglFragmentShader; error = nglFragmentShader.CreateShader(GL_FRAGMENT_SHADER);
-    char* vertexSource = NGLParseShader(vsc.string().c_str());
-    char* fragmentSource = NGLParseShader(fsc.string().c_str());
-    error = nglVertexShader.ShaderSource(1, (const char**)&vertexSource, NULL);
-    error = nglFragmentShader.ShaderSource(1, (const char**)&fragmentSource, NULL);
-    error = nglVertexShader.CompileShader();
-    error = nglFragmentShader.CompileShader();
-    GLsizei LogLength = 0;
-    error = nglVertexShader.GetInfoLog(NULL, &LogLength, NULL);
-    GLint isCompiled = 0;
-    error = nglVertexShader.GetShaderiv(GL_COMPILE_STATUS, &isCompiled);
-    if (!isCompiled)
-    {
-        char* VertexLog = (char*)malloc(LogLength);
-        error = nglVertexShader.GetInfoLog(LogLength, NULL, VertexLog);
-        printf("%s\n", VertexLog);
-        free(VertexLog);
-    }
-    error = nglFragmentShader.GetShaderiv(GL_COMPILE_STATUS, &isCompiled);
-    if (!isCompiled)
-    {
-        error = nglFragmentShader.GetInfoLog(NULL, &LogLength, NULL);
-        char* FragmentLog = (char*)malloc(LogLength);
-        error = nglFragmentShader.GetInfoLog(LogLength, NULL, FragmentLog);
-        printf("%s\n", FragmentLog);
-        free(FragmentLog);
-    }
-    error = nglProgram.AttachShader(nglVertexShader.ReturnShader());
-    error = nglProgram.AttachShader(nglFragmentShader.ReturnShader());
-    error = nglProgram.LinkProgram();
-    //error = nglProgram.UseProgram();
-
-    //nglProgram.DetachShader(nglVertexShader.ReturnShader());
-    //nglProgram.DetachShader(nglFragmentShader.ReturnShader());
-    nglVertexShader.DeleteShader();
-    nglFragmentShader.DeleteShader();
-    GLint  linkStatus = 0;
-    error = nglProgram.GetProgramiv(GL_LINK_STATUS, &linkStatus);
-    if(linkStatus != GL_TRUE){ throw("fuck"); }
-
-    return nglProgram;
+    NGLBuffer waveInformation;
+    waveInformation.GenerateBuffer();
+    waveInformation.BindBuffer(GL_UNIFORM_BUFFER);
+    waveInformation.BufferData(size, data, GL_STATIC_DRAW);
+    waveInformation.Unbind(GL_UNIFORM_BUFFER);
+    waveInformation.BindBufferBase(GL_UNIFORM_BUFFER, 0);
+    return waveInformation;
 }
 
 void setMat4(NGLProgram& program, const char* name, glm::mat4 mat)
@@ -150,14 +110,13 @@ void setVec3(NGLProgram& program, const char* name, float* a)
 
 }
 
-void setVec3(NGLProgram& program, const char* name, glm::vec3 vec)
+void setVec3(NGLProgram& program, const char* name, glm::vec3 X)
 {
     int modelLoc;
     program.GetUniformLocation(name, &modelLoc);
-    program.ProgramUniform3f(modelLoc, vec.x, vec.y, vec.z);
+    program.ProgramUniform3f(modelLoc, X.x, X.y, X.z);
 
 }
-
 
 void set2Vec3Array(NGLProgram& program, const char* name, float* array)
 {
@@ -179,7 +138,6 @@ void setFloat(NGLProgram& program, const char* name, float value)
     program.GetUniformLocation(name, &modelLoc);
     program.ProgramUniform1f(modelLoc, value);
 }
-
 
 
 void setInt(NGLProgram& program, const char* name, GLint value)

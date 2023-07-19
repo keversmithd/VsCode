@@ -16,7 +16,7 @@ struct AtlasText
 
     int vertexes;
 
-    AtlasText() : vbo(-1), vuv(-1), vao(-1), program(CreateShaderPrefix("shaders/AtlasTester.vs", "shaders/AtlasTester.fs")), vertexes(0)
+    AtlasText() : vbo(-1), vuv(-1), vao(-1), program(CreateShader("shaders/AtlasTester.vs", "shaders/AtlasTester.fs")), vertexes(0)
     {
 
     }

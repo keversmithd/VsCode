@@ -13,6 +13,8 @@ struct vec2
     }
 };
 
+
+
 vec2 operator*(const vec2 a, const double b)
 {
     return {static_cast<float>(a.x * b), static_cast<float>(a.y * b)};
@@ -41,6 +43,11 @@ double cross(const vec2 a, const vec2 b)
 double mag(const vec2 a)
 {
     return sqrt(pow(a.x,2) + pow(a.y, 2));
+}
+
+bool operator <(const vec2 a, const vec2 b)
+{
+    return (mag(a) < mag(b));
 }
 
 vec2 normalize(const vec2 a)

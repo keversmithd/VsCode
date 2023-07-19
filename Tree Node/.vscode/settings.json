@@ -52,6 +52,7 @@
         "xutility": "cpp",
         "array": "cpp",
         "deque": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "string": "cpp"
     }
 }

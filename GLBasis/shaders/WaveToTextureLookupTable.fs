@@ -8,5 +8,5 @@ void main()
 {
     //color = vec4(cos(2*3.14*o_uv.x*o_uv.y));
     //color = vec3(o_uv.x);
-    gl_FragColor = vec4(cos(2*3.14*o_uv.x));
+    gl_FragColor = vec4(cos(2*3.14*o_uv.x), 0, 0, 1);
 }

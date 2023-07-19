@@ -16,6 +16,8 @@
 
 #include "FullScreenQuad.h"
 #include "AtlasTester.h"
+#include "Camera.h"
+#include "GraphicVector.h"
 
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
@@ -60,80 +62,7 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
     throw("bad");
 }
 
-void refreshCallback(GLFWwindow* window)
-{
-    std::cout << "refreshed" << std::endl;
 
-}
-
-void focusCallback(GLFWwindow* window, int focused)
-{
-    std::cout << "focused" << std::endl;
-}
-
-void framebufferSizeCallback(GLFWwindow *window, int width, int height)
-{
-    glViewport(0,0, width, height);
-    //passing scene context to update the perspective matrix
-}
-
-void windowPosCallback(GLFWwindow *window, int xpos, int ypos)
-{
-    std::cout << "window pos" << std::endl;
-}
-
-void windowSizeCallback(GLFWwindow *window, int width, int height)
-{
-    std::cout << "windowSized" << std::endl;
-
-}
-
-float lastX = 320, lastY = 240;
-float yaw = -90, pitch = 0;
-float fov = 45;
-bool firstMouse = true;
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-{
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-  
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; 
-    lastX = xpos;
-    lastY = ypos;
-
-    float sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    yaw   += xoffset;
-    pitch += yoffset;
-
-    if(pitch > 89.0f)
-        pitch = 89.0f;
-    if(pitch < -89.0f)
-        pitch = -89.0f;
-
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(direction);
-}
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    //fov += 2;
-    // if (fov < 1.0f)
-    //     fov = 1.0f;
-    // if (fov > 45.0f)
-    //     fov = 45.0f; 
-}
-#define WS "X:\\1.4 C++\\Vscode\\GLTextEntry\\"
 
 
 vec3* GenerateTwoDimensionalAxis(const vec2 XDimensionality, const vec2 YDimensionality, double dx, double dy, int& size)
@@ -172,19 +101,10 @@ vec3* GenerateTwoDimensionalAxis(const vec2 XDimensionality, const vec2 YDimensi
 
 }
 
-
-
-
-int main()
+GLFWwindow* CreateContext()
 {
-
-
-#pragma region Init
-
     bool debugO = true;
-
     if(!glfwInit()){return 0;}
-    GLint samples = 4; // Or any other desired value
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -193,19 +113,14 @@ int main()
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     
     /* Create a windowed mode window and its OpenGL context */
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Hello World", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1024, 768, "Hello World", nullptr, nullptr);
     if (!window)
     {
         glfwTerminate();
-        return -1;
+        throw std::range_error("Did not load context of window.");
     }
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-
-    glfwSetScrollCallback(window, scroll_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-    glfwSetWindowSizeCallback(window, windowSizeCallback);
 
     if(glewInit() != GLEW_OK)
     {
@@ -223,21 +138,27 @@ int main()
 
             glDebugMessageCallback(glDebugOutput, nullptr);
             glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-
         }
      }
 
 
     ImGui::CreateContext();
-        ImGui_ImplGlfwGL3_Init(window, true);
-        ImGui::StyleColorsDark();
+    ImGui_ImplGlfwGL3_Init(window, true);
+    ImGui::StyleColorsDark();
     glEnable(GL_DEPTH_TEST);
+    return window;
+}
 
 
-#pragma endregion
+int main()
+{
 
 
-#pragma region Shaders
+#pragma region Init
+
+    
+    /* Create a windowed mode window and its OpenGL context */
+    GLFWwindow* window = CreateContext();
 
     LoadCharacterAtlas("C:\\Users\\Dust\\Desktop\\Joan-Regular.ttf");
 
@@ -287,96 +208,32 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-
-#pragma endregion
-
-#pragma region UnpackInitalScene
-
-#pragma endregion
-
-    
-
-#pragma region NonLightSourceMVP
-
+    Camera MainCamera;
+    MainCamera.MakeActiveCamera(window);
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-    glm::mat4 view = glm::mat4(1.0f);
-
-    glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
-    
-    glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
-    // note that we're translating the scene in the reverse direction of where we want to move
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f)); 
-
-    bool ortho = false;
-    glm::mat4 projection;
-    projection = (ortho) ? glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 100.0f) : glm::perspective(glm::radians(fov), 640.0f / 480.0f, 0.1f, 100.0f);
-
-#pragma endregion
-
-    float cameraSpeed = 0.5f; // adjust accordingly
-    double curPosx = 0.0f;
-    double curPosy = 0.0f;
-    float deltaTime = 0.0f;	// Time between current frame and last frame
-    float lastFrame = 0.0f; // Time of last frame
-    float currentFrame = 0.0f;
-
-    
+    GraphicVector v({-1.0, -1.0, 0.0}, {1.0, 1.0, 0.0});
 
     while (!glfwWindowShouldClose(window))
     {
         
-#pragma region proccessInput
-
-        currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame; 
-        cameraSpeed = 2.0f * deltaTime;
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraFront;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraFront;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-
-        glfwGetCursorPos(window, &curPosx, &curPosy);
-       
-#pragma endregion
+        MainCamera.proccessInput(window);
 
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // setMat4(program, "model", model);
-        // setMat4(program, "view", view);
-        // setMat4(program, "projection", projection);
-        projection = glm::perspective(glm::radians(fov), 640.0f / 480.0f, 0.1f, 100.0f);
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
-        setMat4(TextRenderer.program, "projection", projection);
-        setMat4(TextRenderer.program, "view", view);
-
-        // setMat4(fontprogram, "view", view);
-        // setMat4(fontprogram, "projection", projection);
-
-        //Previous Quad Controller
-        //Texture_Viewer.Draw();
-
-        // program.UseProgram();
-        // vertexarray.BindVertexArray();
-        // glDrawArrays(GL_LINES, 0, AxisGeometrySize);
+        setMat4(TextRenderer.program, "projection", MainCamera.projection);
+        setMat4(TextRenderer.program, "view", MainCamera.view);
 
         TextRenderer.Draw();
-        //AtlasSub.Draw();
-
+        v.DrawElements(MainCamera);
 
         ImGui_ImplGlfwGL3_NewFrame();
         {
             
         }
+
         ImGui::Render();
         ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 

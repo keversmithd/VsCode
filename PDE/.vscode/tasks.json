@@ -8,6 +8,10 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
+                "-I","${workspaceFolder}\\AbstractExpressionCalculator",
+                "-I","${workspaceFolder}\\SingularValueDecomposition",
+                "-I","${workspaceFolder}\\Eigen",
+                "-I","${workspaceFolder}",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],

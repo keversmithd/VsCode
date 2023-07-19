@@ -45,6 +45,7 @@ struct SDFBoundingVolume
     SDFVec3 BottomRightBack;
 };
 
+
 struct SDFParaLine
 {
     SDFVec3 Origin;
@@ -71,7 +72,7 @@ struct SDFPlaneEquation
 };
 
 
-    inline SDFVec3 CenterOfVolume(const SDFBoundingVolume volume)
+inline SDFVec3 CenterOfVolume(const SDFBoundingVolume volume)
     {
         float ZDepth = volume.BottomRightBack.z - volume.TopLeftFront.z;
         float XDepth = volume.BottomRightBack.x - volume.TopLeftFront.x;

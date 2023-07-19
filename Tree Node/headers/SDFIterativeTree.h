@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <array>
 #include <stack>
-
+#include <SDFBoundingPrimitives.h>
 
 
 template<typename T>
@@ -127,7 +127,7 @@ struct SDFIterativeTree
 
         for(int i = 0; i < 8; i++)
         {
-            if(i != canceledIndex && IntersectsThisBoundingVolumeBooleanT(facialBoundingVolume, Children[i]->BoundingVolume))
+            if(i != canceledIndex && IntersectsThisBoundingVolumeBoolean(facialBoundingVolume, Children[i]->BoundingVolume))
             {
                 intersectionStack.push({this,  i});
             }
@@ -146,7 +146,7 @@ struct SDFIterativeTree
 
             for(int i = 0; i < 8; i++)
             {
-                if(IntersectsThisBoundingVolumeBooleanT(volumeOfFace, Children[i]->BoundingVolume))
+                if(IntersectsThisBoundingVolumeBoolean(volumeOfFace, Children[i]->BoundingVolume))
                 {
                     Children[i]->ContainedFaces.push_back(face);
                 }
@@ -198,7 +198,7 @@ struct SDFIterativeTree
     {
         const SDFBoundingVolume volumeOfFace = GetVolumeOfFace(face); //Volume of face
         //const SDFVec3 centerOfFace = CenterOfFace(face); //Center Point of face //irrellevant
-        bool BaseIntersection = IntersectsThisBoundingVolumeBooleanT(BoundingVolume, volumeOfFace); //Whether or not the bounding boxes even touch.
+        bool BaseIntersection = IntersectsThisBoundingVolumeBoolean(BoundingVolume, volumeOfFace); //Whether or not the bounding boxes even touch.
         if(!BaseIntersection){return false;}
 
         //At this point it is verified that we will need to be searching the bounding boxes of the children and need to calculate their bounding boxes.

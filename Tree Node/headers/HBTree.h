@@ -322,9 +322,6 @@ public:
         }
 
         return m_head;
-
-
-
     }
     HBTNode<E>* InsertRecursive(HBTNode<E>* m_head, E element)
     {
@@ -349,7 +346,6 @@ public:
         if(BalanceFactor > 1 && m_lcompare(element, m_head->left->element))
         {
             return right_rotate(m_head);
-
         }
         if(BalanceFactor < -1 && m_rcompare(element, m_head->right->element))
         {

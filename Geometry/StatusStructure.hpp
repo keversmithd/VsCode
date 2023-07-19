@@ -4,7 +4,7 @@
 #include "Deque.hpp"
 #include <unordered_set>
 #include "LIEventPoint.hpp"
-#include <unordered_map>
+#include <map>
 
 template<typename T>
 struct sb_node
@@ -34,17 +34,17 @@ struct sb_tree
     sb_node<T>* root;
     int elements;
     int(*c)(const T a, const T b, float sweepLine);
-    int(*z)(const P a, const P b);
+    int(*z)(const T a, const T b);
     bool(*i_c)(const W a, const P b);
     
-    sb_tree(int(*Compare)(const T a, const T b, float sweepLine), int(*PartCompare)(const P a, const P b), bool(*InteriorCompare)(const W a, const P b)) : root(nullptr) , elements(0)
+    sb_tree(int(*Compare)(const T a, const T b, float sweepLine), int(*EventCompare)(const T a, const T b), bool(*InteriorCompare)(const W a, const P b)) : root(nullptr) , elements(0)
     {
-        if(Compare == nullptr || PartCompare == nullptr || InteriorCompare == nullptr)
+        if(Compare == nullptr || EventCompare == nullptr || InteriorCompare == nullptr)
         {
             throw ("Bad");
         }
         c = Compare;
-        z = PartCompare;
+        z = EventCompare;
         i_c = InteriorCompare;
     }
     int height(sb_node<T>* t)
@@ -168,7 +168,7 @@ struct sb_tree
 
 
 
-    void insertCheckAdjacent(T v, std::unordered_map<vec2, doubleline, vec2Hash, vec2Equal>& IntersectionList)
+    void insertCheckAdjacent(T v, std::map<vec2, EventPoint>& IntersectionList)
     {
         
         if(root == nullptr)
@@ -237,17 +237,21 @@ struct sb_tree
     }
     
 
-    void checkAdjacentIntersections(sb_node<T>* r, std::unordered_map<vec2, doubleline, vec2Hash, vec2Equal>& IntersectionList, double yline)
+    void checkAdjacentIntersections(sb_node<T>* r,  std::map<vec2, EventPoint>& IntersectionList, double yline)
     {
+
+        //problem was to do with not searching throughouly enough here.
         vec2 intersectionPoint1;
         if(r->left && lineIntersection(r->value.whole, r->left->value.whole, intersectionPoint1))
         {
             printf("Intersection Point\n");
             SpellPoint(intersectionPoint1);
             printf("\n");
+            
             if(IntersectionList.find(intersectionPoint1) == IntersectionList.end() && intersectionPoint1.y < yline)
             {
-                IntersectionList.insert({intersectionPoint1, {r->value.whole, r->left->value.whole}});
+                IntersectionList.insert({intersectionPoint1, r->value});
+                //IntersectionList.insert(std::make_pair(intersectionPoint1, {r->value.whole, r->left->value.whole}));
             }
         }
 
@@ -259,7 +263,7 @@ struct sb_tree
             printf("\n");
             if(IntersectionList.find(intersectionPoint2) == IntersectionList.end())
             {
-                IntersectionList.insert({intersectionPoint2, {r->value.whole, r->right->value.whole}});
+                IntersectionList.insert({intersectionPoint1, r->value});
             }
         }
 
@@ -271,68 +275,10 @@ struct sb_tree
             if(IntersectionList.find(intersectionPoint3) == IntersectionList.end())
             {
                 doubleline insert = {r->left->value.whole, r->right->value.whole};
-                IntersectionList.insert({intersectionPoint2, insert});
+                IntersectionList.insert({intersectionPoint1, r->value});
             }
         }
 
-    }
-
-    void InSetCombination(const T p, std::unordered_set<T, EventPointHash>& U, std::unordered_set<T, EventPointHash>& L, std::unordered_set<T, EventPointHash>& C)
-    {
-        P point = p.part;
-        //binary search for edge with upper point which matches.
-        sb_node<T>* iter = root;
-        float ylevel = p.part.y;
-        sb_node<T>* root = root; //Gather root of tree.
-        Deque<sb_node<T>*> s; //Stack
-
-        while(iter != nullptr || !s.isEmpty())
-        {
-            while(iter != nullptr) //goes down all the way left to last left leaf node, and adds open parenthesis to the stack.
-            {
-                sb_node<T>* temp = root;
-                s.addTail(iter);
-                iter = iter->left;
-            }
-
-            iter = s.removeTail(); //Gets the top of the node stack.
-            
-            P upperEndpoint;
-            P lowerEndpoint;
-
-            int upperlowerPointCompare = z(iter->value.whole.start, iter->value.whole.end);
-            if(upperlowerPointCompare == 1)
-            {
-                upperEndpoint = iter->value.whole.start;
-                lowerEndpoint = iter->value.whole.end;
-            }else
-            {
-                upperEndpoint = iter->value.whole.end;
-                lowerEndpoint = iter->value.whole.start;
-            }
-            
-            int i_compare = z(point, upperEndpoint);
-
-            int j_compare = z(point, lowerEndpoint);
-
-            int k_compare = i_c(iter->value.whole, point);
-
-            if(i_compare == 0)
-            {
-                U.insert(iter->value);
-            }
-            if(j_compare == 0)
-            {
-                
-                L.insert(iter->value);
-            }
-            if(k_compare == true)
-            {
-                C.insert(iter->value);
-            }
-
-            iter = iter->right;
-        }
     }
 
     void remove(T v)
@@ -348,7 +294,9 @@ struct sb_tree
         int compare;
         while(removalSearch != nullptr && removed == false)
         {
-            compare = c(v, removalSearch->value, yline);
+
+            float y = v.part.y;
+            compare = c(v, removalSearch->value, y);
             if(compare == -1)
             {
                 parent = removalSearch;
@@ -424,7 +372,7 @@ struct sb_tree
         root = balance(root);
     }
 
-    void remove(T v, std::unordered_map<vec2, doubleline, vec2Hash, vec2Equal>& IntersectionList)
+    void remove(T v, std::map<vec2, EventPoint>& IntersectionList)
     {
         if(root == nullptr){return;}
 
@@ -437,7 +385,8 @@ struct sb_tree
         int compare;
         while(removalSearch != nullptr && removed == false)
         {
-            compare = c(v, removalSearch->value, yline);
+            float y = removalSearch->value.part.y;
+            compare = c(v, removalSearch->value, y);
             if(compare == -1)
             {
                 parent = removalSearch;
@@ -518,7 +467,6 @@ struct sb_tree
 
         root = balance(root);
     }
-
 
     T removeTop()
     {
