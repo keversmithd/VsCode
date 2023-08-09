@@ -18,7 +18,8 @@
 #include "AtlasTester.h"
 #include "Camera.h"
 #include "GraphicVector.h"
-
+#include "UVSphere.h"
+#include "InputBox.h"
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
     GLsizei length, const char* message, const void* userParam) {
@@ -146,6 +147,9 @@ GLFWwindow* CreateContext()
     ImGui_ImplGlfwGL3_Init(window, true);
     ImGui::StyleColorsDark();
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     return window;
 }
 
@@ -167,45 +171,15 @@ int main()
     Texture_Viewer.texture = CharacterAtlas;
 
     //Atlas Tester
-    AtlasText TextRenderer;
-    TextRenderer.AddText(0, 0, -0.1, 0.01, "!CG!");
-    TextRenderer.AddText(0, 0.6, -0.001, 0.001, "!!!");
-    TextRenderer.SetupBuffers();
+    // AtlasText TextRenderer;
+    // TextRenderer.AddText(0, 0, -0.01, 0.01, "!CG!");
+    // TextRenderer.AddText(0, 0.6, -0.01, 0.001, "!!!");
+    // TextRenderer.SetupBuffers();
 
     char e = '!';
     AtlasCharacter ch = AtlasCharacters[e];
 
     float scale = 0.01;
-
-    //QuickTesting
-    float sq[] =
-    {
-        0.0, 0.0, -0.1,
-        ch.Size.x * scale, 0.0, -0.1,
-        ch.Size.x * scale, ch.Size.y*scale, -0.1,
-
-        0.0, 0.0, -0.1,
-        ch.Size.x * scale, ch.Size.y*scale, -0.1,
-        0.0, ch.Size.y*scale, -0.1,
-    };
-
-    float squv[] =
-    {
-        ch.BottomLeft.x, ch.BottomLeft.y,
-        ch.TopRight.x, ch.BottomLeft.y,
-        ch.TopRight.x, ch.TopRight.y,
-
-        ch.BottomLeft.x, ch.BottomLeft.y,
-        ch.TopRight.x, ch.TopRight.y,
-        ch.BottomLeft.x, ch.TopRight.y,
-    };
-
-    QuickRender AtlasSub;
-    AtlasSub.SetUpBuffers(sq, squv, sizeof(sq), sizeof(squv));
-
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
     Camera MainCamera;
@@ -213,21 +187,50 @@ int main()
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-    GraphicVector v({-1.0, -1.0, 0.0}, {1.0, 1.0, 0.0});
+    // GraphicVector v({-1.0, -1.0, 0.0}, {1.0, 1.0, 0.0});
+    // UVSphere s({-1.0, -1.0, 1.0}, 0.2);
+    // InputBoxUpdate b({{-1.0, 1.0, 1.0}, {1.0, -1.0, -1.0}});
+
+    AtlasAlignedText alignedText;
+    alignedText.AddAlignedText({-1.0, -1.0, 0.0},{1.0, 1.0, 0.0}, {0.5, 2.0, 0.0}, "hello mike", 0.5, 0.5);
+    
+
+
+    double lastTime = glfwGetTime();
+    int nbFrames = 0;
 
     while (!glfwWindowShouldClose(window))
     {
+        double currentTime = glfwGetTime();
+        nbFrames++;
+        if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+            // printf and reset timer
+
+            glfwSetWindowTitle(window, std::to_string(double(nbFrames)).c_str());
+            nbFrames = 0;
+            lastTime += 1.0;
+        }
+            
         
+
         MainCamera.proccessInput(window);
 
-        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClearColor(0.0, 0.0, 0.0, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        setMat4(TextRenderer.program, "projection", MainCamera.projection);
-        setMat4(TextRenderer.program, "view", MainCamera.view);
+        // setMat4(TextRenderer.program, "projection", MainCamera.projection);
+        // setMat4(TextRenderer.program, "view", MainCamera.view);
 
-        TextRenderer.Draw();
-        v.DrawElements(MainCamera);
+        //Texture_Viewer.Draw();
+        // b.Draw(MainCamera);
+        // v.Draw(MainCamera);
+        // s.DrawElements(MainCamera);
+        // TextRenderer.Draw();
+        alignedText.Draw(MainCamera);
+        
+        
+        
+        
 
         ImGui_ImplGlfwGL3_NewFrame();
         {
@@ -239,6 +242,7 @@ int main()
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+        
     }
 
     glfwTerminate();

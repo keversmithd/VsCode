@@ -14,9 +14,9 @@ static const float QuadUvs[] =
 
 static SDFVec3 NHolder;
 
+
 void fPoint(const SDFVec3& A, const int quadsIndex, std::vector<float>& memoryData)
 {
-
     memoryData.push_back(A.x);
     memoryData.push_back(A.y);
     memoryData.push_back(A.z);
@@ -34,8 +34,8 @@ void fPoint(const SDFVec3& A, float uvx, float uvy, float* memoryData, int& i)
     memoryData[i++] = A.y;
     memoryData[i++] = A.z;
 
-    memoryData[i++] = (A.x+1)/2;
-    memoryData[i++] = (A.y+1)/2;
+    memoryData[i++] = uvx;
+    memoryData[i++] = uvy;
 
     memoryData[i++] = NHolder.x;
     memoryData[i++] = NHolder.y;
@@ -67,6 +67,59 @@ void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, float* memoryData, int
     fPoint(D, 0,1, memoryData, i);
 
 }
+
+void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, float* memoryData, int& i, unsigned int* indexBuffer, int& j, int& indices)
+{
+    NHolder = Cross(Subtract(B, A), Subtract(D,A));
+
+    fPoint(A, 0,0, memoryData, i);
+    fPoint(B, 1,0, memoryData, i);
+    fPoint(C, 1,1, memoryData, i);
+    fPoint(D, 0,1, memoryData, i);
+
+    indexBuffer[indices++] = j;
+    indexBuffer[indices++] = j+1;
+    indexBuffer[indices++] = j+2;
+
+    indexBuffer[indices++] = j;
+    indexBuffer[indices++] = j+2;
+    indexBuffer[indices++] = j+3;
+
+    j+=4;
+}
+
+
+
+void fCircQuad(const SDFVec3 Start, const SDFVec3 End, float radius0,  float radius1, const SDFVec3 Normal, const SDFVec3 Binormal, float j, float dr, float* memoryData, int& i, unsigned int* indexBuffer, int& b, int& indices)
+{
+    SDFVec3 c1,c2,c3,c4;
+    SDFVec3 LowerRotation, UpperRotation;
+    LowerRotation.rotateFrame(Normal, Binormal, j*dr);
+    UpperRotation.rotateFrame(Normal, Binormal, (j+1)*dr);
+    LowerRotation *= radius0;
+    UpperRotation *= radius0;
+    c1 = Start;
+    c1 += LowerRotation;
+    c4 = Start;
+    c4 += UpperRotation;
+
+    LowerRotation.normalize();
+    UpperRotation.normalize();
+    LowerRotation *= radius1;
+    UpperRotation *= radius1;
+    c2 = End;
+    c2 += LowerRotation;
+    c3 = End;
+    c3 += UpperRotation;
+    
+
+    fTriQuad(c1, c2, c3, c4, memoryData, i, indexBuffer, b, indices);
+}
+
+
+
+
+
 void fTri(const SDFVec3 A, const SDFVec3 B, const SDFVec3 C, std::vector<float>& memoryData)
 {
     NHolder = Cross(Subtract(B, A), Subtract(C,A));
@@ -75,73 +128,10 @@ void fTri(const SDFVec3 A, const SDFVec3 B, const SDFVec3 C, std::vector<float>&
     fPoint(B, 1, memoryData);
     fPoint(B, 2, memoryData);
 }
-void TriangulateQuad(vec3 A, vec3 B, vec3 C, vec3 D, std::vector<vec3>& Verticies, std::vector<vec2>& UVs)
-{
-
-    Verticies.push_back(A);
-    Verticies.push_back(B);
-    Verticies.push_back(C);
-
-    Verticies.push_back(A);
-    Verticies.push_back(C);
-    Verticies.push_back(D);
-    
-    vec2 AUV = {1.0, 1.0};
-    UVs.push_back(AUV);
-    UVs.push_back(AUV);
-    UVs.push_back(AUV);
-
-    UVs.push_back(AUV);
-    UVs.push_back(AUV);
-    UVs.push_back(AUV);
-
-}
-
-std::vector<vec4> SubdividedPlane(float gap, double width, double height, std::vector<vec2>& uvs)
-{
-    std::vector<vec4> mesh;
-
-    double wstep = width/gap;
-    double hstep = height/gap;
-
-    for(int i = 0; i < wstep; i++)
-    {
-        
-        for(int j = 0; j < hstep; j++)
-        {
-            vec4 bottomLet = {j*gap, 0.0, i*gap, 1.0};
-            vec2 bottomUV = {j*gap/width,i*gap/height};
-            vec4 bottomRight = {(j+1)*gap, 0.0, i*gap, 1.0};
-            vec2 bottomRightUv = {(j+1)*gap/width, i*gap/height};
-            vec4 TopRight = {(j+1)*gap, 0.0, (i+1)*gap, 1.0};
-            vec2 TopRightUv = {(j+1)*gap/width, (i+1)*gap/height};
-            vec4 TopLeft = {(j)*gap, 0.0, (i+1)*gap, 1.0};
-            vec2 TopLeftUv = {(j)*gap/width,(i+1)*gap/height};
-            
-            mesh.push_back(bottomLet);
-            uvs.push_back(bottomUV);
-            mesh.push_back(bottomRight);
-            uvs.push_back(bottomRightUv);
-            mesh.push_back(TopRight);
-            uvs.push_back(TopRightUv);
-            mesh.push_back(bottomLet);
-            uvs.push_back(bottomUV);
-            mesh.push_back(TopRight);
-            uvs.push_back(TopRightUv);
-            mesh.push_back(TopLeft);
-            uvs.push_back(TopLeftUv);
-        }
-        
-
-       
 
 
-    }
 
 
-    return mesh;
-
-}
 struct SubPlane
 {
     float* data;

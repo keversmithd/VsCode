@@ -10,7 +10,6 @@
 #include <filesystem>
 
 
-
 struct vec4
 {
     float x,y,z,w;
@@ -19,6 +18,12 @@ struct vec4
 struct vec2
 {
     float x, y;
+
+    vec2(float p_x, float p_y)
+    {
+        x = p_x;
+        y = p_y;
+    }
 };
 struct vec3
 {
@@ -64,15 +69,11 @@ NGLProgram CreateShader(std::string vs, std::string fs)
     error = nglProgram.AttachShader(nglVertexShader.ReturnShader());
     error = nglProgram.AttachShader(nglFragmentShader.ReturnShader());
     error = nglProgram.LinkProgram();
-    //error = nglProgram.UseProgram();
-
-    //nglProgram.DetachShader(nglVertexShader.ReturnShader());
-    //nglProgram.DetachShader(nglFragmentShader.ReturnShader());
     nglVertexShader.DeleteShader();
     nglFragmentShader.DeleteShader();
     GLint  linkStatus = 0;
     error = nglProgram.GetProgramiv(GL_LINK_STATUS, &linkStatus);
-    if(linkStatus != GL_TRUE){ throw("fuck"); }
+    if(linkStatus != GL_TRUE){ printf("throwing fuck\n"); throw("fuck"); }
 
     return nglProgram;
 }
@@ -84,7 +85,7 @@ NGLBuffer CreateUniformBuffer(int size, void* data, int index)
     waveInformation.BindBuffer(GL_UNIFORM_BUFFER);
     waveInformation.BufferData(size, data, GL_STATIC_DRAW);
     waveInformation.Unbind(GL_UNIFORM_BUFFER);
-    waveInformation.BindBufferBase(GL_UNIFORM_BUFFER, 0);
+    waveInformation.BindBufferBase(GL_UNIFORM_BUFFER, index);
     return waveInformation;
 }
 

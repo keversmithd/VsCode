@@ -41,10 +41,6 @@ void fPoint(const SDFVec3& A, float uvx, float uvy, float* memoryData, int& i)
     memoryData[i++] = NHolder.y;
     memoryData[i++] = NHolder.z;
 }
-
-
-
-
 void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, std::vector<float>& memoryData)
 {
     NHolder = Cross(Subtract(B, A), Subtract(D,A));
@@ -71,6 +67,7 @@ void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, float* memoryData, int
     fPoint(D, 0,1, memoryData, i);
 
 }
+
 void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, float* memoryData, int& i, unsigned int* indexBuffer, int& j, int& indices)
 {
     NHolder = Cross(Subtract(B, A), Subtract(D,A));
@@ -119,13 +116,8 @@ void fCircQuad(const SDFVec3 Start, const SDFVec3 End, float radius0,  float rad
     fTriQuad(c1, c2, c3, c4, memoryData, i, indexBuffer, b, indices);
 }
 
-void fCircQuadAppended(const SDFVec3 Start, const SDFVec3 End, float radius0,  float radius1, const SDFVec3 Normal, const SDFVec3 Binormal, float j, float dr, float* memoryData, int& i, unsigned int* indexBuffer, int& CurrentIndice, int& PreviousIndice)
-{
-    if(PreviousIndice == 0) //sequentially neccecary, use assumption
-    {
 
-    }
-}
+
 
 
 void fTri(const SDFVec3 A, const SDFVec3 B, const SDFVec3 C, std::vector<float>& memoryData)

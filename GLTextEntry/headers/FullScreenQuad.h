@@ -20,7 +20,7 @@ struct FullQuadController
         {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, texture);
-            setInt(program, "atexture", 0);
+            setInt(program, "atlas", 0);
         }
         glBindVertexArray(FullScreenQuadVertexArray);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -82,7 +82,7 @@ struct QuickRender
     unsigned int texture;
     NGLProgram program;
 
-    QuickRender() : vertexBuffer(-1), uvBuffer(-1), FullScreenQuadVertexArray(-1), texture(-1), program(CreateShader("shaders/AtlasTester.vs", "shaders/AtlasTester.fs"))
+    QuickRender() : vertexBuffer(-1), uvBuffer(-1), FullScreenQuadVertexArray(-1), texture(-1), program(CreateShader("shaders/FullScreenQuad.vs", "shaders/FullScreenQuad.fs"))
     {
     }
 

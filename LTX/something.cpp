@@ -4,6 +4,8 @@
 #include <list>
 #include <array>
 #include <vector>
+
+
 LTXCubicBezier GetThickCurve(LTXCubicBezier p, LTXPoint Delta1, LTXPoint Delta2)
 {
     p.P1 = p.P1 + Delta1;
@@ -46,12 +48,7 @@ std::array<LTXPoint,2> MinimumAndMaximumOfCubicCurve(LTXCubicBezier curve)
 
     std::array<LTXPoint,2> retValue;
 
-
-
-
     return retValue;
-    
-    
 }
 
 void DrawLTXLine(LTXPoint A, LTXPoint B)
@@ -105,24 +102,6 @@ std::array<double, 4> MinMaxGP(LTXCubicBezier curve)
     return t_solutions;
 
 }
-
-
-struct LTXRect
-{
-    LTXPoint bottomLeft;
-    LTXPoint topRight;
-
-    void ReadNamed()
-    {
-        char r1[2] = {(char)(rand() % 26 + 'a'), (char)(rand() % 26 + 'a')};
-        char r2[2] = {(char)(rand() % 26 + 'a'), (char)(rand() % 26 + 'a')};
-
-        PrintLTXLatexPoint(bottomLeft, r1);
-        PrintLTXLatexPoint(topRight, r2);
-
-        printf("\\draw (%c%c) rectangle (%c%c);", r1[0], r1[1], r2[0], r2[1]);
-    }
-};
 
 LTXRect operator+(LTXRect E, LTXPoint V)
 {
@@ -181,7 +160,6 @@ double MinTwo(const double original, const double a, const double b)
     double min = original;
     min = (a < min) ? a : min;
     min = (b < min) ? b : min;
-
     return min;
 }
 
@@ -190,7 +168,6 @@ double MaxTwo(const double original, const double a, const double b)
     double min = original;
     min = (a > min) ? a : min;
     min = (b > min) ? b : min;
-
     return min;
 }
 
@@ -283,8 +260,6 @@ struct LTXParaline
 
 };
 
-
-
 LTXRect CubicBounding(LTXCubicBezier curve)
 {
     const std::array<double, 4> Extrema = MinMaxGP(curve);
@@ -300,7 +275,6 @@ LTXRect CubicBounding(LTXCubicBezier curve)
     for(int i = 0; i < 4; i++)
     {
         
-
         if(Extrema[i] >= 0 && Extrema[i] <= 1)
         {
             Sample = curve.Sample(Extrema[i]);
@@ -314,8 +288,6 @@ LTXRect CubicBounding(LTXCubicBezier curve)
     return {{MinX, MinY}, {MaxX, MaxY}};
 
 }
-
-
 
 struct LTXCCWCubicList
 {
@@ -531,11 +503,6 @@ CubicSolution LineCubicIntersection(LTXCubicBezier curve, LTXParaline line)
 
 }
 
-//Detangler Algorithm
-
-//Planar Orthographic Projection Of Control Points between -1.0 and 1.0
-
-//
 
 int main()
 {
@@ -560,9 +527,6 @@ int main()
     // LineCubicIntersection(t0, IntersectionLine);
     
 
-
-    
-    
     //Tangent Thing
     
     double AreaOfRect = (Rect.topRight.x - Rect.bottomLeft.x)*(Rect.topRight.y - Rect.bottomLeft.y);

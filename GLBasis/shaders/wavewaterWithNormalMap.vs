@@ -70,15 +70,13 @@ void main()
 
     for(int i = 0; i < numberofwaves; i++)
     {
-        
         WaveInformation wave = waveData[i];
-
         L = randomRange(0.0, wave.WavelengthThreshold, 1717171);
         w = 2/L;
         A = randomRange(0.0, wave.AmplitudeThreshold, 1717171);
         S = randomRange(0.0, wave.Speed, 1717171);
 
-        //Directional Inward Wave
+        //Directional Inward Wave //z0 
         if(wave.z0 == 0)
             D = vec2(wave.dx, wave.dy);
         else

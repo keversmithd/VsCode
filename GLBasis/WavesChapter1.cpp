@@ -10,7 +10,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image/stb_image.h"
 
-#include <GeometricHelper.h>
 
 #include <thread>
 #include "SDFArchive.h"
@@ -244,7 +243,7 @@ int main()
 
 
 #pragma region Shaders
-    NGLProgram program = CreateShader(WS "shaders/gertsner.vs", WS "shaders/gertsner.fs");
+    NGLProgram program = CreateShader("shaders/gertsner.vs", "shaders/gertsner.fs");
     program.UseProgram();
 #pragma endregion
 

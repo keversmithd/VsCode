@@ -38,8 +38,6 @@ std::map<char, AtlasCharacter> AtlasCharacters;
 
 std::map<char, Character> Characters;
 
-
-
 inline bool loadFont(const char* file)
 {
     FT_Library ft;
@@ -148,7 +146,7 @@ inline bool LoadCharacterAtlas(const char* file)
     memset(TextureData,0,(TextureDimension*TextureDimension) );
 
     
-    int CharactersToLoad = 40;
+    int CharactersToLoad = 100;
 
     AtlasVec2 CurrentLocation = {0,0}; //Starting At the Bottom Of the Texture
     AtlasVec2 DeltaLocation = CurrentLocation;

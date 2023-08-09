@@ -5,9 +5,6 @@
 #include "FGeom.h"
 #include "Camera.h"
 
-
-
-
 struct GraphicVector
 {
     SDFVec3 m_Start;
@@ -22,14 +19,20 @@ struct GraphicVector
     int elementDataBack;
     int vertices; 
     int indices;
+
     GraphicVector(SDFVec3 Start, SDFVec3 End) : memoryDataBack(0), vertices(0), indices(0), elementDataBack(0), memoryData(nullptr), elementData(nullptr), program(CreateShader("/shaders/GraphicVector.vs", "/shaders/GraphicVector.fs"))
     {
+        
         m_Start = Start;
         m_End = End;
-        ConstructSquaredAxisElementAppended();
-        SetUpBuffersElement();
+        ConstructSquaredAxis();
+        SetUpBuffers();
     }
 
+    GraphicVector(const GraphicVector& vector) : memoryDataBack(vector.memoryDataBack), vertices(vector.vertices), indices(vector.indices), elementDataBack(vector.elementDataBack), memoryData(vector.memoryData), elementData(vector.elementData), program(vector.program)
+    {
+        vertexArray = vector.vertexArray;
+    }
     void ConstructSquaredAxis()
     {
         float arrowHeight = 0.05;
@@ -41,27 +44,29 @@ struct GraphicVector
         float baseRadius = 0.4;
         float shaftRadius = 0.05;
 
-        float SubdivisionFaces = 5;
+        float SubdivisionFaces = 6;
         float HorizontalDivisions = 1;
 
         memoryData = new float[20*6*20];
 
         float borderRadius = 0.2;
 
-        SDFVec3 axis = Normalize(Subtract(m_End, m_Start));
-        SDFVec3 axisnorm = Cross(axis, {1,0,0}); 
+        SDFVec3 axis = Subtract(m_End, m_Start);
+        SDFVec3 axisnorm = Cross(axis, {1,1,1}); 
         SDFVec3 axisnnorm = Cross(axisnorm, axis);
 
         int numberOfFaces = (SubdivisionFaces*(HorizontalDivisions+2));
-
-
         float axisLength = Mag(axis);
         float axisdx = axisLength/HorizontalDivisions;
         float dr = (2*3.14159265359)/SubdivisionFaces;
 
+        
+        SDFVec3 tip_loc = m_End;
+        m_End = m_End - (Normalize(axis)*tipLength);
+        axis.normalize();
         SDFVec3 p_left = m_Start, p_right = m_End;
 
-        SDFVec3 tip_loc = Add(m_End, Multiply(axis, tipLength));
+        
 
         SDFVec3 c1,c2,c3,c4, c5;
 
@@ -91,43 +96,43 @@ struct GraphicVector
 
                 fTriQuad(c1, c2, c3, c4, memoryData, memoryDataBack);
 
-                // if(i == 0)
-                // {
-                //     c1 = m_End;
-                //     c2 = {(borderRadius*cos(j*dr)*axisnorm.x) + (borderRadius*sin(j*dr)*axisnnorm.x), (borderRadius*cos(j*dr)*axisnorm.y) + (borderRadius*sin(j*dr)*axisnnorm.y), (borderRadius*cos(j*dr)*axisnorm.z) + (borderRadius*sin(j*dr)*axisnnorm.z)};
-                //     c1 = Add(c1, Multiply(Normalize(c2), borderRadius));
-                //     c3 = {(baseRadius*cos(j*dr)*axisnorm.x) + (baseRadius*sin(j*dr)*axisnnorm.x), (baseRadius*cos(j*dr)*axisnorm.y) + (baseRadius*sin(j*dr)*axisnnorm.y), (baseRadius*cos(j*dr)*axisnorm.z) + (baseRadius*sin(j*dr)*axisnnorm.z)};
-                //     c2 = m_End;
-                //     c2 = Add(c2, Multiply(Normalize(c3), baseRadius));
-                //     c4 = {(baseRadius*cos((j+1)*dr)*axisnorm.x) + (baseRadius*sin((j+1)*dr)*axisnnorm.x), (baseRadius*cos((j+1)*dr)*axisnorm.y) + (baseRadius*sin((j+1)*dr)*axisnnorm.y), (baseRadius*cos((j+1)*dr)*axisnorm.z) + (baseRadius*sin((j+1)*dr)*axisnnorm.z)};
-                //     c3 = m_End;
-                //     c3 = Add(c3, Multiply(Normalize(c4), baseRadius));
-                //     c4 = m_End;
-                //     c5 = {(borderRadius*cos((j+1)*dr)*axisnorm.x) + (borderRadius*sin((j+1)*dr)*axisnnorm.x), (borderRadius*cos((j+1)*dr)*axisnorm.y) + (borderRadius*sin((j+1)*dr)*axisnnorm.y), (borderRadius*cos((j+1)*dr)*axisnorm.z) + (borderRadius*sin((j+1)*dr)*axisnnorm.z)};                  
-                //     c4 = Add(c4, Multiply(Normalize(c5), borderRadius));
+                if(i == 0)
+                {
+                    c1 = m_End;
+                    c2 = {(borderRadius*cos(j*dr)*axisnorm.x) + (borderRadius*sin(j*dr)*axisnnorm.x), (borderRadius*cos(j*dr)*axisnorm.y) + (borderRadius*sin(j*dr)*axisnnorm.y), (borderRadius*cos(j*dr)*axisnorm.z) + (borderRadius*sin(j*dr)*axisnnorm.z)};
+                    c1 = Add(c1, Multiply(Normalize(c2), borderRadius));
+                    c3 = {(baseRadius*cos(j*dr)*axisnorm.x) + (baseRadius*sin(j*dr)*axisnnorm.x), (baseRadius*cos(j*dr)*axisnorm.y) + (baseRadius*sin(j*dr)*axisnnorm.y), (baseRadius*cos(j*dr)*axisnorm.z) + (baseRadius*sin(j*dr)*axisnnorm.z)};
+                    c2 = m_End;
+                    c2 = Add(c2, Multiply(Normalize(c3), baseRadius));
+                    c4 = {(baseRadius*cos((j+1)*dr)*axisnorm.x) + (baseRadius*sin((j+1)*dr)*axisnnorm.x), (baseRadius*cos((j+1)*dr)*axisnorm.y) + (baseRadius*sin((j+1)*dr)*axisnnorm.y), (baseRadius*cos((j+1)*dr)*axisnorm.z) + (baseRadius*sin((j+1)*dr)*axisnnorm.z)};
+                    c3 = m_End;
+                    c3 = Add(c3, Multiply(Normalize(c4), baseRadius));
+                    c4 = m_End;
+                    c5 = {(borderRadius*cos((j+1)*dr)*axisnorm.x) + (borderRadius*sin((j+1)*dr)*axisnnorm.x), (borderRadius*cos((j+1)*dr)*axisnorm.y) + (borderRadius*sin((j+1)*dr)*axisnnorm.y), (borderRadius*cos((j+1)*dr)*axisnorm.z) + (borderRadius*sin((j+1)*dr)*axisnnorm.z)};                  
+                    c4 = Add(c4, Multiply(Normalize(c5), borderRadius));
 
-                //     vertices += 6;
+                    vertices += 6;
 
-                //     fTriQuad(c1, c2, c3, c4, memoryData, memoryDataBack);
+                    fTriQuad(c1, c2, c3, c4, memoryData, memoryDataBack);
 
-                //     c1 = m_End;
-                //     c2 = {(baseRadius*cos(j*dr)*axisnorm.x) + (baseRadius*sin(j*dr)*axisnnorm.x), (baseRadius*cos(j*dr)*axisnorm.y) + (baseRadius*sin(j*dr)*axisnnorm.y), (baseRadius*cos(j*dr)*axisnorm.z) + (baseRadius*sin(j*dr)*axisnnorm.z)};
-                //     c1 = Add(c1, Multiply(Normalize(c2), baseRadius));
-                //     c3 = {(tipRadius*cos(j*dr)*axisnorm.x) + (tipRadius*sin(j*dr)*axisnnorm.x), (tipRadius*cos(j*dr)*axisnorm.y) + (tipRadius*sin(j*dr)*axisnnorm.y), (tipRadius*cos(j*dr)*axisnorm.z) + (tipRadius*sin(j*dr)*axisnnorm.z)};
-                //     c2 = tip_loc;
-                //     c2 = Add(c2, Multiply(Normalize(c3), tipRadius));
-                //     c4 = {(tipRadius*cos((j+1)*dr)*axisnorm.x) + (tipRadius*sin((j+1)*dr)*axisnnorm.x), (tipRadius*cos((j+1)*dr)*axisnorm.y) + (tipRadius*sin((j+1)*dr)*axisnnorm.y), (tipRadius*cos((j+1)*dr)*axisnorm.z) + (tipRadius*sin((j+1)*dr)*axisnnorm.z)};
-                //     c3 = tip_loc;
-                //     c3 = Add(c3, Multiply(Normalize(c4), tipRadius));
-                //     c4 = m_End;
-                //     c5 = {(baseRadius*cos((j+1)*dr)*axisnorm.x) + (baseRadius*sin((j+1)*dr)*axisnnorm.x), (baseRadius*cos((j+1)*dr)*axisnorm.y) + (baseRadius*sin((j+1)*dr)*axisnnorm.y), (baseRadius*cos((j+1)*dr)*axisnorm.z) + (baseRadius*sin((j+1)*dr)*axisnnorm.z)};                  
-                //     c4 = Add(c4, Multiply(Normalize(c5), baseRadius));
+                    c1 = m_End;
+                    c2 = {(baseRadius*cos(j*dr)*axisnorm.x) + (baseRadius*sin(j*dr)*axisnnorm.x), (baseRadius*cos(j*dr)*axisnorm.y) + (baseRadius*sin(j*dr)*axisnnorm.y), (baseRadius*cos(j*dr)*axisnorm.z) + (baseRadius*sin(j*dr)*axisnnorm.z)};
+                    c1 = Add(c1, Multiply(Normalize(c2), baseRadius));
+                    c3 = {(tipRadius*cos(j*dr)*axisnorm.x) + (tipRadius*sin(j*dr)*axisnnorm.x), (tipRadius*cos(j*dr)*axisnorm.y) + (tipRadius*sin(j*dr)*axisnnorm.y), (tipRadius*cos(j*dr)*axisnorm.z) + (tipRadius*sin(j*dr)*axisnnorm.z)};
+                    c2 = tip_loc;
+                    c2 = Add(c2, Multiply(Normalize(c3), tipRadius));
+                    c4 = {(tipRadius*cos((j+1)*dr)*axisnorm.x) + (tipRadius*sin((j+1)*dr)*axisnnorm.x), (tipRadius*cos((j+1)*dr)*axisnorm.y) + (tipRadius*sin((j+1)*dr)*axisnnorm.y), (tipRadius*cos((j+1)*dr)*axisnorm.z) + (tipRadius*sin((j+1)*dr)*axisnnorm.z)};
+                    c3 = tip_loc;
+                    c3 = Add(c3, Multiply(Normalize(c4), tipRadius));
+                    c4 = m_End;
+                    c5 = {(baseRadius*cos((j+1)*dr)*axisnorm.x) + (baseRadius*sin((j+1)*dr)*axisnnorm.x), (baseRadius*cos((j+1)*dr)*axisnorm.y) + (baseRadius*sin((j+1)*dr)*axisnnorm.y), (baseRadius*cos((j+1)*dr)*axisnorm.z) + (baseRadius*sin((j+1)*dr)*axisnnorm.z)};                  
+                    c4 = Add(c4, Multiply(Normalize(c5), baseRadius));
 
 
-                //     vertices += 6;
+                    vertices += 6;
 
-                //     fTriQuad(c1, c2, c3, c4, memoryData, memoryDataBack);
-                // }
+                    fTriQuad(c1, c2, c3, c4, memoryData, memoryDataBack);
+                }
 
             }
         }
@@ -143,6 +148,7 @@ struct GraphicVector
         float tipRadius = 0.00;
         float baseRadius = 0.4;
         float shaftRadius = 0.05;
+        float lipLength = 0.1;
 
         float SubdivisionFaces = 5;
         float HorizontalDivisions = 1;
@@ -164,8 +170,10 @@ struct GraphicVector
         float dr = (2*3.14159265359)/SubdivisionFaces;
 
         SDFVec3 p_left = m_Start, p_right = m_End;
+        SDFVec3 m_lip = Add(m_End, Multiply(axis, lipLength));
 
-        SDFVec3 tip_loc = Add(m_End, Multiply(axis, tipLength));
+
+        SDFVec3 tip_loc = Add(m_lip, Multiply(axis, tipLength-lipLength));
 
         SDFVec3 c1,c2,c3,c4, c5;
 
@@ -181,21 +189,16 @@ struct GraphicVector
                 
                 if(i == 0)
                 {
+                    // vertices += 6;
+                    // fCircQuad(m_End, m_End, borderRadius, baseRadius, axisnorm, axisnnorm, j, dr, memoryData, memoryDataBack, elementData, elementDataBack, indices);
                     vertices += 6;
                     fCircQuad(m_End, m_End, borderRadius, baseRadius, axisnorm, axisnnorm, j, dr, memoryData, memoryDataBack, elementData, elementDataBack, indices);
+                    
+
                 }
+
                 
             }
-
-            // if(i == 0)
-            // {
-            //     for(float j = 0; j < SubdivisionFaces; j++)
-            //     {
-            //         vertices += 6;
-            //         fCircQuad(m_Start, m_End, baseRadius, baseRadius, axisnorm, axisnnorm, j, dr, memoryData, memoryDataBack, elementData, elementDataBack, indices);
-                    
-            //     }
-            // }
         }
     }
 
@@ -228,8 +231,6 @@ struct GraphicVector
         SDFVec3 axisdx = axis * (axisLength/HorizontalDivisions);
 
         float dr = (2*3.14159265359)/SubdivisionFaces;
-
-
 
         SDFVec3 tip_loc = Add(m_End, Multiply(axis, tipLength));
 
@@ -403,14 +404,22 @@ struct GraphicVector
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
+
+    ~GraphicVector()
+    {
+        if(memoryData != nullptr)
+        {
+            delete[] memoryData;
+        }
+
+        if(elementData != nullptr)
+        {
+            delete[] elementData;
+        }
+    }
 };
 
-struct GraphicVectorTransformer
-{
-    SDFVec3 transform;
-    SDFVec3 rotation;
-    SDFBoundingVolume boundingVolume;
-};
+
 
 
 

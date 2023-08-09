@@ -7,5 +7,7 @@ uniform sampler2D atlas;
 
 void main()
 {
-    gl_FragColor = vec4(1,0,0,texture(atlas, o_uv).x);
+    vec4 texColor = texture(atlas, o_uv);
+
+    gl_FragColor = vec4(texColor.x,1,1,texColor.x);
 }

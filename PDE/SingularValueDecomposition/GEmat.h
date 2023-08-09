@@ -1,28 +1,13 @@
-#ifndef GEMat_H_D
+#ifndef GEMAT_H_D
 #define GEMAT_H_D
 #include <initializer_list>
 #include <memory>
 #include <exception>
 #include <math.h>
 #include <limits>
-
-struct GEspan
-{
-    int from;
-    int to;
-
-    GEspan(int j)
-    {
-        from = j;
-        to = j;
-    }
-
-    GEspan(int i, int k)
-    {
-        from = i;
-        to = k;
-    }
-};
+#include <iomanip>
+#include "GEcommon.h"
+#include <memory.h>
 
 
 struct GEmat
@@ -41,6 +26,17 @@ struct GEmat
         MATRIX_DIMENSION_X = x;
         MATRIX_DIMENSION_Y = y;
         MATRIX_END_INDEX = MATRIX_SIZE-1;
+        memset(data, 0, sizeof(float)*MATRIX_SIZE);
+    }
+
+    GEmat(int y) : data(nullptr), MATRIX_DIMENSION_X(0), MATRIX_DIMENSION_Y(0), MATRIX_END_INDEX(0), MATRIX_SIZE(0), copy(false)
+    {
+        MATRIX_SIZE = 1*y;
+        data = new float[MATRIX_SIZE];
+        MATRIX_DIMENSION_X = 1;
+        MATRIX_DIMENSION_Y = y;
+        MATRIX_END_INDEX = MATRIX_SIZE-1;
+        memset(data, 0, sizeof(float)*MATRIX_SIZE);
     }
 
     GEmat(const GEmat &c) : data(c.data), MATRIX_DIMENSION_X(c.MATRIX_DIMENSION_X), MATRIX_DIMENSION_Y(c.MATRIX_DIMENSION_Y), MATRIX_END_INDEX(c.MATRIX_END_INDEX), MATRIX_SIZE(c.MATRIX_SIZE), copy(true)
@@ -111,6 +107,24 @@ struct GEmat
 
     }
 
+    void trigDown(float a, float b, float c)
+    {
+
+        
+
+        data[0] = b;
+        data[1] = c;
+        for(int i = 1; i < MATRIX_DIMENSION_Y-1; i++)
+        {
+            data[(i*MATRIX_DIMENSION_X) + i] = b;
+            data[(i*MATRIX_DIMENSION_X) + (i+1)] = c;
+            data[(i*MATRIX_DIMENSION_X) + (i-1)] = a;
+        }
+
+        data[MATRIX_END_INDEX] = b;
+        data[MATRIX_END_INDEX-1] = a;
+    }
+
     void display()
     {
         int ij;
@@ -121,7 +135,7 @@ struct GEmat
             for(int j = 0; j < MATRIX_DIMENSION_X; j++)
             {
                 ij = (i*MATRIX_DIMENSION_X)+j;
-                printf("%f ", data[ij]);
+                printf("%.3e ", data[ij]);
             }
             printf("|\n");
         }
@@ -302,6 +316,23 @@ struct GEmat
         }
 
         return r;
+    }
+
+    GEmat operator-=(const GEmat c)
+    {
+        if(c.MATRIX_END_INDEX > c.MATRIX_DIMENSION_Y < MATRIX_DIMENSION_Y)
+        {
+            throw std::range_error("bad dims in subtraciton");
+        }
+
+        for(int i = 0; i < MATRIX_DIMENSION_Y; i++)
+        {
+            for(int j = 0; j < MATRIX_DIMENSION_X; j++)
+            {
+                data[(i*MATRIX_DIMENSION_X) + j] = c.data[(i*c.MATRIX_DIMENSION_X) + j];
+            }
+
+        }
     }
 
     GEmat operator/(const float c)
@@ -579,10 +610,12 @@ struct GEmat
         int dr = (rows.to-rows.from)+1;
         int dc = (columns.to-columns.from)+1;
 
-        if(subResult.MATRIX_DIMENSION_Y < dr || subResult.MATRIX_DIMENSION_X < dc)
+        if(subResult.MATRIX_END_INDEX+1 < dr*dc)
         {
             throw std::range_error("Incorrect Dimensional Sub-Matrix");
         }
+
+        subResult.resize(dr, dc);
 
         for(int i = rows.from-1, k = 0; i < rows.to; i++, k++)
         {
@@ -612,7 +645,6 @@ struct GEmat
 
     }
 
-
     void setSubMatrix(GEspan rows, GEspan columns, GEmat A)
     {
         int m = (rows.to-rows.from)+1;
@@ -634,23 +666,19 @@ struct GEmat
         }
 
     }
-    void subtractSubMatrix(GEspan rows, GEspan columns, GEmat A)
+    void subtractSubMatrix(GEspan rows, GEspan columns, const GEmat other)
     {
-        int m = (rows.to-rows.from)+1;
-        int n = (columns.to-columns.from)+1;
 
-        if(A.MATRIX_DIMENSION_Y != m && A.MATRIX_DIMENSION_X != n)
+        if(MATRIX_DIMENSION_X != other.MATRIX_DIMENSION_X || MATRIX_DIMENSION_Y != other.MATRIX_DIMENSION_Y)
         {
-
-            return;
-
+            throw std::out_of_range("dimension mismatch subtractByMatrix");
         }
 
         for(int i = rows.from-1, k = 0; i < rows.to; i++, k++)
         {
             for(int j = columns.from-1, l = 0; j < columns.to; j++, l++)
             {
-                data[(i*MATRIX_DIMENSION_X) + j] -= A[(k * n) + l];
+                data[(i*MATRIX_DIMENSION_X) + j] -= other.data[(k * other.MATRIX_DIMENSION_X) + l];
             }
         }
     }
@@ -756,20 +784,112 @@ GEmat operator-(const float a, GEmat A)
         return result;
 }
 
-// GEmat operator*(const float c, GEmat A){
+void meq(const GEmat t, const GEmat other, GEmat& r)
+{   
+    if(t.MATRIX_DIMENSION_X != other.MATRIX_DIMENSION_Y)
+    {
+        throw std::out_of_range("dimension mismatch multiplication");
+    }
 
-//         GEmat result(A.MATRIX_DIMENSION_X, A.MATRIX_DIMENSION_Y);
+    if(r.MATRIX_DIMENSION_X != t.MATRIX_DIMENSION_Y || r.MATRIX_DIMENSION_Y != other.MATRIX_DIMENSION_X)
+    {
+        r.resize(t.MATRIX_DIMENSION_Y,other.MATRIX_DIMENSION_X);
+    }
+    float sum = 0;
+    for(int i = 0; i < t.MATRIX_DIMENSION_Y; i++)
+    {
 
-//         for(int i = 0; i < A.MATRIX_DIMENSION_Y; i++)
-//         {
-//             for(int j = 0; j < A.MATRIX_DIMENSION_X; j++)
-//             {
-//                 result.data[(i*A.MATRIX_DIMENSION_X) + j] = A.data[(i*A.MATRIX_DIMENSION_X) + j]*c;
-//             }
-//         }
+        for(int j = 0; j < other.MATRIX_DIMENSION_X; j++)
+        {
+            sum = 0;
+            for(int k = 0; k < t.MATRIX_DIMENSION_X; k++)
+            {
+                sum += t.data[(i*t.MATRIX_DIMENSION_X) + k] * other.c((k*other.MATRIX_DIMENSION_X) + j);
+            }
 
-//         return result;
-// }
+            r[(i*r.MATRIX_DIMENSION_X) + j] = sum;
+        }
+
+    }
+}
+
+
+template<typename T, int I>
+struct e{
+    T box[I];
+};
+
+e<GEmat,2> gaussian_two(GEmat A, GEmat b)
+{
+    int MatrixDimensionX = A.MATRIX_DIMENSION_X;
+    int MatrixDimensionY = A.MATRIX_DIMENSION_Y;
+    
+    int Pointer = 0;
+    int Pointer1 = 0;
+    int Pointer2 = 0;
+
+    int SearchDepth = 1;
+
+    float ScryingResult = 0;
+
+
+    for(int i = 1; i < MatrixDimensionY; i++) //From bottom and right two to the top.
+    {
+        for(int j = 0; j < SearchDepth; j++)
+        {
+            Pointer = (i*MatrixDimensionX)+j;
+            ScryingResult = A[Pointer];
+
+            if(ScryingResult != 0)
+            {
+                ScryingResult = A[Pointer-MatrixDimensionX]; //Right above scrying result, guarenteed to hit do to I starting at one.
+                Pointer1 = i-1;
+
+                while(ScryingResult == 0 && Pointer1 >= 0) //Search down column for non zero or at the bounds of the matrix. (IMPLEMENT DOWN TO CURRENT ROW)
+                {
+                    Pointer1--;
+                    ScryingResult = A[(Pointer1*MatrixDimensionX)+j];
+                    
+                }
+
+                if(Pointer1 < 0)
+                {
+                    break;
+                }
+
+                float pro = -A[Pointer]/ScryingResult;
+                
+                for(int k = 0; k < MatrixDimensionX; k++)
+                {   
+                    A[(i*MatrixDimensionX) + k] += pro*A[(Pointer1*MatrixDimensionX)+k];
+                }
+                b[i] += pro*b[Pointer1];
+
+            }
+        }
+
+        SearchDepth++;
+    }
+
+
+    b[(MatrixDimensionY-1)] /= A[(MatrixDimensionX*MatrixDimensionY)-1]; //Calculate last term in the vector.
+
+    int LeftShift = 2; //A left shift variable for when cancelation starts in the matrix.
+
+    for(int i = (MatrixDimensionY-2); i >= 0; i--) //Move backward
+    {
+        for(int j = (MatrixDimensionX-1); j > (MatrixDimensionX-LeftShift); j--)
+        {
+            b[i] -= b[j]*A[(i*MatrixDimensionX)+j];
+        }   
+
+        b[i] /= A[(i*MatrixDimensionX)+(MatrixDimensionX-LeftShift)];
+
+        LeftShift++;
+    }
+
+    return {A, b};
+}
 
 float dot(GEmat A, GEmat B)
 {
@@ -860,42 +980,38 @@ void house(GEmat& v, float& beta)
 
 void applyhouseholder(GEmat A)
 {
-    //A ^ MXN COLUMNS BY ROW
+    
     int m = A.MATRIX_DIMENSION_Y;
     int n = A.MATRIX_DIMENSION_X;
 
     float beta;
+    std::cout << beta << std::endl;
     GEmat vt(1, m);
 
     GEmat matrixBuffer(n,m);
     GEmat matrixBuffer2(n,m);
+    GEmat matrixBuffer3(n,m);
 
-    
     for(int j = 1; j < A.MATRIX_DIMENSION_X; j++)
     {
         A.subMatrix({j, m}, j, vt);
         house(vt, beta);
-        matrixBuffer.resize({j,m}, {j,n});
         A.subMatrix({j,m}, {j,n}, matrixBuffer);
-        A.subMatrix({j,m}, {j,n}, matrixBuffer2);
-        vt.ftranspose();
-        vt.multiply(matrixBuffer,matrixBuffer2);
+        GEmat vtemp = vt;
+        vtemp.ftranspose();
+        meq(vt, vtemp, matrixBuffer2);
 
-        matrixBuffer2.display();
-        vt.ftranspose();
-
-        vt.display();
-        vt.mulBy(beta);
-
-
+        meq(matrixBuffer2, matrixBuffer, matrixBuffer3);
+        matrixBuffer3.display();
+        matrixBuffer3.mulBy(beta);
+        matrixBuffer3.display();
         
-
-
-        // A.subtractBy({j,m}, {j,n}, matrixBuffer2);
-        // matrixBuffer.resize({j+1, m}, j);
-        // vt.ftranspose();
-        // vt.subMatrix({2,m-j+1},{0});
-
+        A.display();
+        A.subtractSubMatrix({j,m},{j,n}, matrixBuffer3);
+        A.display();
+        vt.subMatrix({2,m-j+1},matrixBuffer);
+        A.setSubMatrix({j+1,m},{j}, matrixBuffer);
+        A.display();
     }
 }
 

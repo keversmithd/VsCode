@@ -3,6 +3,59 @@
 
 #include "LTXVector.h"
 
+double MinTwo(const double original, const double a, const double b)
+{
+    double min = original;
+    min = (a < min) ? a : min;
+    min = (b < min) ? b : min;
+    return min;
+}
+
+double MaxTwo(const double original, const double a, const double b)
+{
+    double min = original;
+    min = (a > min) ? a : min;
+    min = (b > min) ? b : min;
+    return min;
+}
+
+struct LTXVD4
+{
+    double x,y,z,w;
+};
+
+struct LTXRect
+{
+    LTXPoint bottomLeft;
+    LTXPoint topRight;
+
+    LTXPoint center()
+    {
+        float mx = bottomLeft.x + ((topRight.x - bottomLeft.x)/2);
+        float my = bottomLeft.y + ((topRight.y - bottomLeft.y)/2);
+
+        return {mx,my};
+    }
+
+    void ReadNamed()
+    {
+        char r1[2] = {(char)(rand() % 26 + 'a'), (char)(rand() % 26 + 'a')};
+        char r2[2] = {(char)(rand() % 26 + 'a'), (char)(rand() % 26 + 'a')};
+
+        PrintLTXLatexPoint(bottomLeft, r1);
+        PrintLTXLatexPoint(topRight, r2);
+
+        printf("\\draw (%c%c) rectangle (%c%c);\n", r1[0], r1[1], r2[0], r2[1]);
+    }
+};
+
+LTXPoint operator *(const LTXPoint A, const LTXRect Workspace)
+{
+    float w = Workspace.topRight.x - Workspace.bottomLeft.x;
+    float h = Workspace.topRight.y - Workspace.bottomLeft.y;
+    return {Workspace.bottomLeft.x + (A.x*w), Workspace.bottomLeft.y + (A.y*h)};
+}
+
 struct LTXLineSegment
 {
     LTXPoint P;
@@ -84,7 +137,6 @@ LTXPoint SubdivideLineSegmentByT(LTXPoint A, LTXPoint B, float t)
     A.y = A.y + ry;
     return A;
 }
-
 
 
 #endif

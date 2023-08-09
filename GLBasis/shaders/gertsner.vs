@@ -36,11 +36,11 @@ float randomRange(float min, float max, float seed)
 
 out vec3 normal;
 out vec3 tangent;
+out vec3 binormal;
 
 void main()
 {
 
-    
     float height = 0.0;
     float L = 0.0;
     float w = 0.0;

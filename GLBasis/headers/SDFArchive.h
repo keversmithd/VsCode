@@ -2,6 +2,8 @@
 #define SDFARCH_H
 #include <vector>
 #include <math.h>
+#include <initializer_list>
+
 
 struct SDFVec2
 {
@@ -11,7 +13,125 @@ struct SDFVec2
 struct SDFVec3
 {
     float x,y,z;
+
+    SDFVec3()
+    {
+        x = 0;
+        y = 0;
+        z = 0;
+    }
+
+    SDFVec3(std::initializer_list<float> it)
+    {
+        x = *(it.begin());
+        y = *(it.begin()+1);
+        z = *(it.begin()+2);
+    }
+
+    SDFVec3(float p_x, float p_y, float p_z)
+    {
+        x = p_x;
+        y = p_y;
+        z = p_z;
+    }
+
+    void operator-=(const SDFVec3 A)
+    {
+        x -= A.x;
+        y -= A.y;
+        z -= A.z;
+    }
+
+    SDFVec3 operator*(const float c)
+    {
+        return SDFVec3(x * c, y * c, z * c);
+    }
+
+    
+
+    void operator *=(const SDFVec3 A)
+    {
+        x *= A.x;
+        y *= A.y;
+        z *= A.z;
+    }
+
+    void operator =(const SDFVec3 A)
+    {
+        x = A.x;
+        y = A.y;
+        z = A.z;
+    }
+
+    void operator *=(const float c)
+    {
+        x *= c;
+        y *= c;
+        z *= c;
+    }
+    
+    void operator +=(const SDFVec3 A)
+    {
+        x += A.x;
+        y += A.y;
+        z += A.z;
+    }
+
+
+
+    void normalize()
+    {
+        float m = sqrt((x*x) + (y*y) + (z*z));
+        if( m == 0)
+        {
+            x = 0;
+            y = 0;
+            z = 0;
+        }else
+        {
+            x /= m;
+            y /= m;
+            z /= m;
+        }
+        
+    }
+
+    void rotateFrame(const SDFVec3 Normal, const SDFVec3 Binormal, float theta)
+    {
+        x = (cos(theta)*Normal.x) + (sin(theta)*Binormal.x);
+        y = (cos(theta)*Normal.y) + (sin(theta)*Binormal.y);
+        z = (cos(theta)*Normal.z) + (sin(theta)*Binormal.z);
+    }
 };
+
+
+SDFVec3 operator*(const SDFVec3 A, const SDFVec3 B)
+{
+    return SDFVec3(A.x * B.x, A.y * B.y, A.z * B.z);
+
+
+}
+SDFVec3 operator*(const float A, const SDFVec3 B)
+{
+    return SDFVec3(A * B.x, A * B.y, A * B.z);
+
+
+}
+
+SDFVec3 operator-(const SDFVec3 A, const SDFVec3 B)
+{
+    return SDFVec3(A.x - B.x, A.y - B.y, A.z - B.z);
+}
+
+SDFVec3 operator+(const SDFVec3 A, const SDFVec3 B)
+{
+    return SDFVec3(A.x + B.x, A.y + B.y, A.z + B.z);
+
+
+}
+
+
+
 
 struct SDFOVec4{
     float x,y,z;
@@ -45,7 +165,6 @@ struct SDFBoundingVolume
     SDFVec3 BottomRightBack;
 };
 
-
 struct SDFParaLine
 {
     SDFVec3 Origin;
@@ -72,7 +191,7 @@ struct SDFPlaneEquation
 };
 
 
-inline SDFVec3 CenterOfVolume(const SDFBoundingVolume volume)
+    inline SDFVec3 CenterOfVolume(const SDFBoundingVolume volume)
     {
         float ZDepth = volume.BottomRightBack.z - volume.TopLeftFront.z;
         float XDepth = volume.BottomRightBack.x - volume.TopLeftFront.x;
@@ -121,7 +240,12 @@ inline SDFVec3 Divide(const SDFVec3 P, SDFVec3 Q)
 }
 inline SDFVec3 Cross(const SDFVec3 vec1, const SDFVec3 vec2)
 {
-    return {(vec1.y * vec2.z) - (vec2.y * vec2.z),-((vec1.x * vec2.z) - (vec2.x * vec1.z)), (vec1.x * vec2.y) - (vec2.x * vec1.y)};
+    SDFVec3 Cross = {(vec1.y * vec2.z) - (vec2.y * vec1.z),((vec1.x * vec2.z) - (vec2.x * vec1.z)), (vec1.x * vec2.y) - (vec2.x * vec1.y)};
+    if(Cross.y != 0)
+    {
+        Cross.y *= -1;
+    }
+    return Cross;
 }
 inline SDFVec3 FinitePlaneNormal(const SDFPlane nPlane)
 {
@@ -130,6 +254,10 @@ inline SDFVec3 FinitePlaneNormal(const SDFPlane nPlane)
 inline SDFVec3 Normalize(const SDFVec3 n)
 {
     float mag = Mag(n);
+    if(mag == 0)
+    {
+        return {0,0,0};
+    }
     return {n.x /mag, n.y/mag, n.z/mag};
 }
 inline SDFVec3 ParametricLineSample(const SDFVec3 Direction, const SDFVec3 Start, float t)

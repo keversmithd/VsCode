@@ -35,10 +35,19 @@ struct SDFVec3
         z = p_z;
     }
 
+    void operator-=(const SDFVec3 A)
+    {
+        x -= A.x;
+        y -= A.y;
+        z -= A.z;
+    }
+
     SDFVec3 operator*(const float c)
     {
         return SDFVec3(x * c, y * c, z * c);
     }
+
+    
 
     void operator *=(const SDFVec3 A)
     {
@@ -95,6 +104,31 @@ struct SDFVec3
     }
 };
 
+
+SDFVec3 operator*(const SDFVec3 A, const SDFVec3 B)
+{
+    return SDFVec3(A.x * B.x, A.y * B.y, A.z * B.z);
+
+
+}
+SDFVec3 operator*(const float A, const SDFVec3 B)
+{
+    return SDFVec3(A * B.x, A * B.y, A * B.z);
+
+
+}
+
+SDFVec3 operator-(const SDFVec3 A, const SDFVec3 B)
+{
+    return SDFVec3(A.x - B.x, A.y - B.y, A.z - B.z);
+}
+
+SDFVec3 operator+(const SDFVec3 A, const SDFVec3 B)
+{
+    return SDFVec3(A.x + B.x, A.y + B.y, A.z + B.z);
+
+
+}
 
 
 

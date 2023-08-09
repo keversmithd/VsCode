@@ -1,27 +1,29 @@
 #include <iostream>
 
 #include "GEMat.h"
-
+#include "GEMatd.h"
 
 
 int main()
 {
-    GEmat z(1,3);
-    z = {0.422650,-0.566,-0.566};
-    GEmat b(3,1);
-    b = {-1.73,-3.46,-5.196};
     
-    (z * b).display();
 
+    GEmatd y(2,4);
 
-    int i = 0;
+    y[0] = 1;
 
-    GEmat y(3,3);
+    y = {2,1,4,3,6,5,8,7};
 
-    y = {1,2,3,1,2,3,1,2,3};
+    GEmatd O = OctaveVector({1,2,8}, 4);
+    O.display();
+
     y.display();
 
-    pyqr(y);
+    GEmatd P = PermutationOfColumn(y, GEmatd({2,1}));
+
+    
+
+    P.display();
 
 
 

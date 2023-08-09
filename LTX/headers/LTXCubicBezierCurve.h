@@ -19,6 +19,7 @@ struct LTXCubicBezier
     LTXPoint P1;
     LTXPoint P2;
     LTXPoint P3;
+
     LTXCubicBezier()
     {
         P0 = LTXPoint(0.0f,0.0f);
@@ -33,6 +34,13 @@ struct LTXCubicBezier
         P1 = p1;
         P2 = p2;
         P3 = p3;
+    }
+    LTXCubicBezier(LTXPoint p0, LTXPoint p1, LTXPoint p2, LTXPoint p3, LTXRect C)
+    {
+        P0 = p0*C;
+        P1 = p1*C;
+        P2 = p2*C;
+        P3 = p3*C;
     }
     LTXCubicBezier(float x, float y, float z, float w, float u, float v, float b, float n)
     {
@@ -87,6 +95,18 @@ struct LTXCubicBezier
     {
         return pow((1-t),3)*P0 + 3*pow((1-t),2)*t*P1 + 3*(1-t)*pow(t,2)*P2 + pow(t,3)*P3;
     }
+
+    void reflect(LTXPoint AXA, LTXPoint AXB)
+    {
+        P0.reflectLine(AXA,AXB);
+        P1.reflectLine(AXA,AXB);
+        P2.reflectLine(AXA,AXB);
+        P3.reflectLine(AXA,AXB);
+    }
+
+    
+    
+
     void Read()
     {
         PrintLTXPoint(P0);
@@ -106,6 +126,13 @@ struct LTXCubicBezier
         PrintLTXLatexPoint(P2, r3);
         PrintLTXLatexPoint(P3, r4);
         printf("\\draw (%c%c) .. controls (%c%c) and (%c%c) .. (%c%c);\n", r1[0], r1[1], r2[0],r2[1],r3[0],r3[1],r4[0],r4[1]);
+    }
+
+
+
+    void Draw()
+    {
+        printf("\\draw (%f pt, %f pt) .. controls (%f pt, %f pt) and (%f pt, %f pt) .. (%f pt, %f pt);\n", P0.x, P0.y, P1.x, P1.y, P2.x, P2.y, P3.x, P3.y);
     }
     
     
@@ -203,6 +230,105 @@ LTXPoint SubdivideCubicBezierCurveByT(LTXCubicBezier Curve, float t)
     return tint6;
 }
 
+
+LTXVD4 MinMaxGP(LTXCubicBezier curve)
+{
+    LTXVD4 t_solutions;
+
+    double i = curve.P1.x - curve.P0.x;
+    double j = curve.P2.x - curve.P1.x;
+    double k = curve.P3.x - curve.P2.x;
+
+    double a = (3*i - 6*j + 3*k);
+    double b = (6*j - 6*i);
+    double c = 3*i;
+
+    double sqrtPart = (b * b) - (4 * a * c);
+    bool hasSolution = sqrtPart >= 0;
+    if (!hasSolution) {std::cout << " No solution" << std::endl;}
+
+
+    double t1 = (-b + sqrt(sqrtPart)) / (2 * a);
+    double t2 = (-b - sqrt(sqrtPart)) / (2 * a);
+
+    t_solutions.x = t1;
+    t_solutions.y = t2;
+
+    i = curve.P1.y - curve.P0.y;
+    j = curve.P2.y - curve.P1.y;
+    k = curve.P3.y - curve.P2.y;
+
+    a = (3*i - 6*j + 3*k);
+    b = (6*j - 6*i);
+    c = 3*i;
+
+    sqrtPart = (b * b) - (4 * a * c);
+    hasSolution = sqrtPart >= 0;
+    if (!hasSolution) {std::cout << " No solution" << std::endl;}
+
+
+    t1 = (-b + sqrt(sqrtPart)) / (2 * a);
+    t2 = (-b - sqrt(sqrtPart)) / (2 * a);
+
+    t_solutions.z = t1;
+    t_solutions.w = t2;
+
+    return t_solutions;
+
+}
+
+LTXRect CubicBounding(LTXCubicBezier curve)
+{
+    const LTXVD4 Extrema = MinMaxGP(curve);
+
+    double MinX = MinTwo(curve.P0.x, curve.P0.x, curve.P3.x);
+    double MinY = MinTwo(curve.P0.y, curve.P0.y, curve.P3.y);
+
+    double MaxX = MaxTwo(curve.P0.x, curve.P0.x, curve.P3.x);
+    double MaxY = MaxTwo(curve.P0.y, curve.P0.y, curve.P3.y);
+
+    LTXPoint Sample;
+
+    if(Extrema.x >= 0 && Extrema.x <= 1)
+    {
+        Sample = curve.Sample(Extrema.x);
+        MinX = (Sample.x < MinX) ? Sample.x : MinX;
+        MinY = (Sample.y < MinY) ? Sample.y : MinY;
+        MaxX = (Sample.x > MaxX) ? Sample.x : MaxX;
+        MaxY = (Sample.y > MaxY) ? Sample.y : MaxY;
+    }
+
+    if(Extrema.y >= 0 && Extrema.y <= 1)
+    {
+        Sample = curve.Sample(Extrema.y);
+        MinX = (Sample.x < MinX) ? Sample.x : MinX;
+        MinY = (Sample.y < MinY) ? Sample.y : MinY;
+        MaxX = (Sample.x > MaxX) ? Sample.x : MaxX;
+        MaxY = (Sample.y > MaxY) ? Sample.y : MaxY;
+    }
+
+    if(Extrema.z >= 0 && Extrema.z <= 1)
+    {
+        Sample = curve.Sample(Extrema.z);
+        MinX = (Sample.x < MinX) ? Sample.x : MinX;
+        MinY = (Sample.y < MinY) ? Sample.y : MinY;
+        MaxX = (Sample.x > MaxX) ? Sample.x : MaxX;
+        MaxY = (Sample.y > MaxY) ? Sample.y : MaxY;
+    }
+
+    if(Extrema.w >= 0 && Extrema.w <= 1)
+    {
+        Sample = curve.Sample(Extrema.w);
+        MinX = (Sample.x < MinX) ? Sample.x : MinX;
+        MinY = (Sample.y < MinY) ? Sample.y : MinY;
+        MaxX = (Sample.x > MaxX) ? Sample.x : MaxX;
+        MaxY = (Sample.y > MaxY) ? Sample.y : MaxY;
+    }
+
+
+    return {{MinX, MinY}, {MaxX, MaxY}};
+
+}
 
 
 #endif

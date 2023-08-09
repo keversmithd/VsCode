@@ -40,28 +40,14 @@ def bts(function, symbol, d, presc):
 def dots(function, symbol, d, presc):
     return fts(function, symbol, d, presc) + bts(function, symbol, d, presc)
 
-
 def ptrunkts(f):
     z = fts(f, t, dt, 3)
     g = dots(f, x, dx, 4)
     return (z/(dt)-g/(dx**2))
 
 
-v = sympy.Function('v')(x, t)
-# z = fts(v, t, dt, 3)
-# g = dots(v, x, dx, 4)
+#truncated example
 
-# print("$")
-# print(sympy.latex(z))
-# print("$")
-# print(sympy.latex(g))
-# print("$")
-
-# k = (z/(dt)-g/(dx**2))
-
-#truncate the taylor series : section
-
-xi, eta = sympy.symbols('xi eta')
 
 def trunkfts(function, symbol, d, sub):
     function += (1/2*function.diff(symbol,2)*(d**2)).subs(symbol, sub)
@@ -75,9 +61,20 @@ def trunkbts(function, symbol, d, sub):
     return function
 
 def trunkdots(function, symbol, d, sub):
-    return trunkfts(function, symbol, d, sub) + trunkbts(function, symbol, d, sub)
+    return function.diff(symbol,2) * d**2  - (1/12*function.diff(symbol,4) * dt**4).subs(symbol,sub)
 
-print(trunkfts(v, t, dt, eta))
+
+u = sympy.Function('u')(x,t)
+v = sympy.Function('v')(x, t)
+xi, eta = sympy.symbols('xi eta')
+def TruncatedTruncationError():
+    return (1/2 * u.diff(t,2) * dt).subs(t,eta) - (1/12*u.diff(x,4)*dx**2).subs(x,xi)
+     
+# a factor of dt/dx^2 appears in the factorized truncated error of the scheme
+# since ut = uxx every where, it can be factotred
+
+
+#eta lies from t and t+dt
 
 
 
