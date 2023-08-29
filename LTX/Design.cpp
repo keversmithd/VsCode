@@ -2,7 +2,7 @@
 #include "headers/LTXStructures.h"
 
 #include "LTXCurveList.h"
-
+#include "LTXCyclic.hpp"
 
 int main()
 {
@@ -19,8 +19,6 @@ int main()
 
     LTXRect CenterMountWorkspace; CenterMountWorkspace.bottomLeft={(textwidth/2)-mountWidth/2,-mountHeight/2}; CenterMountWorkspace.topRight={(textwidth/2)+mountWidth/2, mountHeight/2};
 
-    //CenterMountWorkspace.ReadNamed();
-
     LTXPoint AnchorPoint = {0,0};
     LTXPoint ControlPoint1 = {0.45, 0.15};
     LTXPoint EndPoint1 = {0.4, 0.45};
@@ -28,31 +26,20 @@ int main()
     LTXPoint ControlPoint3 = {0.25, 0.5};
     LTXPoint EndPoint2 = {0.30, 0.45};
      
-
     LTXQuadraticBezier Curve1 = {AnchorPoint, ControlPoint1, EndPoint1, CenterMountWorkspace};
 
-    
     LTXCubicBezier Curve2 = {EndPoint1, ControlPoint2, ControlPoint3, EndPoint2, CenterMountWorkspace};
 
-    LTXPoint AXA = {CubicBounding(Curve2).topRight.x,CubicBounding(Curve2).bottomLeft.y};
-    LTXPoint AXB = {CubicBounding(Curve2).topRight.x,CubicBounding(Curve2).topRight.y};
-
-    Curve2.Draw();
-
-    Curve2.reflect(AXA,AXB);
-
-    Curve2.Draw();
-
-    // curveList.append(Curve1);
-    // curveList.append(Curve2);
-    // curveList.RadiallyThickenCurrentCurve(90, 3);
-    // curveList.RadiallyThickenCurrentCurve(360, 10);
-    // //curveList.RotateThickenedPath(-90);
-    // curveList.ReflectThickenPath({0,1});
-
-    // curveList.read();
 
 
+    curveList.append(Curve1);
+    curveList.append(Curve2);
+    curveList.RadiallyThickenCurrentCurve(90, 3);
+    curveList.RadiallyThickenCurrentCurve(360, 10);
+    curveList.ReflectThickenPath({0,1});
+    curveList.read();
+
+    return 0;
 
 
 

@@ -747,8 +747,6 @@ struct GEmatd
 };
 
 
-
-
 GEmatd operator-(const double a, GEmatd A)
 {
     GEmatd result(A.MATRIX_DIMENSION_X, A.MATRIX_DIMENSION_Y);
@@ -895,7 +893,6 @@ void UpperTriangularMultiplication(GEmatd A, GEmatd B,  GEmatd& r)
     }
 
 }
-
 
 GEmatd PermutationOfRow(GEmatd I, GEmatd V)
 {   

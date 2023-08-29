@@ -25,6 +25,8 @@ struct Curve
 
 };
 
+
+
 LTXPoint ProjectOnto(LTXPoint Position, LTXPoint Normal)
 {
     LTXPoint Touch = Normal-Position;
@@ -36,19 +38,17 @@ LTXPoint ProjectOnto(LTXPoint Position, LTXPoint Normal)
 
     return Position + V;
 
-}   
+}  
 
-LTXPoint ProjectPointToCurve(LTXPoint Subject, Curve Area)
+float ProjectPointToCurve(LTXPoint Subject, Curve Area)
 {
-
     if(Area.type == 0)
     {
         LTXRect boundingArea = Area.Quadratic.BoundingRectangle();
+        boundingArea.ReadNamed();
+
         LTXPoint bottomRight = {boundingArea.topRight.x, boundingArea.bottomLeft.y};
         LTXPoint topLeft = {boundingArea.bottomLeft.x, boundingArea.topRight.y};
-
-        LTXPoint Diagonal1 = boundingArea.topRight-boundingArea.bottomLeft;
-        LTXPoint Diagonal2 = topLeft-bottomRight;
 
         //0 case
         LTXPoint V0 = topLeft-boundingArea.bottomLeft;
@@ -61,29 +61,116 @@ LTXPoint ProjectPointToCurve(LTXPoint Subject, Curve Area)
         LTXPoint P2 = Subject.ProjectOnto(topLeft, boundingArea.topRight);
         LTXPoint P3 = Subject.ProjectOnto(boundingArea.bottomLeft, bottomRight);
 
-        float MinimumDistance = (Subject-P0).mag();
-        LTXPoint Closest = (MinimumDistance);
-
-
-        //1st case
-
-        float d0 = dot(Diagonal1, Subject);
-        float d1 = dot(Diagonal2, Subject);
-
-        if(d0 || d1 == 0)
+        float d0 = (Subject-P0).mag();
+        float d1 = (Subject-P1).mag();
+        float d2 = (Subject-P2).mag();
+        float d3 = (Subject-P3).mag();
+        
+        LTXPoint MinimumDistancePoint = P0;
+        float MinimumDistance = d0;
+        //Distance Flag : 0 for vertical edges, 1 for horizontal edges.
+        int DistanceFlag = 0;
+        if((d1 < MinimumDistance))
         {
+            MinimumDistance = d1;
+            MinimumDistancePoint = P1;
+            DistanceFlag = 0;
+        }
+        if((d2 < MinimumDistance))
+        {
+            MinimumDistance = d2;
+            MinimumDistancePoint = P2;
+            DistanceFlag = 1;
+        }
+        if((d3 < MinimumDistance))
+        {
+            MinimumDistance = d3;
+            MinimumDistancePoint = P3;
+            DistanceFlag = 1;
+        }
 
+        LTXPoint T;
+        if(DistanceFlag == 0)
+        {
+            T = Area.Quadratic.SolveForY(MinimumDistancePoint.y);
+            return Area.Quadratic.CloserOfTwo(T, Subject);
+        }
+
+        if(DistanceFlag == 1)
+        {
+            T = Area.Quadratic.SolveForX(MinimumDistancePoint.y);
+            return Area.Quadratic.CloserOfTwo(T, Subject);
         }
         
-
     }
     if(Area.type == 1)
     {
+        LTXRect boundingArea = CubicBounding(Area.Cubic);
+        boundingArea.ReadNamed();
 
+        LTXPoint bottomRight = {boundingArea.topRight.x, boundingArea.bottomLeft.y};
+        LTXPoint topLeft = {boundingArea.bottomLeft.x, boundingArea.topRight.y};
+
+        //0 case
+        LTXPoint V0 = topLeft-boundingArea.bottomLeft;
+        LTXPoint V1 = boundingArea.topRight - bottomRight;
+        LTXPoint V2 = boundingArea.topRight - topLeft;
+        LTXPoint V3 = bottomRight - boundingArea.bottomLeft;
+
+        LTXPoint P0 = Subject.ProjectOnto(boundingArea.bottomLeft, topLeft);
+        P0.ReadNamed();
+        LTXPoint P1 = Subject.ProjectOnto(bottomRight, boundingArea.topRight);
+        P1.ReadNamed();
+        LTXPoint P2 = Subject.ProjectOnto(topLeft, boundingArea.topRight);
+        P2.ReadNamed();
+        LTXPoint P3 = Subject.ProjectOnto(boundingArea.bottomLeft, bottomRight);
+        P3.ReadNamed();
+
+        float d0 = (Subject-P0).mag();
+        float d1 = (Subject-P1).mag();
+        float d2 = (Subject-P2).mag();
+        float d3 = (Subject-P3).mag();
+        
+        LTXPoint MinimumDistancePoint = P0;
+        float MinimumDistance = d0;
+        //Distance Flag : 0 for vertical edges, 1 for horizontal edges.
+        int DistanceFlag = 0;
+        if((d1 < MinimumDistance))
+        {
+            MinimumDistance = d1;
+            MinimumDistancePoint = P1;
+            DistanceFlag = 0;
+        }
+        if((d2 < MinimumDistance))
+        {
+            MinimumDistance = d2;
+            MinimumDistancePoint = P2;
+            DistanceFlag = 1;
+        }
+        if((d3 < MinimumDistance))
+        {
+            MinimumDistance = d3;
+            MinimumDistancePoint = P3;
+            DistanceFlag = 1;
+        }
+
+        CubicSolution T;
+        if(DistanceFlag == 0)
+        {
+            T = Area.Cubic.SolveForY(MinimumDistancePoint.y);
+            return Area.Cubic.CloserOfThree(T, Subject);
+        }
+
+        if(DistanceFlag == 1)
+        {
+            T = Area.Cubic.SolveForX(MinimumDistancePoint.y);
+            return Area.Cubic.CloserOfThree(T, Subject);
+        }
     }
 
 }
-
+//Different types of projections
+//Angle of entry projections
 
 void PrintLTXVector(LTXVector A)
 {

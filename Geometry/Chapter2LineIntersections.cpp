@@ -25,7 +25,6 @@ bool EdgeCompare(const EventPoint A, const EventPoint B)
 
 line* EdgeSetInPlane(const plane pl, int I)
 {
-
     line* edges = new line[I];
     std::uniform_real_distribution<float> leftRight(pl.bottomLeft.x, pl.topRight.x);
     std::uniform_real_distribution<float> downUp(pl.bottomLeft.y, pl.topRight.y);
@@ -261,8 +260,6 @@ std::vector<vec2> FindIntersectionsBook(line* edges, int N)
 
 int main()
 {
-
-    
 
     plane Domain = {{-5.0, -1.0}, {10.0, 1.0}};
 

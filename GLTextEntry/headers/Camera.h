@@ -45,7 +45,7 @@ struct Camera
 
         glfwGetCursorPos(window, &curPosx, &curPosy);
 
-        projection = glm::perspective(glm::radians(fov), 640.0f / 480.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(fov), GlobalWindowStats.vx / GlobalWindowStats.vy, 0.1f, 100.0f);
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     }
 
@@ -55,7 +55,18 @@ struct Camera
         glfwSetCursorPosCallback(window, mouse_callback);
     }
 
-    
+    glm::vec2 ScreenToWorld(float xpos, float ypos)
+    {
+        float ndcX = (2.0f * xpos) / GlobalWindowStats.vx - 1.0f;
+        float ndcY = 1.0f - (2.0f * ypos) / GlobalWindowStats.vy;
+        glm::vec4 rayClip = glm::vec4(ndcX, ndcY, -1.0f, 1.0f);
+        glm::mat4 iV = glm::inverse(view);
+        glm::mat4 invProjection = glm::inverse(projection);
+        glm::vec4 rayEye = invProjection * rayClip;
+        rayEye = glm::vec4(rayEye.x, rayEye.y, -1.0f, 0.0f); // Z points forward
+        glm::mat4 invView = glm::inverse(view);
+        glm::vec4 rayWorld = invView * rayEye;
+    }
 
     ~Camera()
     {
@@ -63,7 +74,6 @@ struct Camera
     }
 
 };
-
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -100,5 +110,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     direction.z = sin(glm::radians(activeCamera->yaw)) * cos(glm::radians(activeCamera->pitch));
     activeCamera->cameraFront = glm::normalize(direction);
 }
+
+
+
+
 
 #endif

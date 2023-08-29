@@ -67,6 +67,19 @@ void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, float* memoryData, int
     fPoint(D, 0,1, memoryData, i);
 
 }
+void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, float* memoryData, int& i, float uvscale)
+{
+    NHolder = Cross(Subtract(B, A), Subtract(D,A));
+
+    fPoint(A, 0,0, memoryData, i);
+    fPoint(B, uvscale*1,0, memoryData, i);
+    fPoint(C, uvscale*1,uvscale*1, memoryData, i);
+
+    fPoint(A, 0,0, memoryData, i);
+    fPoint(C, uvscale*1,uvscale*1, memoryData, i);
+    fPoint(D, 0,uvscale*1, memoryData, i);
+
+}
 
 void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, float* memoryData, int& i, unsigned int* indexBuffer, int& j, int& indices)
 {
@@ -153,7 +166,7 @@ SubPlane EqualSubdividedPlane(float subDivisions)
     {
         for(int j = 0; j < subDivisions; j++)
         {
-            fTriQuad(Add(Origin, {dx*j, dy*i, 0}), Add(Origin, {dx*(j+1), dy*i, 0}), Add(Origin, {dx*(j+1), dy*(i+1), 0}), Add(Origin, {dx*j, dy*(i+1)}), data, k);
+            fTriQuad(Add(Origin, {dx*j, dy*i, 0}), Add(Origin, {dx*(j+1), dy*i, 0}), Add(Origin, {dx*(j+1), dy*(i+1), 0}), Add(Origin, {dx*j, dy*(i+1)}), data, k, 2);
         }
     }
 

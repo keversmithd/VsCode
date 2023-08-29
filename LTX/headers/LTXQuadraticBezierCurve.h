@@ -5,13 +5,7 @@
 
 
 
-LTXPoint LTXQuadraticCalculation(LTXPoint* Coef, float t)
-{
-    //printf("\n");
-    LTXPoint X = pow((1-t),2) * Coef[0] +  2*(1-t)*t*Coef[1] + pow(t,2)*Coef[2];
-    //PrintLTXPoint(X);
-    return X;
-}
+
 
 struct LTXQuadraticBezier
 {
@@ -47,7 +41,6 @@ struct LTXQuadraticBezier
 
     LTXVD4 Solutions()
     {
-
         LTXVD4 sol;
 
         double Ax = (P0.x-2*P1.x + P2.x);
@@ -66,6 +59,236 @@ struct LTXQuadraticBezier
         }
 
         return sol;
+    }
+
+    float MedianProjection(LTXPoint Subject)
+    {
+       LTXPoint TX = SolveForX(Subject.x);
+
+       LTXPoint TY = SolveForY(Subject.y);
+
+       float ClosestXDistance = INT_MAX;
+       float BufferDistance = INT_MAX;
+
+       float tx = -1;
+
+       if(TX.x >= 0 && TX.x <= 1)
+       {
+           ClosestXDistance = (Subject-Sample(TX.x)).mag();
+           tx = TX.x;
+       }
+       if(TX.y >= 0 && TX.y <= 1)
+       {
+          BufferDistance = (Subject-Sample(TX.y)).mag();
+          tx = (BufferDistance < ClosestXDistance) ? TX.y : tx;
+       }
+
+       float ty = -1;
+       if(TY.x >= 0 && TY.x <= 1)
+       {
+            ClosestXDistance = (Subject-Sample(TY.x)).mag();
+            ty = TY.x;
+       }
+       if(TY.y >= 0 && TY.y <= 1)
+       {
+            BufferDistance = (Subject-Sample(TY.y)).mag();
+            ty = (BufferDistance < ClosestXDistance) ? TY.y : ty;
+       }
+
+       if(tx == -1 && ty == -1)
+       {
+         return -1;
+       }
+
+       if(tx == -1 && ty != -1)
+       {
+            return ty;
+       }
+
+       if(ty == -1 && tx != -1)
+       {
+            return tx;
+       }
+
+       if(tx < ty)
+       {
+        return tx + (ty-tx)/2;
+       }
+       
+       return ty + (tx + ty)/2;
+    }
+
+    float ClosestOfTwoProjection(LTXPoint Subject)
+    {
+       LTXPoint TX = SolveForX(Subject.x);
+       LTXPoint TY = SolveForY(Subject.y);
+
+       float ClosestXDistance = INT_MAX;
+       float BufferDistance = INT_MAX;
+
+       float tx = -1;
+
+       if(TX.x >= 0 && TX.x <= 1)
+       {
+           BufferDistance = (Subject-Sample(TX.x)).mag();
+           ClosestXDistance = (BufferDistance < ClosestXDistance) ? BufferDistance : ClosestXDistance;
+           tx = TX.x;
+       }
+       if(TX.y >= 0 && TX.y <= 1)
+       {
+          BufferDistance = (Subject-Sample(TX.y)).mag();
+          ClosestXDistance = (BufferDistance < ClosestXDistance) ? BufferDistance : ClosestXDistance;
+          tx = (BufferDistance < ClosestXDistance) ? TX.y : tx;
+       }
+       if(TY.x >= 0 && TY.x <= 1)
+       {
+            BufferDistance = (Subject-Sample(TY.x)).mag();
+            ClosestXDistance = (BufferDistance < ClosestXDistance) ? BufferDistance : ClosestXDistance;
+            tx = (BufferDistance < ClosestXDistance) ? TY.x : tx;
+       }
+       if(TY.y >= 0 && TY.y <= 1)
+       {
+            BufferDistance = (Subject-Sample(TY.y)).mag();
+            ClosestXDistance = (BufferDistance < ClosestXDistance) ? BufferDistance : ClosestXDistance;
+            tx = (BufferDistance < ClosestXDistance) ? TY.y : tx;
+       }
+
+        return tx;
+    }
+    
+    float CloserOfTwo(LTXPoint TValues, LTXPoint Subject)
+    {
+
+        float tmin = 0;
+        float dmin = INT_MAX;
+        float dbuff = 0;
+        if(TValues.x >= 0 && TValues.x <= 1)
+        {   
+            dbuff = (Subject-Sample(TValues.x)).mag();
+            if(dbuff < dmin)
+            {
+                dmin = dbuff;
+                tmin = TValues.x;
+            }
+
+        }
+
+        if(TValues.y >= 0 && TValues.y <= 1)
+        {
+            dbuff = (Subject-Sample(TValues.y)).mag();
+            if(dbuff < dmin)
+            {
+                dmin = dbuff;
+                tmin = TValues.y;
+            }
+        }
+
+        if(dmin == INT_MAX)
+        {
+            return -16969;
+        }
+
+
+
+        return tmin;
+    }
+
+    LTXVD4 SolveFor(LTXPoint G)
+    {
+        LTXVD4 sol;
+        LTXPoint A = (P0 - 2*P1 + P2);
+        LTXPoint B = (-2*P0 + 2*P1);
+        LTXPoint C = P0;
+
+        float a = A.x;
+        float b = B.x;
+        float c = C.x - G.x;
+
+        float disc = b * b - 4 * a * c;
+        float t1, t2;
+
+        if(disc >= 0 && a != 0)
+        {
+            t1 = (-b + sqrt(disc)) / (2 * a);
+
+            t2 = (-b - sqrt(disc)) / (2 * a);
+
+            if(t1 >= 0 && t1 <= 1)
+            {
+                sol.x  = t1;
+            }
+
+            if(t2 >= 0 && t2 <= 1)
+            {
+                sol.y  = t2;
+            }
+        }
+
+        a = A.y;
+        b = B.y;
+        c = C.y - G.y;
+
+        disc = b * b - 4 * a * c;
+
+        if(disc >= 0 && a != 0)
+        {
+            t1 = (-b + sqrt(disc)) / (2 * a);
+            t2 = (-b - sqrt(disc)) / (2 * a);
+
+            if(t1 >= 0 && t1 <= 1)
+            {
+                sol.z  = t1;
+            }
+
+            if(t2 >= 0 && t2 <= 1)
+            {
+                sol.w  = t2;
+            }
+        }
+
+        return sol;
+    }
+
+    LTXPoint SolveForY(float Y)
+    {
+
+        LTXPoint t = {-69, -69};
+
+        float a = (P0.y - 2*P1.y + P2.y);
+        float b = (-2*P0.y + 2*P1.y);
+        float c = P0.y - Y;
+
+        float disc = b * b - 4 * a * c;
+
+        if(disc >= 0 && a != 0)
+        {
+            t.x = (-b + sqrt(disc)) / (2 * a);
+            t.y = (-b - sqrt(disc)) / (2 * a);
+        }
+        return t;
+
+    }
+
+    LTXPoint SolveForX(float X)
+    {
+
+        LTXPoint t = {-69, -69};
+
+        float a = (P0.x - 2*P1.x + P2.x);
+        float b = (-2*P0.x + 2*P1.x);
+        float c = P0.x - X;
+
+        float disc = b * b - 4 * a * c;
+
+        if(disc >= 0 && a != 0)
+        {
+            t.x = (-b + sqrt(disc)) / (2 * a);
+            t.y = (-b - sqrt(disc)) / (2 * a);
+        }
+
+        return t;
+
+
     }
 
 
@@ -147,11 +370,6 @@ struct LTXQuadraticBezier
     ~LTXQuadraticBezier(){}
 };
 
-
-LTXRect QuadraticBounding(LTXQuadraticBezier Bezier)
-{
-
-}
 
 
 #endif

@@ -15,7 +15,6 @@
 #include <thread>
 #include "SDFArchive.h"
 #include "Lights.h"
-#include "UVSphere.h"
 
 struct wav4
 {
@@ -159,12 +158,17 @@ GLFWwindow* CreateContext()
     ImGui_ImplGlfwGL3_Init(window, true);
     ImGui::StyleColorsDark();
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     return window;
 }
 
 
 int main()
 {
+
+    int i = 0;
     GLFWwindow* window = CreateContext();
 
 #pragma region Shaders
@@ -216,8 +220,8 @@ int main()
     {
         printf("\nWent Wrong\n");
     }
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0,0,1024,768);
 
     NGLProgram program = CreateShader("shaders/wavewaterWithNormalMap.vs","shaders/wavewaterWithNormalMap.fs");
 
@@ -279,7 +283,7 @@ int main()
 #pragma endregion
 
     std::vector<Light> lights;
-    lights.push_back({{0.5, 0.5, 0.5, 0.5}, {1.0, 1.0, 1.0, 0.0}, {0.5, 0.5, 0.5, 0.0}, {0,0,0,0}});
+    lights.push_back({{0.5, 0.5, 0.5, 0.5}, {1.0, 1.0, 1.0, 0.0}, {0.5, 0.5, 0.5, 0.0}, {0,1,0,1}});
     NGLBuffer LightBuffer = CreateUniformBuffer(lights.size()*sizeof(Light), lights.data(), 1);
     setUniformBlock(program, "LightBuffer", 1);
 
@@ -289,19 +293,38 @@ int main()
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-    glm::vec3 viewPosition = MainCamera.cameraPos;
 
     int selectedWindow = 0;
-
+    double lastTime = glfwGetTime();
+    int nbFrames = 0;
     while (!glfwWindowShouldClose(window))
     {
+
+        double currentTime = glfwGetTime();
+        nbFrames++;
+        if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+            // printf and reset timer
+
+            glfwSetWindowTitle(window, std::to_string(double(nbFrames)).c_str());
+            nbFrames = 0;
+            lastTime += 1.0;
+        }
 
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         float currentFrame = glfwGetTime();
         MainCamera.proccessInput(window);
-        viewPosition = MainCamera.cameraPos;
+
+        //rendering normal map
+        glViewport(0,0,256,256);
+        glBindFramebuffer(GL_FRAMEBUFFER, NormalFrameBuffer);
+        FrameBufferProgram.UseProgram();
+        setFloat(FrameBufferProgram, "time", currentFrame);
+        FramebufferRenderVertexArray.BindVertexArray();
+        glDrawArrays(GL_TRIANGLES, 0, UVPlane.verts);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0,0,1024,768);
 
         setFloat(program, "time", currentFrame);
         setInt(program, "numberofwaves", NumberOfWaves);
@@ -310,8 +333,7 @@ int main()
         setMat4(program, "projection", MainCamera.projection);
         setMat4(program, "model", model);
         setInt(program, "NormalMap", 0);
-
-        
+        setVec3(program, "viewPos", MainCamera.cameraPos);
 
         program.UseProgram();
         vertexarray.BindVertexArray();
@@ -372,9 +394,11 @@ int main()
                     std::string Title = "Ambient" + i;
                     std::string Title1 = "Diffuse" + i;
                     std::string Title2 = "Specularity" + i;
+                    std::string Title3 = "Position" + i;
                     ImGui::InputFloat4t(Title.c_str(), &lights[i].ambient.x, &lights[i].ambient.x, &lights[i].ambient.y, &lights[i].ambient.z);
                     ImGui::InputFloat4t(Title1.c_str(), &lights[i].diffuse.x, &lights[i].diffuse.x, &lights[i].diffuse.y, &lights[i].diffuse.z);
                     ImGui::InputFloat4t(Title2.c_str(), &lights[i].specular.x, &lights[i].specular.x, &lights[i].specular.y, &lights[i].specular.z);
+                    ImGui::InputFloat4t(Title3.c_str(), &lights[i].position.x, &lights[i].position.y, &lights[i].position.z, &lights[i].position.w);
                     
                 }
 

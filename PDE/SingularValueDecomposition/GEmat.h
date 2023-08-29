@@ -19,6 +19,11 @@ struct GEmat
     int MATRIX_END_INDEX;
     int MATRIX_SIZE;
 
+    GEmat() : data(nullptr), MATRIX_DIMENSION_X(0), MATRIX_DIMENSION_Y(0), MATRIX_END_INDEX(0), MATRIX_SIZE(0), copy(false)
+    {
+
+    }
+
     GEmat(int x, int y) : data(nullptr), MATRIX_DIMENSION_X(0), MATRIX_DIMENSION_Y(0), MATRIX_END_INDEX(0), MATRIX_SIZE(0), copy(false)
     {
         MATRIX_SIZE = x*y;
@@ -48,6 +53,7 @@ struct GEmat
     {
         if(index < 0 || index > MATRIX_END_INDEX)
         {
+            printf("overflow\n");
             return data[0];
         }
 
@@ -88,6 +94,38 @@ struct GEmat
         }
     }
 
+    void operator=(std::initializer_list<int> L)
+    {
+        for(int i = 0; i < L.size(); i++)
+        {
+            data[i] = *(L.begin() + i);
+        }
+    }
+
+    void operator=(const float c)
+    {
+        for(int i = 0; i < MATRIX_DIMENSION_Y; i++)
+        {
+            for(int j = 0; j < MATRIX_DIMENSION_X; j++)
+            {
+                data[(i*MATRIX_DIMENSION_X) + j] = c;
+            }
+        }
+    }
+
+    void operator=(GEmat& other)
+    {
+
+        for(int othery = 0; othery < other.MATRIX_DIMENSION_Y; othery++)
+        {
+            for(int otherx = 0; otherx < other.MATRIX_DIMENSION_X; otherx++)
+            {
+                data[(othery * MATRIX_DIMENSION_X) + otherx] = other[(othery * other.MATRIX_DIMENSION_Y) + otherx];
+            }
+        }
+
+    }
+
     GEmat cpy()
     {
         GEmat result(MATRIX_DIMENSION_X, MATRIX_DIMENSION_Y);
@@ -95,16 +133,96 @@ struct GEmat
         return result;
     }
 
-    const float operator()(int i, int j)
+    float& operator()(int i, int j)
     {
         if(i > MATRIX_DIMENSION_X || j > MATRIX_DIMENSION_Y || i < 0 || j < 0)
         {
+            printf("Overflowed\n");
             return data[0];
         }
 
         return data[(j * MATRIX_DIMENSION_X) + i];
+    }
 
+    float& operator()(int i)
+    {
+        if(i > MATRIX_END_INDEX)
+        {
+            printf("Overflowed\n");
+            return data[0];
+        }
 
+        return data[i];
+    }
+
+    GEmat operator()(GEspan rows, GEspan columns) //work in progress
+    {
+        rows.SetLimits(MATRIX_DIMENSION_Y);
+        columns.SetLimits(MATRIX_DIMENSION_X);
+
+        int m = (rows.to-rows.from)+1;
+        int n = (columns.to-columns.from)+1;
+        GEmat CopyNonDestructable;
+        CopyNonDestructable.copy = true;
+
+        CopyNonDestructable.MATRIX_DIMENSION_Y = m;
+        CopyNonDestructable.MATRIX_DIMENSION_X = n;
+
+        int Start = ((rows.from-1)*MATRIX_DIMENSION_X) + columns.from;
+
+        CopyNonDestructable.data = data+Start;
+
+        return CopyNonDestructable;
+    }
+
+    
+
+    void equate(GEspan rows, GEspan columns, GEmat& other, GEspan orows, GEspan ocolumns)
+    {
+        rows.SetLimits(MATRIX_DIMENSION_Y);
+        columns.SetLimits(MATRIX_DIMENSION_X);
+        orows.SetLimits(other.MATRIX_DIMENSION_Y);
+        ocolumns.SetLimits(other.MATRIX_DIMENSION_X);
+        int k = (orows.from-1);
+        int l = (ocolumns.from-1);
+        for(int i = (rows.from-1); i <= (rows.to-1); i++)
+        {
+            for(int j = (columns.from-1); j <= (columns.to-1); j++)
+            {
+                data[(i*MATRIX_DIMENSION_X) + j] = other.data[(k*other.MATRIX_DIMENSION_X) + l];
+                if(l >= (ocolumns.to-1))
+                {
+                    l = 0;
+                    k++;
+                }else
+                {
+                    l++;
+                }
+                
+            }
+        }
+    }
+
+    void equate(GEspan columns, GEmat& other, GEspan orows, GEspan ocolumns)
+    {
+        columns.SetLimits(MATRIX_DIMENSION_X);
+        orows.SetLimits(other.MATRIX_DIMENSION_Y);
+        ocolumns.SetLimits(other.MATRIX_DIMENSION_X);
+        int k = (orows.from-1);
+        int l = (ocolumns.from-1);
+        for(int j = (columns.from-1); j <= (columns.to-1); j++)
+        {
+            data[j] = other.data[(k*other.MATRIX_DIMENSION_X) + l];
+            if(l >= (ocolumns.to-1))
+            {
+                l = 0;
+                k++;
+            }else
+            {
+                l++;
+            }
+            
+        }
     }
 
     void trigDown(float a, float b, float c)
@@ -252,20 +370,26 @@ struct GEmat
         }
     }
 
-    // GEmat operator *(const float c){
+    float max()
+    {
+        float max = data[0];
+        for(int i = 0; i < MATRIX_DIMENSION_Y; i++)
+        {
+            for(int j = 0; j < MATRIX_DIMENSION_X; j++)
+            {
+                max = (data[(i*MATRIX_DIMENSION_X) + j] > max) ? data[(i*MATRIX_DIMENSION_X) + j] : max;
+            }
+        }
+        return max;
+    }
 
-    //     GEmat result(MATRIX_DIMENSION_X, MATRIX_DIMENSION_Y);
-
-    //     for(int i = 0; i < MATRIX_DIMENSION_Y; i++)
-    //     {
-    //         for(int j = 0; j < MATRIX_DIMENSION_X; j++)
-    //         {
-    //             result.data[(i*MATRIX_DIMENSION_X) + j] = data[(i*MATRIX_DIMENSION_X) + j]*c;
-    //         }
-    //     }
-
-    //     return result;
-    // }
+    void fill(const float c)
+    {
+        for(int i = 0; i < MATRIX_SIZE; i++)
+        {
+            data[i] = c;
+        }
+    }   
 
     GEmat operator +(const GEmat other)
     {
@@ -666,6 +790,7 @@ struct GEmat
         }
 
     }
+    
     void subtractSubMatrix(GEspan rows, GEspan columns, const GEmat other)
     {
 
@@ -832,7 +957,6 @@ e<GEmat,2> gaussian_two(GEmat A, GEmat b)
 
     float ScryingResult = 0;
 
-
     for(int i = 1; i < MatrixDimensionY; i++) //From bottom and right two to the top.
     {
         for(int j = 0; j < SearchDepth; j++)
@@ -890,6 +1014,122 @@ e<GEmat,2> gaussian_two(GEmat A, GEmat b)
 
     return {A, b};
 }
+
+e<GEmat,2> LU(GEmat A, GEmat b)
+{
+    int MatrixDimension = A.MATRIX_DIMENSION_Y;
+    int MX = A.MATRIX_DIMENSION_X;
+    
+    GEmat L(A.MATRIX_DIMENSION_X, A.MATRIX_DIMENSION_Y);
+  
+    int DiagonalStart = 0;
+    
+    for(int i = 0; i < MatrixDimension; i++) //this makes the identity matrix??
+    {
+        L[(i*MX) + DiagonalStart] = 1;
+        for(int j = DiagonalStart+1; j < MX; j++)
+        {
+            L[(i*MX) + j] = 0;
+        }
+        DiagonalStart++;
+    }
+
+    int Pointer = 0;
+    int Pointer1 = 0;
+    int Pointer2 = 0;
+
+    int SearchDepth = 1;
+
+    float ScryingResult = 0;
+
+    for(int i = 1; i < MatrixDimension; i++) //From bottom and right two to the top.
+    {
+        for(int j = 0; j < SearchDepth; j++)
+        {
+            Pointer = (i*MX)+j;
+            ScryingResult = A[Pointer];
+
+            if(ScryingResult != 0)
+            {
+                ScryingResult = A[Pointer-MX]; //Right above scrying result, guarenteed to hit do to I starting at one.
+                Pointer1 = i-1;
+
+                while(ScryingResult == 0 && Pointer1 >= 0) //Search down column for non zero or at the bounds of the matrix. (IMPLEMENT DOWN TO CURRENT ROW)
+                {
+                    Pointer1--;
+                    ScryingResult = A[(Pointer1*MX)+j]; 
+                }
+
+                if(Pointer1 < 0)
+                {
+                    break;
+                }
+
+                float pro = -A[Pointer]/ScryingResult;
+                
+                for(int k = 0; k < MX; k++)
+                {   
+                    A[(i*MX) + k] += pro*A[(Pointer1*MX)+k];
+                }
+
+                L[(i*MX) + j] = -pro;
+                
+            }
+        }
+
+        SearchDepth++;
+    }
+
+    return {L,A}; 
+}
+e<GEmat,2> Thomas(GEmat A, GEmat b)
+{
+    int MY = A.MATRIX_DIMENSION_Y;
+    int MX = A.MATRIX_DIMENSION_X;
+
+    int Diagonal = 0;
+
+    for(int i = 1; i < MY; i++)
+    {
+        float B = A[((i-1)*MX)+Diagonal];
+        float Pivot = A[(i*MX)+Diagonal];
+
+        if(B == 0)
+        {
+            A[((i-1)*MX)+Diagonal] = Pivot;
+            float t = A[((i-1)*MX)+Diagonal+1];
+            A[((i-1)*MX)+Diagonal+1] = A[(i*MX)+Diagonal+1];
+            A[(i*MX)+Diagonal+1] = t;
+            A[(i*MX)+Diagonal] = B;
+        }else
+        if(Pivot != 0)
+        {
+            float pro = -Pivot/B;
+            A[(i * MX) + Diagonal] += pro*A[((i-1)*MX)+Diagonal];
+            b[i] += pro*A[((i-1)*MX)+Diagonal];
+        }
+        Diagonal++;
+    }
+
+
+    //back substittue
+    int LeftShift = 2;
+    for(int i = (MY-2); i >= 0; i--) //Move backward
+    {
+        for(int j = (MX-1); j > (MX-LeftShift); j--)
+        {
+            b[i] -= b[j]*A[(i*MX)+j];
+        }   
+
+        b[i] /= A[(i*MX)+(MY-LeftShift)];
+
+        LeftShift++;
+    }
+
+    
+}
+
+
 
 float dot(GEmat A, GEmat B)
 {

@@ -4,16 +4,9 @@
 #include  "LTXStructures.h"
 #include <vector>
 
-bool ContainedInBoundingArea(const LTXRect Subject, const LTXRect Area)
-{
-    return ((Subject.bottomLeft.x >= Area.bottomLeft.x && Subject.bottomLeft.x <= Area.topRight.x) &&
-    (Subject.bottomLeft.y >= Area.bottomLeft.y && Subject.bottomLeft.y <= Area.topRight.y));
-}
 
-bool ContainedInBoundingArea(const LTXPoint Subject, const LTXRect Area)
-{
-    return (Subject.x >= Area.bottomLeft.x && Subject.x <= Area.topRight.x) && (Subject.y >= Area.bottomLeft.y && Subject.y <= Area.topRight.y);
-}
+
+
 
 struct Quadrant
 {

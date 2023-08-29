@@ -22,6 +22,11 @@ double MaxTwo(const double original, const double a, const double b)
 struct LTXVD4
 {
     double x,y,z,w;
+
+    LTXVD4() : x(-16969), y(-16969), z(-16969), w(-16969)
+    {
+
+    }
 };
 
 struct LTXRect
@@ -48,6 +53,15 @@ struct LTXRect
         printf("\\draw (%c%c) rectangle (%c%c);\n", r1[0], r1[1], r2[0], r2[1]);
     }
 };
+bool ContainedInBoundingArea(const LTXRect Subject, const LTXRect Area)
+{
+    return ((Subject.bottomLeft.x >= Area.bottomLeft.x && Subject.bottomLeft.x <= Area.topRight.x) &&
+    (Subject.bottomLeft.y >= Area.bottomLeft.y && Subject.bottomLeft.y <= Area.topRight.y));
+}
+bool ContainedInBoundingArea(const LTXPoint Subject, const LTXRect Area)
+{
+    return (Subject.x >= Area.bottomLeft.x && Subject.x <= Area.topRight.x) && (Subject.y >= Area.bottomLeft.y && Subject.y <= Area.topRight.y);
+}
 
 LTXPoint operator *(const LTXPoint A, const LTXRect Workspace)
 {

@@ -1,8 +1,7 @@
 #ifndef EXPERIMENT_1_H
 #define EXPERIMENT_1_H
 
-#include "NGL.h"
-#include "GLFW/glfw3.h"
+#include "WindowStats.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -138,7 +137,6 @@ void setFloat(NGLProgram& program, const char* name, float value)
     program.GetUniformLocation(name, &modelLoc);
     program.ProgramUniform1f(modelLoc, value);
 }
-
 
 void setInt(NGLProgram& program, const char* name, GLint value)
 {

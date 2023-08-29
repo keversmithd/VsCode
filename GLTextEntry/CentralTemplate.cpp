@@ -20,6 +20,7 @@
 #include "GraphicVector.h"
 #include "UVSphere.h"
 #include "InputBox.h"
+#include "UVSphereFactory.h"
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
     GLsizei length, const char* message, const void* userParam) {
@@ -64,43 +65,33 @@ void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum 
 }
 
 
-
-
-vec3* GenerateTwoDimensionalAxis(const vec2 XDimensionality, const vec2 YDimensionality, double dx, double dy, int& size)
+void FrameBufferResize(GLFWwindow *window, int width, int height)
 {
-    int xsteps = (XDimensionality.y - XDimensionality.x)/dx;
-    int ysteps = (YDimensionality.y - XDimensionality.x)/dx;
-
-    int e = 4 + xsteps + ysteps;
-    vec3* data = new vec3[(e*2)];
-    size = (e*2);
-
-    int datapointer = 0;
-
-    for(int i = 0; i < xsteps; i++)
-    {
-        float currentx = (XDimensionality.x + i * dx);
-
-        data[datapointer] = {currentx, YDimensionality.x, 0};
-        data[datapointer+1] = {currentx, YDimensionality.y, 0};
-        
-        datapointer+=2;
-        
-    }
-
-    for(int j = 0; j <= ysteps; j++)
-    {
-        float currenty = (YDimensionality.x + (j * dy));
-
-        data[datapointer] = {XDimensionality.x, currenty, 0};
-        data[datapointer+1] = {XDimensionality.y, currenty, 0};
-        
-        datapointer+=2;
-    }
-
-    return data;
-
+    glViewport(0, 0, width, height);
+    GlobalWindowStats.vx = width;
+    GlobalWindowStats.vy = height;
 }
+void WindowResize(GLFWwindow *window, int width, int height)
+{
+    GlobalWindowStats.wx = width;
+    GlobalWindowStats.wy = height;
+}
+
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+
+    Camera* activeCamera = (Camera*)glfwGetWindowUserPointer(window);
+    double xpos,ypos;
+    glfwGetCursorPos(window,  &xpos, &ypos);
+    if(!activeCamera)
+    {
+        return;
+    }
+    
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        GlobalInputContainer.SendClick(window, activeCamera, xpos, ypos);
+    }
+}
+
 
 GLFWwindow* CreateContext()
 {
@@ -120,8 +111,19 @@ GLFWwindow* CreateContext()
         glfwTerminate();
         throw std::range_error("Did not load context of window.");
     }
+
+    
+    
+
+    GlobalWindowStats.wx = 1024;
+    GlobalWindowStats.wy = 768;
+    GlobalWindowStats.vx = 1024;
+    GlobalWindowStats.vy = 768;
+
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
+    
 
     if(glewInit() != GLEW_OK)
     {
@@ -150,17 +152,50 @@ GLFWwindow* CreateContext()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
+
+    glfwSetFramebufferSizeCallback(window, FrameBufferResize);
+    glfwSetWindowSizeCallback(window, WindowResize);
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
+
     return window;
 }
 
 
+struct BufferTest
+{
+    private:
+        unsigned int vertexBuffer;
+    public:
+    BufferTest() : vertexBuffer(0)
+    {
+
+    }
+
+    void CreateBuffer()
+    {
+        glGenBuffers(1,&vertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float)*22, 0, GL_STATIC_DRAW);
+    }
+
+    void UpdateBuffer()
+    {
+        float* d = new float[22];
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*22, d);
+    }
+
+    ~BufferTest()
+    {
+        
+    }
+};
+
+
 int main()
 {
-
-
 #pragma region Init
 
-    
     /* Create a windowed mode window and its OpenGL context */
     GLFWwindow* window = CreateContext();
 
@@ -170,31 +205,24 @@ int main()
     FullQuadController Texture_Viewer;
     Texture_Viewer.texture = CharacterAtlas;
 
-    //Atlas Tester
-    // AtlasText TextRenderer;
-    // TextRenderer.AddText(0, 0, -0.01, 0.01, "!CG!");
-    // TextRenderer.AddText(0, 0.6, -0.01, 0.001, "!!!");
-    // TextRenderer.SetupBuffers();
-
-    char e = '!';
-    AtlasCharacter ch = AtlasCharacters[e];
-
-    float scale = 0.01;
+    AtlasText TextRenderer;
+    TextRenderer.AddText(0, 0, -0.01, 0.01, "hello mike");
+    TextRenderer.SetupBuffers();
 
 
+    
     Camera MainCamera;
     MainCamera.MakeActiveCamera(window);
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-    // GraphicVector v({-1.0, -1.0, 0.0}, {1.0, 1.0, 0.0});
-    // UVSphere s({-1.0, -1.0, 1.0}, 0.2);
-    // InputBoxUpdate b({{-1.0, 1.0, 1.0}, {1.0, -1.0, -1.0}});
 
     AtlasAlignedText alignedText;
-    alignedText.AddAlignedText({-1.0, -1.0, 0.0},{1.0, 1.0, 0.0}, {0.5, 2.0, 0.0}, "hello mike", 0.5, 0.5);
-    
+    alignedText.AddAlignedText({-1.0, -1.0, 0.0}, {1.0, 1.0, 0.0}, "hello mike", 0.2, 0.2);
+    GraphicVector AlignmentAxis({-1.0, -1.0, 0.0}, {1.0, 1.0, 0.0});
 
+
+    InputBoxUpdate b({{-1,-1,0},{-1.3,-1.5,0.7}});
 
     double lastTime = glfwGetTime();
     int nbFrames = 0;
@@ -211,22 +239,32 @@ int main()
             lastTime += 1.0;
         }
             
-        
-
         MainCamera.proccessInput(window);
 
         glClearColor(0.0, 0.0, 0.0, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // setMat4(TextRenderer.program, "projection", MainCamera.projection);
-        // setMat4(TextRenderer.program, "view", MainCamera.view);
+
+        if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        {
+            b.m_volume.TopLeftFront.x += 0.1;
+            b.ReconstructBox();
+        }
+        //setMat4(TextRenderer.program, "projection", MainCamera.projection);
+        //setMat4(TextRenderer.program, "view", MainCamera.view);
 
         //Texture_Viewer.Draw();
         // b.Draw(MainCamera);
         // v.Draw(MainCamera);
         // s.DrawElements(MainCamera);
         // TextRenderer.Draw();
+        //alignedText.Draw(MainCamera);
+        AlignmentAxis.Draw(MainCamera);
+        // //TextRenderer.Draw();
         alignedText.Draw(MainCamera);
+        b.Draw(MainCamera);
+        //SphereFactory.DrawElements(MainCamera);
+
         
         
         
@@ -234,7 +272,7 @@ int main()
 
         ImGui_ImplGlfwGL3_NewFrame();
         {
-            
+
         }
 
         ImGui::Render();
@@ -245,6 +283,8 @@ int main()
         
     }
 
+
     glfwTerminate();
+    glfwDestroyWindow(window);
     return 1;
 }

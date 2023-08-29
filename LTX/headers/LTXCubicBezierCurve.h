@@ -4,6 +4,7 @@
 #include "LTXLineSegment.h"
 #include "LTXQuadraticBezierCurve.h"
 #include "LTXDeCasteljau.h"
+#include <math.h>
 
 LTXPoint LTXCubicCalculation(LTXPoint* Coef, float t)
 {
@@ -12,6 +13,9 @@ LTXPoint LTXCubicCalculation(LTXPoint* Coef, float t)
     PrintLTXPoint(X);
     return X;
 }
+
+#define NON_SOLUTION -16969
+
 
 struct LTXCubicBezier
 {
@@ -96,6 +100,76 @@ struct LTXCubicBezier
         return pow((1-t),3)*P0 + 3*pow((1-t),2)*t*P1 + 3*(1-t)*pow(t,2)*P2 + pow(t,3)*P3;
     }
 
+    CubicSolution SolveForX(float X)
+    {
+
+        float a = (-P0.x + 3*P1.x - 3*P2.x + P3.x);
+        float b = (3*P0.x - 6*P1.x + 3*P2.x);
+        float c = (-P0.x + 3*P1.x);
+        float d = P0.x - X;
+
+        CubicSolution sol = cubicsolve(a,b,c,d);
+        return sol;
+    }
+
+    CubicSolution SolveForY(float Y)
+    {
+        float a = P3.y - 3 * P2.y + 3 * P1.y - P0.y;
+        float b = 3 * P2.y - 6 * P1.y + 3 * P0.y;
+        float c = 3 * P1.y - 3 * P0.y;
+        float d = P0.y - Y;
+
+        CubicSolution sol = cubicsolve(a,b,c,d);
+        return sol;
+    }
+
+    float CloserOfThree(CubicSolution TValues, LTXPoint Subject)
+    {
+
+        float tmin = 0;
+        float dmin = INT_MAX;
+        float dbuff = 0;
+        if(TValues.r0 >= 0 && TValues.r0 <= 1)
+        {   
+            dbuff = (Subject-Sample(TValues.r0)).mag();
+            if(dbuff < dmin)
+            {
+                dmin = dbuff;
+                tmin = TValues.r0;
+            }
+
+        }
+
+        if(TValues.r1 >= 0 && TValues.r1 <= 1)
+        {
+            dbuff = (Subject-Sample(TValues.r1)).mag();
+            if(dbuff < dmin)
+            {
+                dmin = dbuff;
+                tmin = TValues.r1;
+            }
+        }
+
+        if(TValues.r2 >= 0 && TValues.r2 <= 1)
+        {
+            dbuff = (Subject-Sample(TValues.r2)).mag();
+            if(dbuff < dmin)
+            {
+                dmin = dbuff;
+                tmin = TValues.r2;
+            }
+        }
+
+        if(dmin == INT_MAX)
+        {
+            return -16969;
+        }
+
+
+
+        return tmin;
+    }
+
     void reflect(LTXPoint AXA, LTXPoint AXB)
     {
         P0.reflectLine(AXA,AXB);
@@ -103,9 +177,6 @@ struct LTXCubicBezier
         P2.reflectLine(AXA,AXB);
         P3.reflectLine(AXA,AXB);
     }
-
-    
-    
 
     void Read()
     {

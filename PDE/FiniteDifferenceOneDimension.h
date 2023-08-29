@@ -283,7 +283,7 @@ void SecondCentralDifferences()
     double dt = 0.0013; //Seconds
     double dx = 1.0/SpaceStepsRequired; //Centimeters
 
-    double t0 = 0.0; 
+    double t0 = 1.1; 
     double x0 = 0;
     double x1 = 0;
 
@@ -298,7 +298,6 @@ void SecondCentralDifferences()
         results[i] = new double[XDimension];
     }
 
-
     for(int t = 0; t < TDimension; t++)
     {
         for(int s = 0; s < XDimension; s++)
@@ -312,24 +311,22 @@ void SecondCentralDifferences()
 
             }else if(t == 0)
             {   
-                double js = s/(float)XDimension;
-                if(js >= 0 && js <= 1.0/2.0)
-                {
-                    results[t][s] = (2*js);
-                }else if(js >= 1.0/2.0 && js <= 1.0)
-                {
-                    results[t][s] = (2-(2*js));
-                }
+                // double js = s/(float)XDimension;
+                // if(js >= 0 && js <= 1.0/2.0)
+                // {
+                //     results[t][s] = (2*js);
+                // }else if(js >= 1.0/2.0 && js <= 1.0)
+                // {
+                //     results[t][s] = (2-(2*js));
+                // }
+
+                results[t][s] = t0;
+
             }else
             {
                 double rightvalue = results[t-1][s+1];
                 double leftvalue = results[t-1][s-1];
                 double currentvalue = results[t-1][s];
-
-                //centered differences for dt = dxx
-                //How to get half deltaT
-
-
                 
                 results[t][s] = currentvalue + (epsilon *(rightvalue - (2*currentvalue) + leftvalue ));
                 
@@ -338,7 +335,7 @@ void SecondCentralDifferences()
     }
     
 
-    DrawResults(results, TDimension, XDimension, dt, dx, 25);
+    DrawResults(results, TDimension, XDimension, dt, dx, 0);
 }
 
 int FirstCentralDifferences()

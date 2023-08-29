@@ -117,20 +117,19 @@ void main()
         }     
     }
 
-    tangent = vec3(0,1, dery);
-    normal = vec3(-derx, -dery, 1);
-    binormal = vec3(1, 0, derx);
     
-    fragPos = position.xyz;
-
+    
     //gertsner calculations
-    //normal = vec3(0,1,-hx * hy + hz);
-    //tangent = vec3(hx,hy,hz);
     
     o_uv = uv;
 
     vec4 apos = vec4(position.x+hx, position.y+height+hy, position.z+hz, 1.0);
 
+    tangent = vec3(0,1, dery);
+    normal = apos.xyz + vec3(-derx, -dery, 1);
+    binormal = vec3(1, 0, derx);
+
+    fragPos = apos.xyz;
 
     gl_Position = projection * view * model * apos;
 }

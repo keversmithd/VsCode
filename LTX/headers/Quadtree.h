@@ -49,7 +49,7 @@ public:
     T findClosest(LTXPoint query)
     {
         
-        int quadrantOfPoint = QuadrantOfPoint(query);
+        int quadrantOfPoint = QuadrantOfPoint(query, BoundingArea);
 
 
         if(quadrantOfPoint != 0)

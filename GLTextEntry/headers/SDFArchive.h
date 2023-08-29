@@ -8,6 +8,10 @@
 struct SDFVec2
 {
     float x,y;
+    SDFVec2(float _x, float _y) : x(_x), y(_y)
+    {
+
+    }
 };
 
 struct SDFVec3
@@ -114,8 +118,6 @@ SDFVec3 operator*(const SDFVec3 A, const SDFVec3 B)
 SDFVec3 operator*(const float A, const SDFVec3 B)
 {
     return SDFVec3(A * B.x, A * B.y, A * B.z);
-
-
 }
 
 SDFVec3 operator-(const SDFVec3 A, const SDFVec3 B)
@@ -414,7 +416,18 @@ inline const SDFVec3 IntersectionOfLineAndPlane(SDFRay Ray, SDFPlane plane)
     float t = (-Intercept - Constant)/TCoefficent;
     return Add(Ray.Origin, Multiply(Ray.Direction, t));
 }
+inline SDFVec3 DownwardNormal(SDFVec3 Origin, SDFVec3 Destination)
+{
+    //if B.z < A.z use different algorihtm
+    SDFVec3 u = Destination-Origin;
+    SDFVec2 v = SDFVec2(u.x/u.z, u.y/u.z);
+    //if v.x  < 0 use alternative line normal
+    SDFVec2 w = SDFVec2(v.y, -v.x);
+    SDFVec2 a = SDFVec2(w.x-v.x, w.y-v.y);
+    SDFVec3 c = SDFVec3(-a.x, -a.y, -u.z);
 
+    //calculate four cross products and determine  which has the largest dot product
+}
 
 inline const SDFBoundingVolume CalculateBoundingVolumeOfMesh(const SDFMesh& Model)
 {

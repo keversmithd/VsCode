@@ -158,30 +158,90 @@ struct AtlasAlignedText
 
     // }
 
-    void AddAlignedText(SDFVec3 Origin, SDFVec3 Normal, SDFVec3 Binormal, std::string text, float height, float width)
+    void AddText(float x, float y, float z, float scale, std::string text)
     {
-        // Normal.normalize();
-        // Binormal.normalize();
 
         SDFVec3 A,B,C,D;
-        float verticalPadding = 0.1;
+
+        vertexBuffer = new float[320];
+        indexBuffer = new unsigned int[60];
+        int jincides = 0;
+
+        for(int i = 0; i < text.size(); i++)
+        {
+
+            if(AtlasCharacters.find(text[i]) != AtlasCharacters.end())
+            {
+                AtlasCharacter ch = AtlasCharacters[text[i]];
+
+                float xpos = x + ch.Bearing.x * scale;
+                float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+                float w = ch.Size.x * scale;
+                float h = ch.Size.y * scale;
+                
+                A = { xpos,     ypos,   z};
+                B = { xpos+w,     ypos,       z};
+                C = { xpos + w, ypos+h,   z};
+                D = { xpos, ypos + h,   z};
+
+
+                fPoint(A, ch.BottomLeft.x, ch.BottomLeft.y, vertexBuffer, vertexes);
+                fPoint(B, ch.TopRight.x, ch.BottomLeft.y, vertexBuffer, vertexes);
+                fPoint(C, ch.TopRight.x, ch.TopRight.y, vertexBuffer, vertexes);
+                fPoint(D, ch.BottomLeft.x, ch.TopRight.y, vertexBuffer, vertexes);
+
+                indexBuffer[indices++] = jincides;
+                indexBuffer[indices++] = jincides+1;
+                indexBuffer[indices++] = jincides+2;
+
+                indexBuffer[indices++] = jincides;
+                indexBuffer[indices++] = jincides+2;
+                indexBuffer[indices++] = jincides+3;
+
+                jincides+=4;
+
+                x += (ch.Advance >> 6) * scale;
+            }
+            
+            SetupBuffers();
+        }
+    }
+
+
+    void AddAlignedText(SDFVec3 Origin, SDFVec3 Destination, std::string text, float height, float width)
+    {
+
+        //pixel ration
+
+
+        SDFVec3 A,B,C,D;
+        float verticalPadding = 0.2;
         float horizontalPadding = 0.1;
 
-        vertexBuffer = new float[8*7*text.size()];
-        indexBuffer = new unsigned int[9*text.size()];
+        SDFVec3 Ap = Origin + SDFVec3(1,2,3);
+        SDFVec3 Axis = Destination-Origin;
+        Axis.normalize();
+        SDFVec3 Orbitgonal = Cross(Ap, Axis);
+        Orbitgonal.normalize();
+        SDFVec3 NormalSlice = Orbitgonal;
 
+        vertexBuffer = new float[320];
+        indexBuffer = new unsigned int[60];
+        int jincides = 0;
+
+        
         for(int i = 0; i < text.size(); i++)
         {
             if(AtlasCharacters.find(text[i]) != AtlasCharacters.end())
             {
                 AtlasCharacter ch = AtlasCharacters[text[i]];
 
-                A = Origin - Binormal*(height + verticalPadding);
-                B = Origin + Normal*(width);
-                C = B + Binormal*(height);
-                A = Origin + Binormal*(height);
+                A = Origin+(NormalSlice*(-height-verticalPadding));
+                B = A + (Axis*width);
+                C = B + (NormalSlice*height);
+                D = A+(NormalSlice*height);
                 
-                Origin.x += (ch.Advance >> 6) * (height/width);
+                Origin += Axis * (width/height * 0.5);
 
                 NHolder = Cross(Subtract(B, A), Subtract(D,A));
                 fPoint(A, ch.BottomLeft.x, ch.BottomLeft.y, vertexBuffer, vertexes);
@@ -189,15 +249,15 @@ struct AtlasAlignedText
                 fPoint(C, ch.TopRight.x, ch.TopRight.y, vertexBuffer, vertexes);
                 fPoint(D, ch.BottomLeft.x, ch.TopRight.y, vertexBuffer, vertexes);
                 
-                indexBuffer[indices++] = indices;
-                indexBuffer[indices++] = indices+1;
-                indexBuffer[indices++] = indices+2;
+                indexBuffer[indices++] = jincides;
+                indexBuffer[indices++] = jincides+1;
+                indexBuffer[indices++] = jincides+2;
 
-                indexBuffer[indices++] = indices;
-                indexBuffer[indices++] = indices+2;
-                indexBuffer[indices++] = indices+3;
+                indexBuffer[indices++] = jincides;
+                indexBuffer[indices++] = jincides+2;
+                indexBuffer[indices++] = jincides+3;
 
-                indices+=4;
+                jincides+=4;
             }
         }
 
@@ -214,7 +274,7 @@ struct AtlasAlignedText
         glGenBuffers(1, &ibo);
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, 8*sizeof(float)*vertexes+1, vertexBuffer, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexes, vertexBuffer, GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (GLvoid*)0);
         glEnableVertexAttribArray(1);
@@ -243,7 +303,8 @@ struct AtlasAlignedText
         setInt(program, "atlas", 0);
 
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, vertexes);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, (GLvoid*)0);
     }
 
     ~AtlasAlignedText()

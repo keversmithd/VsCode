@@ -145,14 +145,15 @@ struct LTXPoint
   LTXPoint ProjectOnto(LTXPoint AX, LTXPoint AY)
   {
       LTXPoint axis = AY-AX;
-      LTXPoint n = {-axis.y, axis.x};
       LTXPoint T = {x,y};
-      LTXPoint V = T-AX;
+      LTXPoint V = AX-T;
 
       float am = axis.mag();
-      float Vd = V.dot(axis);
+      float Vd = -(V.dot(axis))/(am*am);
 
-      return AX + (axis/am)*(Vd/am);
+      Vd = (Vd < 0) ? 0 : (Vd > 1) ? 1 : Vd;
+      
+      return AX + (axis*Vd);
   }
 
   void reflect(LTXPoint axis)
@@ -231,6 +232,12 @@ double Magnitude(const LTXPoint P)
 {
     return sqrt(pow(P.x,2) + pow(P.y,2));
 }
+
+float angle(LTXPoint A, LTXPoint B)
+{
+  
+}
+
 
 inline LTXPoint Normalize(const LTXPoint P)
 {

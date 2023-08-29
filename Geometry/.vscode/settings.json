@@ -52,6 +52,7 @@
         "unordered_set": "cpp",
         "set": "cpp",
         "map": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "cstring": "cpp"
     }
 }

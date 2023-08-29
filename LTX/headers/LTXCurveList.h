@@ -91,7 +91,6 @@ struct CurveList
 
     void startCurve(Curve SimpleCurve, std::string curveName)
     {
-
         CurrentID = curveName;
         CurrentPathId = 0;
 
@@ -382,6 +381,54 @@ struct CurveList
     {
         CurveNode* iterator = head;
 
+        float h = BoundingArea.topRight.y - BoundingArea.bottomLeft.y;
+        float w = BoundingArea.topRight.x - BoundingArea.bottomLeft.x;
+
+        LTXPoint A,B;
+
+        if(axis.mag() == 1)
+        {
+             if(axis.x == 0)
+            {
+                A = BoundingArea.bottomLeft;
+            }else
+            {
+                A = LTXPoint(BoundingArea.topRight.x, BoundingArea.bottomLeft.y);
+            }
+            if(axis.y == 0)
+            {
+                B = LTXPoint(BoundingArea.bottomLeft.x, BoundingArea.topRight.y);
+            }else
+            {
+                B = BoundingArea.topRight;
+            }
+        }else
+        {
+            
+            A = BoundingArea.bottomLeft * axis;
+            LTXPoint CircularCenter = BoundingArea.center();
+
+            
+
+
+
+
+
+
+
+            B = BoundingArea.topRight * axis;
+        }
+
+
+
+       
+
+
+
+
+        A.ReadNamed();
+        B.ReadNamed();
+
         while(iterator != nullptr)
         {
 
@@ -391,6 +438,7 @@ struct CurveList
                 InnerCurve->Quadratic.P0.reflect(axis);
                 InnerCurve->Quadratic.P1.reflect(axis);
                 InnerCurve->Quadratic.P2.reflect(axis);
+                
             }
 
             if(InnerCurve->type == 1)

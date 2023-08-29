@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "CLASS_TEMPLATE::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-CLASS_TEMPLATE-Debug-dc42fff62dd1f8a5025d.json",
+					"jsonFile" : "target-CLASS_TEMPLATE-Debug-ace3599f6d61b8b54c82.json",
 					"name" : "CLASS_TEMPLATE",
 					"projectIndex" : 0
 				}
@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "X:/1.4 C++/Vscode/GLTextEntry/build",
-		"source" : "X:/1.4 C++/Vscode/GLTextEntry"
+		"build" : "X:/1.4 C++/Vscode/GLBasis/build",
+		"source" : "X:/1.4 C++/Vscode/GLBasis"
 	},
 	"version" : 
 	{

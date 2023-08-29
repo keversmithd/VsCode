@@ -42,6 +42,7 @@ void SpellVector(const vec2 c, const vec2 v, const char* name = nullptr)
     
 }
 
+
 void DisplayConstantEdgeSet(CGConstArray<line> ar)
 {
     for(int i = 0; i < ar.size; i++)
