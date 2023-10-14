@@ -81,8 +81,6 @@ struct UVSphere
         glDrawElements(GL_TRIANGLES, indices+1, GL_UNSIGNED_INT, 0);
     }
 
-
-
     void SetUpBuffersElement()
     {
         glGenVertexArrays(1, &vertexArray);

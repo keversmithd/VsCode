@@ -1,0 +1,49 @@
+1 01 hstem
+3 03 vstem
+4 04 vmoveto
+5 05 rlineto
+6 06 hlineto
+7 07 vlineto
+8 08 rrcurveto
+10 0a callsubr
+11 0b return
+12 0c escape
+14 0e endchar
+18 12 hstemhm
+19 13 hintmask
+20 14 cntrmask
+21 15 rmoveto
+22 16 hmoveto
+23 17 vstemhm
+24 18 rcurveline
+25 19 rlinecurve
+26 1a vvcurveto
+27 1b hhcurveto
+28 1c shortint
+29 1d callgsubr
+30 1e vhcurveto
+31 1f hvcurveto
+12 3 0c 03 and
+12 4 0c 04 or
+12 5 0c 05 not
+12 9 0c 09 abs
+12 10 0c 0a add
+12 11 0c 0b sub
+12 12 0c 0c div
+12 14 0c 0e neg
+12 15 0c 0f eq
+12 18 0c 12 drop
+12 20 0c 14 put
+12 21 0c 15 get
+12 22 0c 16 ifelse
+12 23 0c 17 random
+12 24 0c 18 mul
+12 26 0c 1a sqrt
+12 27 0c 1b dup
+12 28 0c 1c exch
+12 29 0c 1d index
+12 30 0c 1e roll
+12 34 0c 22 hflex
+12 35 0c 23 flex
+12 36 0c 24 hflex1
+12 37 0c 25 flex1

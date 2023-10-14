@@ -192,7 +192,6 @@ struct InputBoxUpdate
         
     }
 
-
     void Draw(Camera& camera)
     {
         if(!reDraw.empty())
@@ -307,10 +306,15 @@ struct InputBoxUpdate
             bool wasDragging = false;
             bool isDragging = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
             
-            glm::vec<2,double> PreviousMouse(0,0);
+            SDFVec2d PreviousMouse(0,0);
             glfwGetCursorPos(window,  &PreviousMouse.x, &PreviousMouse.y);
-            glm::vec<2,double> NewMouse(0,0);
-            glm::vec<2,double> DeltaMouse(0,0);
+            PreviousMouse.x = (PreviousMouse.x)*(2.0f/GlobalWindowStats.vx) -1.0;
+            PreviousMouse.y = 1.0f - (2.0f * PreviousMouse.y)/GlobalWindowStats.vy;
+
+            SDFVec2d NewMouse(0,0);
+            SDFVec2d DeltaMouse(0,0);
+
+            float MovementSpeed = 0.01;
 
             while (isDragging) {
                 if (!wasDragging) {
@@ -320,11 +324,13 @@ struct InputBoxUpdate
 
                 
                 glfwGetCursorPos(window,  &NewMouse.x, &NewMouse.y);
-                DeltaMouse = glm::normalize(NewMouse-PreviousMouse);
+                NewMouse.x = (NewMouse.x)*(2.0f/GlobalWindowStats.vx) -1.0;
+                NewMouse.y = 1.0f - (2.0f * NewMouse.y)/GlobalWindowStats.vy;
+                DeltaMouse = Normalize(NewMouse-PreviousMouse);
+                DeltaMouse*=MovementSpeed;
                 
-
-                this->m_volume.BottomRightBack -= {(float)DeltaMouse.x/4, (float)DeltaMouse.y/4};
-                this->m_volume.TopLeftFront -= {(float)DeltaMouse.x/4, (float)DeltaMouse.y/4};
+                this->m_volume.BottomRightBack += {static_cast<float>(DeltaMouse.x), static_cast<float>(DeltaMouse.y)};
+                this->m_volume.TopLeftFront += {static_cast<float>(DeltaMouse.x), static_cast<float>(DeltaMouse.y)};
                 ReconstructBox();
 
                 isDragging = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
@@ -344,17 +350,17 @@ struct InputBoxUpdate
 
     ~InputBoxUpdate()
     {
-        // if(memoryData != nullptr)
-        // {
-        //     delete[] memoryData;
-        //     memoryData = nullptr;
-        // }
+        if(memoryData != nullptr)
+        {
+            delete[] memoryData;
+            memoryData = nullptr;
+        }
 
-        // if(elementData != nullptr)
-        // {
-        //     delete[] elementData;
-        //     elementData = nullptr;
-        // }
+        if(elementData != nullptr)
+        {
+            delete[] elementData;
+            elementData = nullptr;
+        }
     }
 
     private:

@@ -130,7 +130,7 @@ public:
 public:
     RBTree(int(*comp)(T a, T b)) : root(nullptr), elements(0), compare(comp)
     {
-
+      
     }
     void leftRotate(RBNode<T> *x) {
 

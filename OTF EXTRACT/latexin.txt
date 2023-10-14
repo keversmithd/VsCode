@@ -1,0 +1,19 @@
+\documentclass{article}
+\usepackage{relsize}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{relsize}
+\usepackage{fix-cm}
+\usepackage{tikz}
+\begin{document}
+    Find the union and intersection of the sets \{1,3,5,7,9\} and \{2,3,5,7\} \\
+    If S = \{1,3,5,7,9\} and P = \{2,3,5,7\} then \\
+    S $\cup$ P = \{1,2,3,5,7,9\} and S $\cap$ P = \{3,5,7\} \\
+    The union is all unique members of both sets combined into one set. \\
+    The intersection is all members of both sets which are the same. \\
+
+    Thank you for the feedback, I am dustin!
+    
+
+    
+\end{document}

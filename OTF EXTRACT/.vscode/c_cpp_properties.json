@@ -3,7 +3,8 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "C:\\Users\\Dust\\Desktop\\CS260\\KdTree"
             ],
             "defines": [
                 "_DEBUG",

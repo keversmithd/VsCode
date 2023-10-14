@@ -22,10 +22,13 @@ struct Camera
     float currentFrame = 0.0f;
     float lastFrame = 0.0;
     float deltaTime = 0.0;
+    float near_dist = 0.1f;
+    float far_dist = 100.0f;
+    float cameraZoom = 1.0f;
 
     Camera()
     {
-
+        
     }
 
     void proccessInput(GLFWwindow* window)
@@ -47,6 +50,7 @@ struct Camera
 
         projection = glm::perspective(glm::radians(fov), GlobalWindowStats.vx / GlobalWindowStats.vy, 0.1f, 100.0f);
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        
     }
 
     void MakeActiveCamera(GLFWwindow* window)

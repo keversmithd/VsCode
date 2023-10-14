@@ -1,5 +1,0 @@
-#ifndef PARTITIONING_MONOTONES
-#define PARTITIONING_MONOTONES
-
-
-#endif

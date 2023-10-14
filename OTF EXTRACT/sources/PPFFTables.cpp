@@ -50,9 +50,75 @@ void PPFF::Tables::SortTableFilter(char** TableFilter, uint8_t filterCount)
     chronologic.clear();
 }
 
+// void PPFF::Tables::GetTableRecords(PPFFTableDirectory &TableDirectory, FILE* file, const char** tableFilter, uint8_t filterCount, bool filterAdjusted)
+// {
+//     fpos_t filePos = 0; fgetpos(file, &filePos);
+//     if(filePos != TableDirectory.tableRecordOffset)
+//     {
+//         fseek(file, TableDirectory.tableRecordOffset, SEEK_SET);
+//     }
+//     if(filterCount == 0)
+//     {
+//         for(int r = 0; r < TableDirectory.numTables; r++)
+//         {
+//             PPFF::Tables::PPFFTableRecord TableRecord;
+//             fread(TableRecord.Tag, 4, 1, file);
+//             TableRecord.Tag[4] = '\0';
+//             TableRecord.checksum = ReadTT(file);
+//             TableRecord.offset = ReadTT(file);
+//             TableRecord.length = ReadTT(file);
+//             TableDirectory.tableRecords.insert({TableRecord.Tag,TableRecord});
+//         }
+//         return;
+//     }
+
+//     if(!filterAdjusted)
+//     {
+//         SortTableFilter((char**)tableFilter, filterCount);
+//     }
+
+//     uint8_t remainder = 0;
+//     uint8_t max = TableDirectory.numTables;
+//     uint8_t r = 0;
+//     while(remainder < filterCount && r <= max)
+//     {
+//         char TagName[5];
+//         fread(TagName, 4, 1, file);
+//         TagName[4] = '\0';
+//         if(strcmp(TagName, tableFilter[remainder]) == 0)
+//         {
+//             PPFF::Tables::PPFFTableRecord TableRecord;
+//             TableRecord.Tag[0] = TagName[0];
+//             TableRecord.Tag[1] = TagName[1];
+//             TableRecord.Tag[2] = TagName[2];
+//             TableRecord.Tag[3] = TagName[3];
+//             TableRecord.Tag[4] = TagName[4];
+//             TableRecord.checksum = ReadTT(file);
+//             TableRecord.offset = ReadTT(file);
+//             TableRecord.length = ReadTT(file);
+//             TableDirectory.tableRecords.insert({TableRecord.Tag, TableRecord});
+//             remainder++;
+//         }else
+//         {
+//             fseek(file, 12, SEEK_CUR);
+//         }
+//         r++;
+//     }
+    
+// }
+
 void PPFF::Tables::GetTableRecords(PPFFTableDirectory &TableDirectory, FILE* file, const char** tableFilter, uint8_t filterCount, bool filterAdjusted)
 {
     fpos_t filePos = 0; fgetpos(file, &filePos);
+
+
+    // std::unordered_map<const char*, const char *> tableFilterMap;
+    // for(int i = 0; i < filterCount; i++)
+    // {
+    //     tableFilterMap.insert(tableFilter[i], tableFilter[i]);
+    // }
+
+
     if(filePos != TableDirectory.tableRecordOffset)
     {
         fseek(file, TableDirectory.tableRecordOffset, SEEK_SET);
@@ -71,10 +137,19 @@ void PPFF::Tables::GetTableRecords(PPFFTableDirectory &TableDirectory, FILE* fil
         }
         return;
     }
-    if(!filterAdjusted)
+    
+    // if(!filterAdjusted)
+    // {
+    //     SortTableFilter((char**)tableFilter, filterCount);
+    // }
+
+    std::unordered_map<std::string, std::string> TableFilter;
+
+    for(int i = 0; i < filterCount; i++)
     {
-        SortTableFilter((char**)tableFilter, filterCount);
+        TableFilter.insert({tableFilter[i], tableFilter[i]});
     }
+
     uint8_t remainder = 0;
     uint8_t max = TableDirectory.numTables;
     uint8_t r = 0;
@@ -83,7 +158,7 @@ void PPFF::Tables::GetTableRecords(PPFFTableDirectory &TableDirectory, FILE* fil
         char TagName[5];
         fread(TagName, 4, 1, file);
         TagName[4] = '\0';
-        if(strcmp(TagName, tableFilter[remainder]) == 0)
+        if(TableFilter.find(TagName) != TableFilter.end())
         {
             PPFF::Tables::PPFFTableRecord TableRecord;
             TableRecord.Tag[0] = TagName[0];
@@ -105,6 +180,7 @@ void PPFF::Tables::GetTableRecords(PPFFTableDirectory &TableDirectory, FILE* fil
     
 }
 
+
 PPFF::Tables::PPFFTableDirectory PPFF::Tables::PopulateOTFDirectory(const char*  FontPath)
 {
     PPFF::Tables::PPFFTableDirectory Directory;
@@ -118,6 +194,21 @@ PPFF::Tables::PPFFTableDirectory PPFF::Tables::PopulateOTFDirectory(const char* 
         PPFF::Tables::PPFFTableRecord CFFRecord = Directory.tableRecords["CFF "];
         char* tag = CFFRecord.Tag;
         uint32_t checksum = CFFRecord.checksum;
+    }
+    return Directory;
+}
+
+
+PPFF::Tables::PPFFTableDirectory PPFF::Tables::PopulateTTFDirectory(const char* FontPath)
+{
+    PPFF::Tables::PPFFTableDirectory Directory;
+    FILE* FontFile = NULL; 
+    fopen_s(&FontFile, FontPath, "rb");
+    if(FontFile != NULL)
+    {
+        PPFF::Tables::GetTableHeader(Directory, FontFile);
+        const char* record[5] = {"maxp","cmap", "glyf", "loca", "head"};
+        PPFF::Tables::GetTableRecords(Directory, FontFile, record, 5, false);
     }
     return Directory;
 }

@@ -93,7 +93,12 @@ void setMat4(NGLProgram& program, const char* name, glm::mat4 mat)
     program.GetUniformLocation(name, &modelLoc);
     program.ProgramUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(mat));
 }
-
+void setMat4(NGLProgram& program, const char* name, float* mat)
+{
+    int modelLoc;
+    program.GetUniformLocation(name, &modelLoc);
+    program.ProgramUniformMatrix4fv(modelLoc, 1, GL_FALSE, mat);
+}
 void setVec2(NGLProgram& program, const char* name, glm::vec2 vec)
 {
     int modelLoc;

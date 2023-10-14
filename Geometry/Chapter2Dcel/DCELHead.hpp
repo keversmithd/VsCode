@@ -53,6 +53,10 @@ struct DCELVec
     {
         printf("\\draw (%f,%f) circle (2pt);\n", vertex.x, vertex.y);
     }
+    void render(const char* name)
+    {
+        printf("\\draw (%f,%f) circle (2pt) node [anchor=east] {\\tiny %s};\n", vertex.x, vertex.y, name);
+    }
 };
 
 struct DCELEdge
@@ -68,6 +72,15 @@ struct DCELEdge
     {
 
     }
+
+    DCELEdge(DCELVec* Origin) : twin(nullptr), face(nullptr), next(nullptr), prev(nullptr), origin(Origin) 
+    {
+
+    }
+    DCELEdge(Vec Origin) : twin(nullptr), face(nullptr), next(nullptr), prev(nullptr), origin(nullptr) 
+    {
+        origin = new DCELVec(Origin);
+    }       
 
 
 

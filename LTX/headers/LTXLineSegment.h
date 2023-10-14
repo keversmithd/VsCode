@@ -52,12 +52,26 @@ struct LTXRect
 
         printf("\\draw (%c%c) rectangle (%c%c);\n", r1[0], r1[1], r2[0], r2[1]);
     }
+
+    void Display()
+    {
+        printf("\\draw (%f,%f) rectangle (%f,%f);\n", bottomLeft.x, bottomLeft.y, topRight.x, topRight.y);
+    }
 };
 bool ContainedInBoundingArea(const LTXRect Subject, const LTXRect Area)
 {
     return ((Subject.bottomLeft.x >= Area.bottomLeft.x && Subject.bottomLeft.x <= Area.topRight.x) &&
     (Subject.bottomLeft.y >= Area.bottomLeft.y && Subject.bottomLeft.y <= Area.topRight.y));
 }
+
+bool IntersectsBoundingArea(const LTXRect Subject, const LTXRect Area)
+{
+
+    return ((Subject.bottomLeft.x >= Area.bottomLeft.x) && (Subject.bottomLeft.x <= Area.topRight.x) || (Subject.topRight.x >= Area.bottomLeft.x) && (Subject.bottomLeft.x <= Area.topRight.x)) 
+    && ((Subject.bottomLeft.y >= Area.bottomLeft.y) && (Subject.bottomLeft.y <= Area.topRight.y) || (Subject.topRight.y >= Area.bottomLeft.y) && (Subject.bottomLeft.y <= Area.topRight.y));
+
+}
+
 bool ContainedInBoundingArea(const LTXPoint Subject, const LTXRect Area)
 {
     return (Subject.x >= Area.bottomLeft.x && Subject.x <= Area.topRight.x) && (Subject.y >= Area.bottomLeft.y && Subject.y <= Area.topRight.y);

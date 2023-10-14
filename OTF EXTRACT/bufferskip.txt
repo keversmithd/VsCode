@@ -1,0 +1,297 @@
+void PPCFF::CharStringInsert0(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert1(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath)
+    {
+        PPCFFHint Hintly;
+        Hintly.intArguments.push_back(intStack[0]);
+        Hintly.intArguments.push_back(intStack[1]);
+
+        for(int i = 2; i < intIndex; i++)
+        {
+            Hintly.intArguments.push_back(intStack[i]);
+            Hintly.intArguments.push_back(intStack[i+1]);
+
+            i++;
+        }
+        intIndex = 0;
+        floatIndex = 0;
+        DataIndex = 0;
+        DataEntries = 0;
+        
+
+    }
+    void PPCFF::CharStringInsert2(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath)
+    {
+        PPCFFHint Hintly;
+
+        Hintly.intArguments.push_back(intStack[0]);
+        Hintly.intArguments.push_back(intStack[1]);
+
+        for(int i = 2; i < intIndex; i++)
+        {
+            Hintly.intArguments.push_back(intStack[i]);
+            Hintly.intArguments.push_back(intStack[i+1]);
+
+            i++;
+        }
+        intIndex = 0;
+        floatIndex = 0;
+        DataIndex = 0;
+        DataEntries = 0;
+    }
+    void PPCFF::CharStringInsert3(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath)
+    {
+        pen.y += intStack[0];
+        intIndex = 0;
+        floatIndex = 0;
+        DataIndex = 0;
+        DataEntries = 0;
+
+    }
+    void PPCFF::CharStringInsert4(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath)
+    {
+        Vectoid2 Origin = pen;
+        Line nl;
+        for(int i = 0; i < DataEntries; i++)
+        {
+            // bool CurrentIndex = (DataIndex >> i) & (1);
+            // if(CurrentIndex == 0){ /*DictData.FontMatrix[i] = intStack[intIndex];*/ intIndex++; }
+            // if(CurrentIndex == 1){ /*DictData.FontMatrix[i] = floatStack[floatIndex];*/ floatIndex++; }
+            
+            nl.A = pen;
+            pen.x += intStack[i];
+            pen.y += intStack[i+1];
+            nl.B = pen;
+            CharData.Lines.push_back(nl);
+            
+            i++;
+        }
+
+        // nl.A = pen;
+        // nl.B = Origin;
+        // CharData.Lines.push_back(nl);
+
+        intIndex = 0;
+        floatIndex = 0;
+        DataIndex = 0;
+        DataEntries = 0;
+        CharData.ReadGeom();
+        
+        
+    }
+    void PPCFF::CharStringInsert5(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath)
+    {
+        Line nl;
+        Vectoid2 Origin = pen;
+        if(intIndex % 2 == 0)
+        {
+            for(int i = 0; i < intIndex; i++)
+            {
+                int dxa = intStack[i];
+                nl.A = pen;
+                pen.x += dxa;
+                nl.B = pen;
+                CharData.Lines.push_back(nl);
+
+                int dyb = intStack[i+1];
+                nl.A = pen;
+                pen.y += dyb;
+                nl.B = pen;
+                CharData.Lines.push_back(nl);
+                i++;
+            }
+        }else
+        {
+            int length = intStack[0];
+
+            nl.A = pen;
+            pen.x += length;
+            nl.B = pen;
+            CharData.Lines.push_back(nl);
+
+            Vectoid2 L = pen;
+            for(int i = 1; i < intIndex; i++)
+            {
+                int dya = intStack[i];
+                nl.A = pen;
+                pen.y += dya;
+                nl.B = pen;
+                CharData.Lines.push_back(nl);
+
+                int dxb = intStack[i+1];
+                nl.A = pen;
+                pen.x += dxb;
+                nl.B = pen;
+                CharData.Lines.push_back(nl);
+                i++;
+            }
+
+            
+        }
+
+        // nl.A = pen;
+        // nl.B = Origin;
+        // CharData.Lines.push_back(nl);
+
+        CharData.ReadGeom();
+
+        intIndex = 0;
+        floatIndex = 0;
+        DataIndex = 0;
+        DataEntries = 0;
+    }
+    void PPCFF::CharStringInsert6(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath)
+    {
+        Line nl;
+        Vectoid2 Origin = pen;
+        if(intIndex % 2 == 0)
+        {
+            for(int i = 0; i < intIndex; i++)
+            {
+                int dya = intStack[i];
+                nl.A = pen;
+                pen.y += dya;
+                nl.B = pen;
+                CharData.Lines.push_back(nl);
+
+                int dxb = intStack[i+1];
+                nl.A = pen;
+                pen.x += dxb;
+                nl.B = pen;
+                CharData.Lines.push_back(nl);
+                i++;
+            }
+        }else
+        {
+            int length = intStack[0];
+
+            nl.A = pen;
+            pen.y += length;
+            nl.B = pen;
+            CharData.Lines.push_back(nl);
+
+            for(int i = 1; i < intIndex; i++)
+            {
+                int dxa = intStack[i];
+                nl.A = pen;
+                pen.x += dxa;
+                nl.B = pen;
+                CharData.Lines.push_back(nl);
+
+                int dyb = intStack[i+1];
+                nl.A = pen;
+                pen.y += dyb;
+                nl.B = pen;
+                CharData.Lines.push_back(nl);
+                i++;
+            }
+
+            
+        }
+
+        // nl.A = pen;
+        // nl.B = Origin;
+        // CharData.Lines.push_back(nl);
+
+        CharData.ReadGeom();
+        intIndex = 0;
+        floatIndex = 0;
+        DataIndex = 0;
+        DataEntries = 0;
+
+        
+    }
+    void PPCFF::CharStringInsert7(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert8(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert9(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert10(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert11(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath)
+    {
+        CharData.ReadGeom();
+
+    }
+    void PPCFF::CharStringInsert12(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath)
+    {
+        PPCFFHint Hintly;
+        Hintly.intArguments.push_back(intStack[0]);
+        Hintly.intArguments.push_back(intStack[1]);
+
+        for(int i = 2; i < DataEntries; i++)
+        {
+            // bool CurrentIndex = (DataIndex >> i) & (1);
+            // if(CurrentIndex == 0){ /*DictData.FontMatrix[i] = intStack[intIndex];*/ intIndex++; }
+            // if(CurrentIndex == 1){ /*DictData.FontMatrix[i] = floatStack[floatIndex];*/ floatIndex++; }
+            Hintly.intArguments.push_back(intStack[i]);
+        }
+
+        CharData.Hints.push_back(Hintly);
+        intIndex = 0;
+        floatIndex = 0;
+        DataIndex = 0;
+        DataEntries = 0;
+
+        Index++;
+    }
+    void PPCFF::CharStringInsert13(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath)
+    {
+        PPCFFHint Hintly;
+
+        Hintly.intArguments.push_back(intStack[0]);
+        Hintly.intArguments.push_back(intStack[1]);
+        Hintly.intArguments.push_back(intStack[2]);
+        Hintly.intArguments.push_back(data[++Index]);
+
+        intIndex = 0;
+        floatIndex = 0;
+        DataIndex = 0;
+        DataEntries = 0;
+    }
+    void PPCFF::CharStringInsert14(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert15(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath)
+    {
+        pen.x += intStack[0]; //funits??
+        pen.y += intStack[1];
+
+        intIndex = 0;
+        floatIndex = 0;
+        DataIndex = 0;
+        DataEntries = 0;
+    }
+    void PPCFF::CharStringInsert16(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert17(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert18(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert19(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert20(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert21(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert22(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath)
+    {
+
+        //pen.x += intStack[]
+
+
+    }
+    void PPCFF::CharStringInsert23(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert24(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert25(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert26(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert27(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert28(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert29(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert30(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert31(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert32(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert33(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert34(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert35(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert36(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert37(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert38(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert39(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert40(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert41(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert42(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert43(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert44(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert45(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert46(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert47(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}
+    void PPCFF::CharStringInsert48(PPCFFCharstring& CharData, float* floatStack, int32_t* intStack, uint8_t& intIndex, uint8_t& floatIndex, int& Index, uint64_t& DataIndex, uint8_t& DataEntries, uint8_t* data, Vectoid2& pen, Vectoid2& OriginOfPath){}

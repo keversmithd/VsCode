@@ -32,7 +32,9 @@ namespace PPFF::Tables
     void SortTableFilter(char** TableFilter, uint8_t filterCount);
     void GetTableHeader(PPFFTableDirectory &TableDirectory, FILE* file);
     void GetTableRecords(PPFFTableDirectory &TableDirectory, FILE* file, const char** tableFilter = 0, uint8_t filterCount = 0, bool filterAdjusted = false);
-    PPFFTableDirectory PopulateOTFDirectory(const char*  FontPath);
+    PPFFTableDirectory PopulateOTFDirectory(const char* FontPath);
+    PPFFTableDirectory PopulateTTFDirectory(const char* FontPath);
+    
     
 
 

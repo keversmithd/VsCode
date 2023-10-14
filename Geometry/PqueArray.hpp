@@ -6,21 +6,16 @@
 template<typename T>
 class HeapArray
 {
-    private:
-        ChronologicalPoolEntry<T> heap;
+    public:
+        T* heap;
         int nodes;
         int capacity;
         bool heapReady;
-        int pool;
-        bool(*COMPARE)(T a, T b);
+        int (*heapQualifier)(T A, T B);
     public:
-        HeapArray(bool(*compare)(T a, T b), ChronologicalPoolEntry<T> Set, int poolID) : heapReady(false)
+        HeapArray(int (*_heapQualifier)(T A, T B)) : heapQualifier(_heapQualifier), heap(nullptr), nodes(0), capacity(0), heapReady(false)
         {
-            nodes = Set.size();
-            capacity = nodes;
-            pool = poolID;
-            COMPARE = compare;
-            heap = Set;
+
         }
 
         void push(T element)
@@ -34,7 +29,8 @@ class HeapArray
             heapReady = false;
 
         }
-        void heapify(int i)
+
+        void heapifyUp(int i)
         {
             int currentNode = i;
 
@@ -44,15 +40,33 @@ class HeapArray
             bool chainEnd = false;
             while(chainEnd == false)
             {
+                largest = currentNode;
                 left = 2*currentNode+1;
                 right = 2*currentNode+2;
 
-                if(left < (nodes) && COMPARE(heap[left], heap[largest]))
+                int HeapLeft = left < nodes ? heapQualifier(heap[left],heap[largest]) : -1;
+                int HeapRight = right < nodes ? heapQualifier(heap[right],heap[largest]) : -1;
+
+                if(HeapLeft == 2 && HeapRight == 2)
+                {
+                    int Biggest = heapQualifier(heap[left],heap[right]);
+                    if(Biggest == 2)
+                    {
+                        largest = left;
+                    }
+                    if(Biggest == 1)
+                    {
+                        largest = right;
+                    }
+                    if(Biggest == 0)
+                    {
+                        largest = currentNode;
+                    }
+
+                }else if (HeapLeft == 2)
                 {
                     largest = left;
-                }
-
-                if(right < (nodes) && COMPARE(heap[right], heap[largest]))
+                }else if(HeapRight == 2)
                 {
                     largest = right;
                 }
@@ -62,13 +76,59 @@ class HeapArray
                     T temp = heap[largest];
                     heap[largest] = heap[currentNode];
                     heap[currentNode] = temp;
-                    currentNode = largest;
+                    currentNode = ((currentNode+1)/2)-1;
+
+                    if(currentNode < 0)
+                    {
+                        chainEnd = true;
+                    }
                 }else
                 {
                     chainEnd = true;
                 }
 
             }
+        }
+
+        void heapify(int i)
+        {
+
+            int largest = i
+            , left = 0, right = 0;
+
+            int currentNode = i;
+
+            bool chainEnd = false;
+
+            while(!chainEnd)
+            {
+                left = 2*currentNode+1;
+                right = 2*currentNode+2;
+
+                if (left < nodes && heapQualifier(heap[left], heap[largest]) == 2)
+                {
+                    largest = left;
+                }
+
+                if (right < nodes && heapQualifier(heap[right], heap[largest]) == 2)
+                {
+                    largest = right;
+                }
+
+                if(largest != currentNode)
+                {
+                    T temp = heap[currentNode];
+                    heap[currentNode] = heap[largest];
+                    heap[largest] = temp;
+                    currentNode = largest;
+                }else
+                {
+                    chainEnd = true;
+                }
+            }
+
+            
+
         }
         void heapup()
         {
@@ -82,6 +142,7 @@ class HeapArray
         T extractMax()
         {
             if(heapReady == false){heapup();}
+
             heapify(0);
             T max = heap[0];
             T temp = heap[nodes-1];
@@ -89,17 +150,6 @@ class HeapArray
             heap[0] = temp;
             nodes--;
             return max;
-        }
-
-        ChronologicalPoolEntry<T> Sort()
-        {
-            ChronologicalPoolEntry<T> sort(nodes, pool);
-            int n = nodes;
-            for(int i = 0; i < n; i++)
-            {
-                sort.push_back(extractMax());
-            }
-            return sort;
         }
 
         void readHeap()
@@ -115,7 +165,7 @@ class HeapArray
         
         bool empty()
         {
-            return (nodes <= 0);
+            return nodes == 0;
         }
 
         void resize(int newCapacity)
@@ -137,143 +187,12 @@ class HeapArray
 
         ~HeapArray()
         {
-            
-        }
-};
-
-template<typename T, typename J>
-struct ConstantEventPoint
-{
-    T part;
-    J whole;
-};
-
-template<typename T>
-struct ConstantHeapArray
-{
-        private:
-        T* heap;
-        int nodes;
-        int capacity;
-        bool heapReady;
-        bool(*COMPARE)(T a, T b);
-    public:
-        ConstantHeapArray(bool(*compare)(T a, T b), T* part, int Size) : heapReady(false)
-        {
-            nodes = Size;
-            capacity = nodes;
-            COMPARE = compare;
-            heap = part;
-        }
-
-        void push(T element)
-        {
-            if(nodes+1 > capacity)
-            {
-                resize(std::max(capacity*2,1));
-            }
-            heap[nodes] = element;
-            nodes++;
-            heapReady = false;
-
-        }
-        void heapify(int i)
-        {
-            int currentNode = i;
-
-            int largest = i
-            , left = 0, right = 0;
-
-            bool chainEnd = false;
-            while(chainEnd == false)
-            {
-                left = 2*currentNode+1;
-                right = 2*currentNode+2;
-
-                if(left < (nodes) && COMPARE(heap[left], heap[largest]))
-                {
-                    largest = left;
-                }
-
-                if(right < (nodes) && COMPARE(heap[right], heap[largest]))
-                {
-                    largest = right;
-                }
-
-                if(largest != currentNode)
-                {
-                    T temp = heap[largest];
-                    heap[largest] = heap[currentNode];
-                    heap[currentNode] = temp;
-                    currentNode = largest;
-                }else
-                {
-                    chainEnd = true;
-                }
-
-            }
-        }
-        void heapup()
-        {
-            for(int i = (nodes/2)-1; i >= 0; i--)
-            {
-                heapify(i);
-            }
-            heapReady = true;
-        }
-
-        T extractMax()
-        {
-            if(heapReady == false){heapup();}
-            heapify(0);
-            T max = heap[0];
-            T temp = heap[nodes-1];
-            heap[nodes-1] = heap[0];
-            heap[0] = temp;
-            nodes--;
-            return max;
-        }
-
-        void readHeap()
-        {
-            for(int i = 0; i < nodes; i++)
-            {
-                printf("%d, ", heap[i]);
-                
-            }
-
-            printf("\n");
-        }
-        
-        bool empty()
-        {
-            return (nodes <= 0);
-        }
-
-        void resize(int newCapacity)
-        {
-            if(newCapacity <= 0)
-            {
-                return;
-            }
-            int memoryDelta = (newCapacity < capacity) ? newCapacity : nodes*sizeof(T);
-            void* memHeap = malloc(newCapacity * sizeof(T));
-            memcpy(memHeap, heap, memoryDelta);
-            if(heap != nullptr && heap != memHeap)
+            if(heap != nullptr)
             {
                 free(heap);
             }
-            heap = (T*)memHeap;
-            capacity = newCapacity;
-        }
-
-        ~ConstantHeapArray()
-        {
-            
         }
 };
-
-
 
 template<typename T>
 class PriQue

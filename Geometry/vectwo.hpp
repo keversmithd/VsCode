@@ -60,6 +60,14 @@ struct vec2
         y /= m;
     }
 
+
+    float distance(const vec2& other)
+    {
+        float xx = (other.x - x);
+        float yy = (other.y - y);
+        return sqrtf(xx*xx + yy*yy);
+    }
+
     int hash()
     {
         int ix = x;
@@ -151,19 +159,6 @@ struct plane
     vec2 topRight;
 };
 
-struct line
-{
-    vec2 start;
-    vec2 end;
-};
-
-struct doubleline
-{
-    line x;
-    line y;
-};
-
-
 struct rect
 {
     vec2 bottomLeft;
@@ -243,7 +238,38 @@ struct rect
 
     }
 
+    void Display()
+    {
+        printf("\\draw (%f,%f) rectangle (%f,%f);\n", bottomLeft.x, bottomLeft.y, topRight.x, topRight.y);
+    }
+
 };
+
+struct line
+{
+    vec2 start;
+    vec2 end;
+
+    void Display()
+    {
+        printf("\\draw (%f,%f) -- (%f,%f);\n", start.x, start.y, end.x, end.y);
+    }
+
+    rect bounding()
+    {
+        
+        return {{start.x < end.x ? start.x : end.x, start.y < end.y ? start.y : end.y},{start.x > end.x ? start.x : end.x, start.y > end.y ? start.y : end.y}};
+    }
+};
+
+struct doubleline
+{
+    line x;
+    line y;
+};
+
+
+
 
 void SpellTime(const vec2 c, const vec2 v)
 {
@@ -273,6 +299,38 @@ bool lineIntersection(const line A, const line B, vec2& intersection)
     {
         intersection.x = A.start.x + DA.x * t;
         intersection.y = A.start.y + DA.y * t;
+        return true;
+    }
+
+    return false;
+}
+
+
+bool lineIntersection2(const vec2 A, const vec2 B, const vec2 C, const vec2 D, vec2& intersection)
+{
+    const vec2 AB = {B.x - A.x, B.y - A.y};
+    const vec2 CD = {D.x - C.x, D.y - C.y};
+
+    const double epsilon = 3e-6; // Tolerance threshold for floating-point comparisons
+
+    //double determinant = (DA.x * DB.y) - (DA.y * DB.x);
+
+    // if (std::abs(determinant) < epsilon)
+    // {
+    //     // Lines are parallel or coincident
+    //     return false;
+    // }
+
+    double G = CD.y - ((AB.y)*(CD.x)/AB.x);
+
+    double S = ((A.y) + ((AB.y*(-A.x + C.x))/AB.x) - C.y)/G;
+
+    double T = (-A.x + C.x + CD.x * S)/AB.x;
+
+    if (T > epsilon && S > epsilon && T < 1-epsilon && S < 1-epsilon)
+    {
+        intersection.x = A.x + AB.x * T;
+        intersection.y = A.y + AB.y * T;
         return true;
     }
 

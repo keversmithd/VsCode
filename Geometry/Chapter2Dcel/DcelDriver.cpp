@@ -98,7 +98,6 @@ void RandomCompleteStructureWithOneHole(DCEL& InsertionSet, const plane pl, int 
 
     InsertionSet.display();
 
-    printf("wtf");
 
     
 }

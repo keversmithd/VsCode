@@ -9,6 +9,7 @@
                 "-g",
                 "${file}",
                 "-I","${workspaceFolder}\\headers",
+                "-I","C:\\Users\\Dust\\Desktop\\CS260\\KdTree",
                 "${workspaceFolder}\\sources\\*.cpp",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"

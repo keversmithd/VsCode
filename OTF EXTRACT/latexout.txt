@@ -1,0 +1,12 @@
+\text{
+    Find the union and intersection of the sets \{1,3,5,7,9\} and \{2,3,5,7\} }\\\text{
+    If S = \{1,3,5,7,9\} and P = \{2,3,5,7\} then }\\\text{
+    S }\cup\text{ P = \{1,2,3,5,7,9\} and S }\cap\text{ P = \{3,5,7\} }\\\text{
+    The union is all unique members of both sets combined into one set. }\\\text{
+    The intersection is all members of both sets which are the same. }\\\text{
+
+    Thank you for the feedback, I am dustin!
+    
+
+    
+}

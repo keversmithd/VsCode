@@ -21,6 +21,8 @@
 #include "UVSphere.h"
 #include "InputBox.h"
 #include "UVSphereFactory.h"
+#include "MappedPlane.h"
+
 
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity,
     GLsizei length, const char* message, const void* userParam) {
@@ -92,7 +94,6 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     }
 }
 
-
 GLFWwindow* CreateContext()
 {
     bool debugO = true;
@@ -101,6 +102,7 @@ GLFWwindow* CreateContext()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE,GL_TRUE);
+    //glfwWindowHint(GLFW_SAMPLES, 4);
     if(debugO)
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     
@@ -148,48 +150,21 @@ GLFWwindow* CreateContext()
     ImGui::CreateContext();
     ImGui_ImplGlfwGL3_Init(window, true);
     ImGui::StyleColorsDark();
+    
+    //glEnable(GL_MULTISAMPLE);
+
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
 
     glfwSetFramebufferSizeCallback(window, FrameBufferResize);
     glfwSetWindowSizeCallback(window, WindowResize);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    
 
     return window;
 }
 
-
-struct BufferTest
-{
-    private:
-        unsigned int vertexBuffer;
-    public:
-    BufferTest() : vertexBuffer(0)
-    {
-
-    }
-
-    void CreateBuffer()
-    {
-        glGenBuffers(1,&vertexBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float)*22, 0, GL_STATIC_DRAW);
-    }
-
-    void UpdateBuffer()
-    {
-        float* d = new float[22];
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*22, d);
-    }
-
-    ~BufferTest()
-    {
-        
-    }
-};
 
 
 int main()
@@ -199,7 +174,7 @@ int main()
     /* Create a windowed mode window and its OpenGL context */
     GLFWwindow* window = CreateContext();
 
-    LoadCharacterAtlas("C:\\Users\\Dust\\Desktop\\Joan-Regular.ttf");
+    LoadCharacterAtlas("X:\\Videos\\MonsoonLife\\Euler-Math.otf");
 
     //Previous Quad Controller
     FullQuadController Texture_Viewer;
@@ -209,8 +184,6 @@ int main()
     TextRenderer.AddText(0, 0, -0.01, 0.01, "hello mike");
     TextRenderer.SetupBuffers();
 
-
-    
     Camera MainCamera;
     MainCamera.MakeActiveCamera(window);
     glm::mat4 model = glm::mat4(1.0f);
@@ -221,12 +194,27 @@ int main()
     alignedText.AddAlignedText({-1.0, -1.0, 0.0}, {1.0, 1.0, 0.0}, "hello mike", 0.2, 0.2);
     GraphicVector AlignmentAxis({-1.0, -1.0, 0.0}, {1.0, 1.0, 0.0});
 
-
     InputBoxUpdate b({{-1,-1,0},{-1.3,-1.5,0.7}});
+    UVSphereFactory SphereFactory(3);
+    
+    MappedViewFrustrum frustrum;
+    MappedPlane plane(&SphereFactory);
+    plane.AttachToViewFrustrum(&frustrum);
+    plane.CreateNormalPlane({-0.5,0,-0.5},{0,0,-1}, 1.0f, 1.0f);
+
+
+
+    std::vector<SDFVec3> PlaneLines = 
+    {
+        {0,0,0},{1,1,0},
+        {0,0,0},{1,2,0},
+    };
+    PlaneProjection projectionTest({-0.5,0,-0.5},{0,0,-1},1.0f, 1.0f, PlaneLines);
+    projectionTest.AttachToMappedPlane(plane);
 
     double lastTime = glfwGetTime();
     int nbFrames = 0;
-
+    float fcx = 0.0f, fcz = 0.0f;
     while (!glfwWindowShouldClose(window))
     {
         double currentTime = glfwGetTime();
@@ -243,36 +231,36 @@ int main()
 
         glClearColor(0.0, 0.0, 0.0, 0.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-        if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        {
-            b.m_volume.TopLeftFront.x += 0.1;
-            b.ReconstructBox();
-        }
-        //setMat4(TextRenderer.program, "projection", MainCamera.projection);
-        //setMat4(TextRenderer.program, "view", MainCamera.view);
-
-        //Texture_Viewer.Draw();
-        // b.Draw(MainCamera);
-        // v.Draw(MainCamera);
-        // s.DrawElements(MainCamera);
-        // TextRenderer.Draw();
-        //alignedText.Draw(MainCamera);
-        AlignmentAxis.Draw(MainCamera);
-        // //TextRenderer.Draw();
-        alignedText.Draw(MainCamera);
-        b.Draw(MainCamera);
-        //SphereFactory.DrawElements(MainCamera);
-
+        frustrum.Draw(MainCamera);
+        plane.Draw(MainCamera);
+        projectionTest.Draw(MainCamera);
         
-        
-        
-        
-
         ImGui_ImplGlfwGL3_NewFrame();
         {
+            ImGui::Begin("Salad Menu");
+            float ffar = 0.5f;
+           
+            float dx = 0.0f;
+            float dz = 0.0f;
+            bool Slid = ImGui::SliderAngle("Near", &ffar, 0.2f, 100.0f);
+            bool U = ImGui::SliderAngle("dx", &dx, -1.0f, 1.0f);
+            bool Z = ImGui::SliderAngle("dz", &dz, -1.0f, 1.0f);
+            float R = 0.0;
+            bool T = ImGui::SliderAngle("theta", &R, -360.f, 360.0f);
 
+            bool Click = ImGui::Button("ButtonNOw");
+            
+            if(Slid || U || Z || T)
+            {
+                fcx  += dx*0.1f;
+                dx = 0;
+                fcz += dz*0.1f;
+                dz = 0;
+                frustrum.UpdateFrustrum({fcx ,fcz,0},{cosf(R),sinf(R),-1},{0,1,0}, 0.1f, ffar, 90.0f);
+                
+            }
+
+            ImGui::End();
         }
 
         ImGui::Render();
@@ -286,5 +274,7 @@ int main()
 
     glfwTerminate();
     glfwDestroyWindow(window);
+
+    
     return 1;
 }

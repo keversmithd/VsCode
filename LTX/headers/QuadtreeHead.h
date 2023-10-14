@@ -24,23 +24,27 @@ std::vector<Quadrant> QuadrantsIntersected(const LTXRect Subject, const LTXRect 
 
 
     LTXRect BottomLeft = {{Area.bottomLeft.x, Area.bottomLeft.x}, {MidPoint.x, MidPoint.y}};
+
     LTXRect TopLeft = {{Area.bottomLeft.x, MidPoint.y}, {MidPoint.x, Area.topRight.y}};
+
     LTXRect BottomRight = {{MidPoint.x, Area.bottomLeft.y}, {Area.topRight.x, MidPoint.y}};
+
     LTXRect TopRight = {{MidPoint.x, MidPoint.y}, {Area.topRight.x, Area.topRight.y}};
 
-    if(ContainedInBoundingArea(Subject, BottomLeft))
+
+    if(IntersectsBoundingArea(Subject, BottomLeft))
     {
         TheVector.push_back({BottomLeft, 0});
     }
-    if(ContainedInBoundingArea(Subject, TopLeft))
+    if(IntersectsBoundingArea(Subject, TopLeft))
     {
-        TheVector.push_back({BottomLeft, 3});
+        TheVector.push_back({TopLeft, 3});
     }
-    if(ContainedInBoundingArea(Subject, BottomRight))
+    if(IntersectsBoundingArea(Subject, BottomRight))
     {
         TheVector.push_back({BottomRight, 1});
     }
-    if(ContainedInBoundingArea(Subject, TopRight))
+    if(IntersectsBoundingArea(Subject, TopRight))
     {
         TheVector.push_back({TopRight, 2});
     }

@@ -67,6 +67,15 @@ void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, float* memoryData, int
     fPoint(D, 0,1, memoryData, i);
 
 }
+void fTriQuadE(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, float* memoryData, int& i)
+{
+
+    NHolder = Cross(Subtract(B, A), Subtract(D,A));
+    fPoint(A, 0,0, memoryData, i);
+    fPoint(B, 1,0, memoryData, i);
+    fPoint(C, 1,1, memoryData, i);
+    fPoint(D, 0,1, memoryData, i);
+}
 
 void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, float* memoryData, int& i, unsigned int* indexBuffer, int& j, int& indices)
 {
@@ -87,6 +96,27 @@ void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, float* memoryData, int
 
     j+=4;
 }
+
+void fTriQuad(SDFVec3 A, SDFVec3 B, SDFVec3 C, SDFVec3 D, SDFVoct uvs, float* memoryData, int& i, unsigned int* indexBuffer, int& j, int& indices)
+{
+    NHolder = Cross(Subtract(B, A), Subtract(D,A));
+
+    fPoint(A, uvs[0],uvs[1], memoryData, i);
+    fPoint(B, uvs[2],uvs[3], memoryData, i);
+    fPoint(C, uvs[4],uvs[5], memoryData, i);
+    fPoint(D, uvs[6],uvs[7], memoryData, i);
+
+    indexBuffer[indices++] = j;
+    indexBuffer[indices++] = j+1;
+    indexBuffer[indices++] = j+2;
+
+    indexBuffer[indices++] = j;
+    indexBuffer[indices++] = j+2;
+    indexBuffer[indices++] = j+3;
+
+    j+=4;
+}
+
 
 
 

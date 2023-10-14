@@ -11,10 +11,11 @@ private:
     LTXRect BoundingArea;
     Quadtree<T>* children[4];
     std::vector<T> data;
+    bool Leaf;
     
 public:
 
-    Quadtree(LTXRect boundingArea) : BoundingArea(boundingArea)
+    Quadtree(LTXRect boundingArea) : BoundingArea(boundingArea), Leaf(true)
     {
         children[0] = nullptr;
         children[1] = nullptr;
@@ -22,9 +23,19 @@ public:
         children[3] = nullptr;
     }
 
+    void redistribute()
+    {
+        for(int i = 0; i < data.size(); i++)
+        {
+            insert(data[i], data[i].Bounding());
+        }
+        Leaf = false;
+        data.clear();
+    }
+
     void insert(T value, LTXRect boundingArea)
     {
-
+        //boundingArea.Display();
         if(ContainedInBoundingArea(boundingArea, BoundingArea))
         {
             std::vector<Quadrant> IntersectedQuadrants = QuadrantsIntersected(boundingArea, BoundingArea);
@@ -36,10 +47,19 @@ public:
                 if(children[quadrantId] == nullptr)
                 {
                     children[quadrantId] = new Quadtree<T>(IntersectedQuadrants[i].boundingArea);
+                    children[quadrantId]->data.push_back(value);
                 }else
                 {
-                    //place this item in this node
-                    children[quadrantId]->insert(value, boundingArea);
+                    if(children[quadrantId]->Leaf && children[quadrantId]->data.size() < 1)
+                    {
+                        children[quadrantId]->data.push_back(value);
+
+                    }else if(children[quadrantId]->Leaf)
+                    {
+                        children[quadrantId]->redistribute();
+                        children[quadrantId]->insert(value, boundingArea);
+                    }
+                    
                 }
                 
             }
@@ -110,6 +130,23 @@ public:
 
         delete n;
 
+    }
+
+    void Display()
+    {
+        BoundingArea.Display();
+
+        for(int i = 0; i < data.size(); i++)
+        {
+            data[i].Display();
+        }
+        for(int i = 0; i < 4; i++)
+        {
+            if(children[i] != nullptr)
+            {
+                children[i]->Display();
+            }
+        }
     }
 
 

@@ -139,14 +139,14 @@ inline bool LoadCharacterAtlas(const char* file)
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     //Texture Definitions
-    int TextureDimension = 1024;
+    int TextureDimension = 4096;
 
     //Over all data meant to be extracted to gl texture.
     unsigned char* TextureData = new unsigned char[(TextureDimension*TextureDimension)];
     memset(TextureData,0,(TextureDimension*TextureDimension) );
 
     
-    int CharactersToLoad = 100;
+    int CharactersToLoad = 1200;
 
     AtlasVec2 CurrentLocation = {0,0}; //Starting At the Bottom Of the Texture
     AtlasVec2 DeltaLocation = CurrentLocation;
@@ -160,8 +160,8 @@ inline bool LoadCharacterAtlas(const char* file)
 
 
     
-    int StartChar = 32;
-    for (unsigned char c = StartChar; c < (StartChar+CharactersToLoad); c++)
+    int StartChar = 247;
+    for (unsigned int c = StartChar; c < (StartChar+CharactersToLoad); c++)
     {
         // load character glyph 
         if (FT_Load_Char(face, c, FT_LOAD_RENDER))
@@ -197,7 +197,7 @@ inline bool LoadCharacterAtlas(const char* file)
                 int GlyphIndex = J + (C*CWidth);
                 int TextureIndex = (DeltaLocation.x+J+(J==(CWidth-1)))+(DeltaLocation.y*TextureDimension);
 
-                if(TextureIndex >= (TextureDimension*TextureDimension)-1)
+                if(TextureIndex > (TextureDimension*TextureDimension)-1)
                 {
                     printf("Overloaded Texture Atlas");
                     abort();
@@ -237,6 +237,7 @@ inline bool LoadCharacterAtlas(const char* file)
 
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
+    delete[] TextureData;
 
     return true;
 

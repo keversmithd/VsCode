@@ -4,6 +4,20 @@
 #include <math.h>
 #include <initializer_list>
 
+struct SDFVoct
+{
+    float uvs[8];
+
+    float operator[](int i)
+    {
+        if(i < 0 || i > 7)
+        {
+            return uvs[0];
+        }
+
+        return uvs[i];
+    }
+};
 
 struct SDFVec2
 {
@@ -12,7 +26,67 @@ struct SDFVec2
     {
 
     }
+
+    SDFVec2 operator -(const SDFVec2  other)
+    {
+        return {x-other.x, y-other.y};
+    }
+
+    float mag()
+    {
+        return sqrt(x*x + y*y);
+    }
+
+
 };
+
+struct SDFVec2d
+{
+    double x,y;
+    SDFVec2d(double _x, double _y) : x(_x), y(_y)
+    {
+
+    }
+
+    SDFVec2d operator -(const SDFVec2d  other)
+    {
+        return {x-other.x, y-other.y};
+    }
+
+    float mag()
+    {
+        return sqrt(x*x + y*y);
+    }
+
+    void operator*=(const float c)
+    {
+        x*=c;
+        y*=c;
+    }
+
+
+};
+
+SDFVec2d Normalize(SDFVec2d V)
+{
+    float m = V.mag();
+    if(m == 0)
+    {
+        return {0,0};
+    }
+    return {V.x/m, V.y/m};
+}
+
+
+SDFVec2 Normalize(SDFVec2 V)
+{
+    float m = V.mag();
+    if(m == 0)
+    {
+        return {0,0};
+    }
+    return {V.x/m, V.y/m};
+}
 
 struct SDFVec3
 {
@@ -51,7 +125,7 @@ struct SDFVec3
         return SDFVec3(x * c, y * c, z * c);
     }
 
-    
+
 
     void operator *=(const SDFVec3 A)
     {
@@ -65,6 +139,22 @@ struct SDFVec3
         x = A.x;
         y = A.y;
         z = A.z;
+    }
+
+    bool operator /=(SDFVec3 B)
+    {
+        float m0 = mag();
+        float m1= B.mag();
+
+        if(m0 == 0 && m1 == 0)
+        {
+            return true;
+        }else if(m0 == 0 || m1 == 0)
+        {
+            return false;
+        }
+
+        return (x/m0 == B.x/m1 && y/m0 == B.y/m1 && z/m0 == B.z/m1);
     }
 
     void operator *=(const float c)
@@ -81,6 +171,10 @@ struct SDFVec3
         z += A.z;
     }
 
+    float mag()
+    {
+        return sqrt(x*x + y*y + z*z);
+    }
 
 
     void normalize()
@@ -100,6 +194,12 @@ struct SDFVec3
         
     }
 
+    void displayNamed(const char* name)
+    {
+
+        printf("%s: (%f,%f,%f)\n", name, x,y,z);
+
+    }
     void rotateFrame(const SDFVec3 Normal, const SDFVec3 Binormal, float theta)
     {
         x = (cos(theta)*Normal.x) + (sin(theta)*Binormal.x);
@@ -108,12 +208,30 @@ struct SDFVec3
     }
 };
 
+SDFVec3 cross(SDFVec3 A, SDFVec3 B)
+{
+    return {(A.y * B.z) - (B.y * A.z),-((A.x * B.z) - (B.x * A.z)), (A.x * B.y) - (B.x*A.y)};
+}
+SDFVec3 normalize(SDFVec3 V)
+{
+    float m = sqrt((V.x*V.x) + (V.y*V.y) + (V.z*V.z));
+    if(m == 0)
+    {
+        V.x = 0;
+        V.y = 0;
+        V.z = 0;
+        return V;
+    }
+
+    V.x /=m;
+    V.y/=m;
+    V.z/=m;
+    return V;
+}
 
 SDFVec3 operator*(const SDFVec3 A, const SDFVec3 B)
 {
     return SDFVec3(A.x * B.x, A.y * B.y, A.z * B.z);
-
-
 }
 SDFVec3 operator*(const float A, const SDFVec3 B)
 {
@@ -416,6 +534,7 @@ inline const SDFVec3 IntersectionOfLineAndPlane(SDFRay Ray, SDFPlane plane)
     float t = (-Intercept - Constant)/TCoefficent;
     return Add(Ray.Origin, Multiply(Ray.Direction, t));
 }
+
 inline SDFVec3 DownwardNormal(SDFVec3 Origin, SDFVec3 Destination)
 {
     //if B.z < A.z use different algorihtm

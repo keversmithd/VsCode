@@ -41,7 +41,10 @@ void SpellVector(const vec2 c, const vec2 v, const char* name = nullptr)
     }
     
 }
-
+void SpellEdge(const vec2 c, const vec2 v)
+{
+    printf("\\draw (%f,%f) -- (%f,%f);\n", c.x, c.y, v.x, v.y);
+}
 
 void DisplayConstantEdgeSet(CGConstArray<line> ar)
 {

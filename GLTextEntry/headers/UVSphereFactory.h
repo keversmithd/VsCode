@@ -21,8 +21,9 @@ struct UVSphereFactory
 
     NGLProgram program;
     bool BuffersSetup;
+    bool BuffersNeedUpdate;
 
-    UVSphereFactory(int Reserve) : vertexDataBack(0), vertexCapacity(0), elementCapacity(0), elementIndexHead(0), elementDataBack(0), vertexData(nullptr), elementData(nullptr), program(CreateShader("shaders/SphereFactory.vs", "shaders/SphereFactory.fs")), BuffersSetup(false)
+    UVSphereFactory(int Reserve) : BuffersNeedUpdate(false), vertexDataBack(0), vertexCapacity(0), elementCapacity(0), elementIndexHead(0), elementDataBack(0), vertexData(nullptr), elementData(nullptr), program(CreateShader("shaders/SphereFactory.vs", "shaders/SphereFactory.fs")), BuffersSetup(false)
     {
         vertexCapacity = 6*6*Reserve*4*sizeof(float)*8;
         elementCapacity = 6*6*Reserve*sizeof(unsigned int)*6;
@@ -76,49 +77,12 @@ struct UVSphereFactory
                 fTriQuad(c1, c2, c3, c4, vertexData, vertexDataBack, elementData, elementIndexHead, elementDataBack);
             }
         }
+
+        if(BuffersSetup == true)
+        {
+            BuffersNeedUpdate = true;
+        }
     }
-
-    // void UpdateSphereElement(SDFVec3 m_Center, float radius, int byteStart)
-    // {
-    //     int RequestedVertexIndex = index*(subdivisions*subdivisions*8);
-    //     int RequestedElementIndex = index*(subdivisions*subdivisions*6);
-    //     int RequestedElementIndexHead = index*(subdivisions*subdivisions*4);
-
-    //     float requiredPhi = (2 * M_PI) / subdivisions;
-    //     float requiredTheta = M_PI / subdivisions;
-
-    //     SDFVec3 c1, c2, c3, c4;
-
-    //     int j = 0;
-
-    //     for (int dp = 0; dp < subdivisions; dp++)
-    //     {
-    //         float phi0 = dp * requiredPhi;
-    //         float phi1 = (dp + 1) * requiredPhi;
-
-    //         for (int dt = 0; dt < subdivisions; dt++)
-    //         {
-    //             float theta0 = dt * requiredTheta;
-    //             float theta1 = (dt + 1) * requiredTheta; // Fix the calculation here (use dt instead of dp)
-
-    //             c1 = m_Center;
-    //             c1 += SDFVec3(radius*cos(theta0) * sin(phi0), radius*sin(theta0) * sin(phi0), radius*cos(phi0));
-    //             c2 = m_Center;
-    //             c2 += SDFVec3(radius*cos(theta1) * sin(phi0), radius*sin(theta1) * sin(phi0), radius*cos(phi0));
-    //             c3 = m_Center;
-    //             c3 += SDFVec3(radius*cos(theta1) * sin(phi1), radius*sin(theta1) * sin(phi1), radius*cos(phi1));
-    //             c4 = m_Center;
-    //             c4 += SDFVec3(radius*cos(theta0) * sin(phi1), radius*sin(theta0) * sin(phi1), radius*cos(phi1));
-
-    //             fTriQuad(c1, c2, c3, c4, vertexData, RequestedVertexIndex, elementData, RequestedElementIndexHead, RequestedElementIndex);
-    //         }
-    //     }
-
-    //     glBindBuffer(GL_VERTEX_ARRAY, vertexBuffer);
-    //     glBufferSubData(GL_VERTEX_ARRAY, RequestedElementIndex*sizeof(float), (subdivisions*subdivisions*8)*sizeof(float), elementData+RequestedElementIndex);
-        
-
-    // }
 
     void ResizeVertexData(int AdditionalCapacity)
     {
@@ -152,7 +116,12 @@ struct UVSphereFactory
         if(BuffersSetup == false)
         {
             SetUpBuffersElement();
+        }else if(BuffersNeedUpdate == true)
+        {
+            UpdateBuffers();
         }
+
+
         glBindVertexArray(vertexArray);
         setMat4(program, "projection", camera.projection);
         setMat4(program, "view", camera.view);
@@ -167,7 +136,6 @@ struct UVSphereFactory
         glGenVertexArrays(1, &vertexArray);
         glBindVertexArray(vertexArray);
 
-        unsigned int vertexBuffer;
         glGenBuffers(1, &vertexBuffer);
         glGenBuffers(1, &elementBuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
@@ -187,6 +155,23 @@ struct UVSphereFactory
 
         BuffersSetup = true;
     }
+    void UpdateBuffers()
+    {
+        glBindVertexArray(vertexArray);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, (elementDataBack+1)*sizeof(unsigned int), NULL, GL_STATIC_DRAW);
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, (elementDataBack+1)*sizeof(unsigned int), elementData);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, (vertexDataBack+1)*sizeof(float), NULL, GL_STATIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, (vertexDataBack+1)*sizeof(float), vertexData);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        BuffersNeedUpdate = false;
+    }
+
 
     ~UVSphereFactory()
     {

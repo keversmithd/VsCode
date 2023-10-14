@@ -203,9 +203,6 @@ void FirstDiagonal(DCEL& Polygon)
 
 }
 
-
-
-
 int main()
 {
 

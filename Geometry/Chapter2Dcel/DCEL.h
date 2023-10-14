@@ -187,6 +187,10 @@ struct DCEL
             if(edges.size() == 1)
             {
                 DCELEdge* Back = edges.back();
+                if(Back->origin->vertex.x == p.x && Back->origin->vertex.y == p.y)
+                {
+                    return;
+                }
                 DCELEdge* Psuedoback = NewOriginEdge(Back->origin->vertex);
                 DCELEdge* V = NewOriginEdge(p);
                 DCELEdge* E = NewOriginEdge(p);
@@ -201,11 +205,16 @@ struct DCEL
                 E->twin = Back;
 
                 edges.push_back(Psuedoback);
+                verticies.push_back(V->origin);
                 edges.push_back(E);
                 edges.push_back(V);
             }else
             {
                 DCELEdge* Back = edges.back();
+                if(Back->origin->vertex.x == p.x && Back->origin->vertex.y == p.y)
+                {
+                    return;
+                }
                 int BackIndex = edges.size()-2;
                 DCELEdge* Twinback = edges[BackIndex];
 
@@ -220,13 +229,21 @@ struct DCEL
 
                 Back->twin  = E;
                 E->twin = Back;
-                
+                verticies.push_back(V->origin);
                 edges.push_back(E);
                 edges.push_back(V);
             }
 
             
         }
+
+
+
+    }
+    void MakeLoop()
+    {
+        edges.back()->next = edges[0];
+        edges[0]->prev = edges.back();
     }
 
     void VisitAllEdgesIncidentToVertex(DCELVec* vert)
@@ -316,7 +333,7 @@ struct DCEL
             thisBound.IncrementBound(origin);
             thisBound.IncrementBound(destination);
 
-            SpellVector(origin, destination);
+            SpellEdge(origin, destination);
 
             iter = iter->next;
         } while (iter != nullptr && iter->twin != nullptr && iter->twin->origin != nullptr && iter != origin);
@@ -330,7 +347,26 @@ struct DCEL
             edges[i]->DrawVector();
         }
     }
+    void NextDisplay()
+    {
+        
+        DCELEdge* Prev = nullptr;
+        DCELEdge* Next = edges[0];
+        DCELEdge* Origin = Next;
+        while(Next != Prev && Next != nullptr && Next->next != nullptr)
+        {
+            SpellEdge(Next->origin->vertex, Next->next->origin->vertex);
+            Prev = Next;
+            Next = Next->next;
 
+            if(Next == Origin)
+            {
+                break;
+            }
+            
+        }
+
+    }
 
     ~DCEL()
     {
