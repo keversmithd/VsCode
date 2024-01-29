@@ -119,7 +119,7 @@ int OrientationSpace(DCELEdge* a, DCELEdge* b)
         //a is right, b is left
     }
 
-
+    return 0;
 
 }
 

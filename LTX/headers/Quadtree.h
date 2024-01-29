@@ -27,7 +27,7 @@ public:
     {
         for(int i = 0; i < data.size(); i++)
         {
-            insert(data[i], data[i].Bounding());
+            //insert(data[i], data[i].Bounding());
         }
         Leaf = false;
         data.clear();

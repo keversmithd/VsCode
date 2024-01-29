@@ -3,59 +3,50 @@
 
 #include "../Chapter2Dcel/DCEL.h"
 #include "MakeMonotope.h"
+
+#include "TriangulateMonotoneHelper.h"
 #include <stack>
 #include <algorithm>
 
-bool DifferentChains(DCELVec* A, DCELVec* B)
-{
-    return (InteriorToTheRight(A) != InteriorToTheRight(B));
-}
 
-bool DiagonalInside(DCEL& P, DCEL& D, vec2 uj, vec2 s)
+
+bool DifferentChains(float CenterLine, DCELVec* A, DCELVec* B)
 {
-    vec2 J = {0,0};
-    DCELEdge* Origin = P.edges[0];
-    DCELEdge* Iter = Origin;
-    while(Iter != nullptr && Iter->next != nullptr)
+    int AID = A->id;
+    int BID = B->id;
+    
+    if(A->incident->incident != B->incident->incident)
     {
-        // if(Iter->origin->vertex == vec2(244,738))
-        // {
-        //     printf("here");
-        // }
-        bool Intersects = lineIntersection2(uj, s,Iter->origin->vertex,Iter->next->origin->vertex, J);
-        bool Is = (uj == Iter->origin->vertex) && (s == Iter->next->origin->vertex); //possibly might need isis,
-        
-        if(Intersects || Is)
-        {
-
-            //SpellPoint(J);
-            return false;
-        }
-
-        Iter = Iter->next;
-
-        if(Iter == Origin)
-        {
-            break;
-        }
-
+        return true;
     }
 
-    // for(int i = 0 ; i < D.edges.size(); i++)
+    return (AID < CenterLine) && (BID > CenterLine) || (AID > CenterLine) && (BID < CenterLine) || (AID == CenterLine) || (BID == CenterLine);
+
+    float dxcA = A->vertex.x-CenterLine;
+    float dxcB = B->vertex.x-CenterLine;
+
+    return (dxcA > 0 && dxcB < 0) || (dxcA < 0 && dxcB > 0);    
+
+    vec2 a = A->vertex;
+    vec2 b = B->vertex;
+
+    vec2 aa = A->incident->next->origin->vertex - A->vertex;
+    vec2 bb = B->incident->next->origin->vertex - B->vertex;
+
+    // if(aa.y == 0 && bb.y == 0)
     // {
-    //     bool Intersects = lineIntersection2(uj, s, D.edges[i]->origin->vertex,D.edges[i]->next->origin->vertex, J);
-
-    //     if(Intersects)
-    //     {
-    //         return false;
-    //     }
-    // }
-
-
-    return true;
+        
+    // }else
+    if(aa.y == 0 || bb.y == 0)
+    {
+        
+    }
+    else
+    {
+        return (InteriorToTheRight(A) != InteriorToTheRight(B));
+    }
     
 }
-
 
 bool MYPrio(DCELVec* A, DCELVec* B)
 {
@@ -84,20 +75,40 @@ void TriangulateMonotonePolygon(DCEL& P, DCEL& D)
 
     for(int i = 0; i < P.verticies.size(); i++)
     {
+        P.verticies[i]->id = i;
         SortedVertices.push_back(P.verticies[i]);
     }
 
     std::sort(SortedVertices.begin(), SortedVertices.end(), MYPrio);
 
     std::stack<DCELVec*> S;
+
+    int CenterLine = SortedVertices[0]->id;
+
     S.push(SortedVertices[0]);
     S.push(SortedVertices[1]);
+
+    DCELVec* Temp0 = nullptr;
+    DCELVec* Temp1 = nullptr;
+    DCELVec* OldG = nullptr;
 
     for(int j = 2; j < SortedVertices.size(); j++)
     {
 
         DCELVec* uj = SortedVertices[j];
 
+        if(uj->vertex == vec2(237,300))
+        {
+            printf("here");
+        }
+
+        if(uj->vertex == vec2(460,300))
+        {
+            printf("here");
+        }
+
+
+        //uj stopping point (91.575989,682.992004)
         uj->render();
         
         if(!S.empty())
@@ -106,12 +117,29 @@ void TriangulateMonotonePolygon(DCEL& P, DCEL& D)
             DCELVec* t = S.top();
             t->render();
 
-            if(DifferentChains(uj, t))
+            
+
+            if(DifferentChains(CenterLine, uj, t))
             {
-
-                while(S.size()>1)
+                
+                while(S.size()>0)
                 {
+                    if(S.top() == nullptr)
+                    {
+                        S.pop();
+                        continue;
+                    }
 
+                    if(S.size() == 1)
+                    {
+                        Temp0 = S.top();
+                        OldG = Temp1;
+                    }
+                    if(S.size() == 2)
+                    {
+                        Temp1 = S.top();
+                        
+                    }
                     DCELVec* p = S.top();
                     S.pop();
 
@@ -120,31 +148,56 @@ void TriangulateMonotonePolygon(DCEL& P, DCEL& D)
                     D.edges.push_back(Diagonal);
 
                     SpellEdge(uj->vertex, p->incident->origin->vertex);
-
                 }
+
                 
+                if(Temp0 != nullptr && Temp1 != nullptr)
+                {
+                    DCELEdge* Diagonal = new DCELEdge(Temp1);
+                    Diagonal->next = Temp0->incident;
+                    D.edges.push_back(Diagonal);
+
+                    SpellEdge(Temp1->vertex, Temp0->vertex);
+                    
+                }
+
+                Temp0 = nullptr;
+                Temp1 = nullptr;
                 S.push(SortedVertices[j-1]);
                 S.push(uj);
                 
             }else
             {
-                DCELVec* p = S.top();
-                p->render();
-                S.pop();
+                //If this happens this means that there are no other points on the same sweep line, meaning that this last vertex can
+                //be abandonded
+                //this phase might be able to be replaced with while, vert[j] same side, append to G, pop G
 
+                Temp0 = nullptr;
+
+                DCELVec* p = S.top(); //If somehow the points are the same maybe try to fix this?
+                p->render();
+
+                //SpellEdge(uj->vertex, p->vertex);
+                S.pop();
                 while(!S.empty())
                 {
                     DCELVec* G = S.top();
 
                     G->render();
 
-                    SpellEdge(uj->vertex, G->vertex);
-
-                    if(DiagonalInside(P, D, uj->vertex, G->vertex))
+                    if(uj->vertex == vec2(460,300))
                     {
-                        DCELEdge* Diagonal = new DCELEdge(uj);
-                        Diagonal->next = G->incident;
-                        D.edges.push_back(Diagonal);
+                        printf("here");
+                    }
+
+                    if(DiagonalInside(P,D, uj->vertex, G->vertex))
+                    {
+                        SpellEdge(uj->vertex, G->vertex);
+                        SpellEdge(p->vertex, G->vertex);
+                        SpellEdge(uj->vertex, p->vertex);
+
+                        Temp0 = G;
+                        //D.edges.push_back(Diagonal);
 
                         S.pop();
 
@@ -152,13 +205,44 @@ void TriangulateMonotonePolygon(DCEL& P, DCEL& D)
                     {
                         break;
                     }
-
-
                 }
+                if(j != SortedVertices.size()-1)
+                {
 
-                S.push(p);
+                    //if forward is to the left, then this, if its too the right then that.
+                    if(DifferentChains(CenterLine, SortedVertices[j+1], p))
+                    {
 
-                S.push(uj);
+                        if(Temp0 != nullptr)
+                        {
+
+                            S.push(Temp0);
+                        }
+
+                        S.push(uj);
+                    }else
+                    {
+                        if(Temp0 != nullptr)
+                        {
+
+                            S.push(Temp0);
+                        }else if(OldG != nullptr)
+                        {
+                            S.push(OldG);
+                        }
+
+                        
+                        S.push(uj);
+                        
+                    }
+                }else
+                {
+                    S.push(Temp0);
+                    S.push(uj);
+                }
+                //S.push(p);
+                
+                
             }
 
         }
@@ -185,6 +269,143 @@ void TriangulateMonotonePolygon(DCEL& P, DCEL& D)
 
 
     //descend, push onto th stack
+
+
+}
+
+void ClassifyChains(DCEL& P)
+{
+    if(P.faces.size() == 1)
+    {
+        
+
+    }
+
+    int currentChainID = 0;
+    for(int f = 0; f < P.faces.size(); f++)
+    {
+
+        DCELEdge* IncidentEdge = P.faces[f]->incident;
+        DCELEdge* Origin = IncidentEdge;
+        while(IncidentEdge != nullptr && IncidentEdge->next != nullptr && IncidentEdge->next != Origin)
+        {
+            
+            if(IsTurnVertex(IncidentEdge->origin))
+            {
+                currentChainID = (currentChainID == f) ? f+1 : f;
+            }
+            IncidentEdge = IncidentEdge->next;
+
+        }
+
+
+
+    }
+
+}
+
+void TriangulateMonotonePolygon2(DCEL& P, DCEL& D)
+{
+    std::vector<DCELVec*> SortedVertices;
+
+    for(int i = 0; i < P.verticies.size(); i++)
+    {
+        P.verticies[i]->id = i;
+        SortedVertices.push_back(P.verticies[i]);
+    }
+
+    std::sort(SortedVertices.begin(), SortedVertices.end(), MYPrio);
+
+    std::stack<DCELVec*> S;
+
+    int CenterLine = SortedVertices[0]->id;
+
+    S.push(SortedVertices[0]);
+    S.push(SortedVertices[1]);
+
+    for(int j = 2; j < SortedVertices.size(); j++)
+    {
+
+        DCELVec* uj = SortedVertices[j];
+
+        uj->render();
+
+        if(uj->vertex == vec2(133.000000,46.000000)) //478.000000,249.000000
+        {
+            printf("here");
+        }
+        
+        if(!S.empty())
+        {
+
+            DCELVec* t = S.top();
+            t->render();
+
+            if(DifferentChains(CenterLine, uj, t)) //secondary potential problem lies in this function.
+            {
+                
+                while(S.size()>0)
+                {
+                    DCELVec* p = S.top();
+                    S.pop();
+                    if(S.size() >= 1)
+                    {
+                        DCELEdge* Diagonal = new DCELEdge(uj);
+                        Diagonal->next = p->incident;
+                        D.edges.push_back(Diagonal);
+
+                        SpellEdge(uj->vertex, p->incident->origin->vertex);
+                    }
+                }
+
+                S.push(SortedVertices[j-1]);
+                S.push(uj);
+                
+            }else
+            {
+
+                DCELVec* p = S.top();
+                //p->render();
+                
+                S.pop();
+
+                if(uj->vertex == vec2(460,300))
+                {
+                    printf("here");
+                }
+                
+                while(!S.empty())
+                {
+                    DCELVec* G = S.top();
+
+                    G->render();
+
+                    if(DiagonalInside(P,D, uj->vertex, G->vertex)) //problem lies in this, need to solidfy this function, it is not ideal. 
+                    {
+                        SpellEdge(uj->vertex, G->vertex);
+                        //SpellEdge(p->vertex, G->vertex);
+                        //SpellEdge(uj->vertex, p->vertex);
+
+                        //D.edges.push_back(Diagonal);
+
+                        S.pop();
+
+                    }else
+                    {
+                        break;
+                    }
+                }
+                S.push(p);
+
+                S.push(uj);    
+            }
+
+        }
+
+    
+    }
+    
+
 
 
 }

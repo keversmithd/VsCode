@@ -21,7 +21,7 @@ ASIOTime *CustomBufferSwitch(ASIOTime *timeInfo, long index, ASIOBool processNow
 		if (g_adp_buffers->bufferInfos[i].isInput == false)
 		{
             memset (g_adp_buffers->bufferInfos[i].buffers[index], 70*sin(proccessedSamples/100)*sin(proccessedSamples/100), buffSize);
-            memset (g_adp_buffers->bufferInfos[i].buffers[index]+buffSize*3, 50*cos(proccessedSamples/50)*sin(proccessedSamples/50), buffSize);
+            //memset (g_adp_buffers->bufferInfos[i].buffers[index]+buffSize*3, 50*cos(proccessedSamples/50)*sin(proccessedSamples/50), buffSize);
 		}
 
         if (g_adp_buffers->bufferInfos[i].isInput == true)

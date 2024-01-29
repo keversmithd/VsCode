@@ -12,6 +12,7 @@ struct ADPSamplesAndTime
     double  nanoSeconds;
 	double  samples;
 	double  tcSamples;
+    double  _sampleRate;
     ASIOTime   tInfo;			// time info state
 	unsigned long  sysRefTime;      // system reference time, when bufferSwitch() was called
 	// Signal the end of processing in this example

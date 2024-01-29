@@ -16,7 +16,26 @@ struct DCELFace
 {
     DCELEdge* incident; //using a possible combination of indices, if possible
 
-    std::vector<DCELEdge*> InnerComponents;
+    DCELFace* internal; //link to internal face. could potentially be a vector but just one for now.
+    DCELFace* external; //link to an external face if this is inside of a face.
+
+    int verticesStart = 0;
+
+    int edgesStart = 0;
+
+    int vertices = 0;
+    
+    int edges = 0;
+
+    int id = 0;
+
+    std::vector<DCELEdge*> InnerComponents; //may use may not?
+
+    DCELFace() : incident(nullptr), internal(nullptr), external(nullptr), verticesStart(0), edgesStart(0), vertices(0), edges(0)
+    {
+        
+    }
+
 };
 
 struct DCELVec
@@ -67,17 +86,19 @@ struct DCELEdge
     DCELEdge* prev; //index
     DCELVec* origin; //index
 
+    DCELFace* incident; //incident face
 
-    DCELEdge() : twin(nullptr), face(nullptr), next(nullptr), prev(nullptr), origin(nullptr)
+
+    DCELEdge() : twin(nullptr), face(nullptr), next(nullptr), prev(nullptr), origin(nullptr), incident(nullptr)
     {
 
     }
 
-    DCELEdge(DCELVec* Origin) : twin(nullptr), face(nullptr), next(nullptr), prev(nullptr), origin(Origin) 
+    DCELEdge(DCELVec* Origin) : twin(nullptr), face(nullptr), next(nullptr), prev(nullptr), origin(Origin), incident(nullptr)
     {
 
     }
-    DCELEdge(Vec Origin) : twin(nullptr), face(nullptr), next(nullptr), prev(nullptr), origin(nullptr) 
+    DCELEdge(Vec Origin) : twin(nullptr), face(nullptr), next(nullptr), prev(nullptr), origin(nullptr), incident(nullptr)
     {
         origin = new DCELVec(Origin);
     }       
@@ -104,6 +125,14 @@ struct DCELEdge
         if(next != nullptr)
         {
             SpellVector(origin->vertex, next->origin->vertex);
+        }
+    }
+
+    void display()
+    {
+        if(next != nullptr)
+        {
+            SpellEdge(origin->vertex, next->origin->vertex);
         }
     }
 

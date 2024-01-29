@@ -16,10 +16,13 @@ struct DCEL
     std::vector<DCELVec*> verticies;
     std::vector<DCELEdge*> edges;
     std::vector<DCELFace*> faces;
-    
+    rect BoundingContainer;
     int id;
 
-    DCEL()
+    bool CounterClockwise;
+    vec2 Origin;
+
+    DCEL() : CounterClockwise(false), id(-1)
     {
 
     }
@@ -67,7 +70,6 @@ struct DCEL
 
 
     }
-
     void AddEdge(vec2 a, vec2 b)
     {
         DCELFace* F;
@@ -143,7 +145,6 @@ struct DCEL
 
         F->incident = AB;
     }
-    
     DCELEdge* NewOriginEdge(vec2 p)
     {
         DCELEdge* NewEdge = new DCELEdge();
@@ -160,9 +161,10 @@ struct DCEL
 
         return NewEdge;
     }
-    
     void AppendPoint(vec2 p)
     {   
+
+
         if(faces.size() == 0) //if this is a new face
         {
             DCELFace* NewFace = new DCELFace();
@@ -245,7 +247,6 @@ struct DCEL
         edges.back()->next = edges[0];
         edges[0]->prev = edges.back();
     }
-
     void VisitAllEdgesIncidentToVertex(DCELVec* vert)
     {
         DCELEdge* incident = vert->incident;
@@ -257,7 +258,6 @@ struct DCEL
             incident = incident->next->twin;
         }
     }
-
     void WalkAroundFace(DCELFace* face)
     {
         DCELEdge* next = face->incident;
@@ -267,7 +267,6 @@ struct DCEL
             next = next->next;
         }
     }
-
     void insert(DCEL GraphStructure)
     {
         for(int i = 0; i < GraphStructure.verticies.size(); i++)
@@ -313,8 +312,6 @@ struct DCEL
             iter = iter->prev;
         }
     }
-
-
     void display()
     {
         DCELEdge* iter = edges[0];
@@ -365,6 +362,184 @@ struct DCEL
             }
             
         }
+
+    }
+
+    //Methods for traversing DCEL given it has internal more than one disconnected faces.
+    DCELEdge* AppendingEdge = nullptr; //Edge to append to.
+    DCELFace* ActiveFace = nullptr; //Currently selected face.
+    
+    void FaceExtraAppendPoint(vec2 p)
+    {
+
+        if(p.x == -69 && p.y == -69)
+        {
+            MakeLoopOnActiveFace();
+            AppendingEdge = nullptr;
+            return;
+        }
+
+        if(AppendingEdge == nullptr)
+        {
+            //Create a new face,edge,etc
+            DCELFace* NewFace = new DCELFace();
+            DCELEdge* NewEdge = new DCELEdge();
+            DCELVec* NewVert = new DCELVec();
+
+            NewVert->incident = NewEdge;
+            NewVert->vertex = p;
+
+            NewEdge->origin = NewVert;
+            NewEdge->next = nullptr;
+            NewEdge->prev = nullptr;
+            NewEdge->twin = nullptr;
+            NewEdge->face = NewFace;
+
+            verticies.push_back(NewVert);
+            edges.push_back(NewEdge);
+            faces.push_back(NewFace);
+
+            AppendingEdge = NewEdge;
+            ActiveFace = NewFace;
+
+            ActiveFace->verticesStart = verticies.size()-1;
+            ActiveFace->edgesStart = edges.size()-1;
+            ActiveFace->vertices = 1;
+            ActiveFace->edges = 1;
+
+            ActiveFace->incident = NewEdge;
+
+            NewEdge->incident = NewFace;
+
+
+
+        }else if(ActiveFace->vertices == 1)
+        {
+            
+            DCELVec* NextVertex = new DCELVec(p);
+            DCELVec* TwinVertex = new DCELVec(p);
+
+            DCELEdge* NextEdge = new DCELEdge(NextVertex);
+            DCELEdge* TwinEdge = new DCELEdge(TwinVertex);
+
+            NextVertex->incident = NextEdge;
+            TwinVertex->incident = TwinEdge;
+
+            NextEdge->incident = ActiveFace;
+            TwinEdge->incident = ActiveFace;
+
+            AppendingEdge->next = NextEdge;
+            AppendingEdge->next->prev = AppendingEdge;
+
+            AppendingEdge->twin = TwinEdge;
+            //NextEdge->twin->next = AppendingEdge
+
+            AppendingEdge = NextEdge;
+
+            verticies.push_back(NextVertex);
+            edges.push_back(NextEdge);
+
+            ActiveFace->vertices += 1;
+            ActiveFace->edges += 1;
+
+
+
+        }else
+        {
+            DCELVec* NextVertex = new DCELVec(p);
+            DCELVec* TwinVertex = new DCELVec(p);
+
+
+            DCELEdge* NextEdge = new DCELEdge(NextVertex);
+            DCELEdge* TwinEdge = new DCELEdge(TwinVertex);
+
+            NextVertex->incident = NextEdge;
+            TwinVertex->incident = TwinEdge;
+
+            NextEdge->incident = ActiveFace;
+            TwinEdge->incident = ActiveFace;
+
+            AppendingEdge->next = NextEdge;
+            AppendingEdge->next->prev = AppendingEdge;
+
+            AppendingEdge->twin = TwinEdge;
+            AppendingEdge->twin->next = AppendingEdge->prev->twin;
+
+            AppendingEdge->prev->twin->prev = TwinEdge;
+
+            verticies.push_back(NextVertex);
+            edges.push_back(NextEdge);
+
+            ActiveFace->vertices += 1;
+            ActiveFace->edges += 1;
+
+            AppendingEdge = NextEdge;
+
+        }
+
+
+    }
+
+    void MakeLoopOnActiveFace()
+    {
+
+        DCELEdge* StartEdge = edges[ActiveFace->edgesStart];
+        DCELEdge* EndEdge = edges[(ActiveFace->edgesStart + ActiveFace->edges)-1];
+        DCELEdge* MinusOne = edges[(ActiveFace->edgesStart)+ActiveFace->edges-2];
+
+        DCELEdge* NextTwinEdge = new DCELEdge(StartEdge->origin->vertex);
+        NextTwinEdge->next = MinusOne->twin;
+        NextTwinEdge->prev = StartEdge->twin;
+        EndEdge->twin = NextTwinEdge;
+        
+        StartEdge->twin->next = NextTwinEdge;
+
+        EndEdge->next = StartEdge;
+        StartEdge->prev = EndEdge;
+    }
+
+    void DCELTopologyToLatex()
+    {
+        
+        for(int f = 1; f < faces.size(); f++)
+        {
+            DCELEdge* IncidentEdge = faces[f]->incident;
+            DCELEdge* OriginEdge = IncidentEdge;
+
+            printf("\n");
+
+            while(IncidentEdge->next != nullptr && IncidentEdge->next != OriginEdge)
+            {
+                vec2 NextOrigin = IncidentEdge->origin->vertex;
+                vec2 NextDestination = IncidentEdge->next->origin->vertex;
+
+                vec2 DeltaNext = {NextDestination.x - NextOrigin.x, NextDestination.y - NextOrigin.x};
+                vec2 NormalNext = {-DeltaNext.y, DeltaNext.x};
+
+                printf("\\draw[fill=black] (%f,%f) circle (0.5pt);\n", NextOrigin.x, NextOrigin.y);
+                printf("\\draw[fill=black] (%f,%f) circle (0.5pt);\n", NextDestination.x, NextDestination.y);
+                printf("\\draw[->] (%f,%f) -- (%f,%f);\n", NextOrigin.x, NextOrigin.y, NextDestination.x, NextDestination.y);
+
+                float innerSeperation = 0.1;
+                float normalM = sqrt(NormalNext.x*NormalNext.x + NormalNext.y*NormalNext.y);
+                vec2 TwinOrigin = IncidentEdge->twin->origin->vertex;
+                TwinOrigin.x += innerSeperation*(NormalNext.x/normalM);
+                TwinOrigin.y += innerSeperation*(NormalNext.y/normalM);
+                vec2 TwinDestination = IncidentEdge->twin->next->origin->vertex;
+                TwinDestination.x += innerSeperation*(NormalNext.x/normalM);
+                TwinDestination.y += innerSeperation*(NormalNext.y/normalM);
+
+                printf("\\draw[fill=black] (%f,%f) circle (0.1pt);\n", TwinOrigin.x, TwinOrigin.y);
+                printf("\\draw[fill=black] (%f,%f) circle (0.1pt);\n", TwinDestination.x, TwinDestination.y);
+                printf("\\draw[->] (%f,%f) -- (%f,%f);\n", TwinOrigin.x, TwinOrigin.y, TwinDestination.x, TwinDestination.y);
+
+                IncidentEdge=IncidentEdge->next;
+
+            }
+        
+        }
+
+        
 
     }
 

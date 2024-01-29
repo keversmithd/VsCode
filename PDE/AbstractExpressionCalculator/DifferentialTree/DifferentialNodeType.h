@@ -1,0 +1,9 @@
+#ifndef DIFFERENTIAL_NODE_TYPE_H
+#define DIFFERENTIAL_NODE_TYPE_H
+
+
+
+
+
+
+#endif

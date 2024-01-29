@@ -1,6 +1,9 @@
 #ifndef LTXDECAST
 #define LTXDECAST
 #include "LTXLineSegment.h"
+#include "math.h"
+
+#define M_PI 3.14159265359
 
 void De_Casteljau(LTXPoint* Curve, int N, float t)
 {
@@ -77,6 +80,21 @@ struct CubicSolution
     double r0 = -16969;
     double r1 = -16969;
     double r2 = -16969;
+
+    CubicSolution()
+    {
+
+    }
+
+    CubicSolution(const CubicSolution& sol) : r0(sol.r0), r1(sol.r1), r2(sol.r2)
+    {
+
+    }
+
+    CubicSolution(double _r0, double _r1, double _r2) : r0(_r0), r1(_r1), r2(_r2)
+    {
+
+    }
 
     void Read()
     {

@@ -4,6 +4,8 @@
 #include <list>
 #include <array>
 #include <vector>
+#include <math.h>
+
 
 
 LTXCubicBezier GetThickCurve(LTXCubicBezier p, LTXPoint Delta1, LTXPoint Delta2)
@@ -56,7 +58,7 @@ void DrawLTXLine(LTXPoint A, LTXPoint B)
     printf("\\draw (%f,%f) -- (%f,%f);\n", A.x, A.y, B.x, B.y);
 }
 
-std::array<double, 4> MinMaxGP(LTXCubicBezier curve)
+std::array<double, 4> MinMaxGp(LTXCubicBezier curve)
 {
 
     std::array<double, 4> t_solutions;
@@ -155,22 +157,6 @@ std::array<double, 4> CubicExtrema(LTXCubicBezier curve)
 
 }
 
-double MinTwo(const double original, const double a, const double b)
-{
-    double min = original;
-    min = (a < min) ? a : min;
-    min = (b < min) ? b : min;
-    return min;
-}
-
-double MaxTwo(const double original, const double a, const double b)
-{
-    double min = original;
-    min = (a > min) ? a : min;
-    min = (b > min) ? b : min;
-    return min;
-}
-
 void CubicFormula(double a, double b, double c, double d)
 {
     double x = 0.0;
@@ -183,24 +169,6 @@ struct QuadraticSolution
 {
     double x0;
     double x1;
-};
-
-struct CubicSolution
-{
-    double r0 = -16969;
-    double r1 = -16969;
-    double r2 = -16969;
-
-    void Read()
-    {
-        if(r1 == -16969 && r2 == -16969)
-        {
-            printf("Root #1: %f\n", r0);
-            return;
-        }
-
-        printf("Root #1: %f, Root #2: %f, Root #3: %f\n", r0, r1, r2);
-    }
 };
 
 CubicSolution CubicRootFormulaRobotBroken(double a, double b, double c, double d)
@@ -262,7 +230,7 @@ struct LTXParaline
 
 LTXRect CubicBounding(LTXCubicBezier curve)
 {
-    const std::array<double, 4> Extrema = MinMaxGP(curve);
+    const std::array<double, 4> Extrema = MinMaxGp(curve);
 
     double MinX = MinTwo(curve.P0.x, curve.P0.x, curve.P3.x);
     double MinY = MinTwo(curve.P0.y, curve.P0.y, curve.P3.y);
@@ -300,7 +268,7 @@ public:
 
     void UpdateExtrema(LTXCubicBezier curve)
     {
-        const std::array<double, 4> Extrema = MinMaxGP(curve);
+        const std::array<double, 4> Extrema = MinMaxGp(curve);
         BoundingContainer.bottomLeft.x = MinTwo(BoundingContainer.bottomLeft.x, curve.P0.x, curve.P3.x);
         BoundingContainer.bottomLeft.y = MinTwo(BoundingContainer.bottomLeft.y, curve.P0.y, curve.P3.y);
 
@@ -365,10 +333,9 @@ public:
     ~LTXCCWCubicList(){}
 };
 
-CubicSolution cubicsolve(double a, double b, double c, double d)
+CubicSolution cubicSolve(double a, double b, double c, double d)
 {
     
-
     if (a == 0)
     {
         //alert("The coefficient of the cube of x is 0. Please use the utility for a SECOND degree quadratic. No further action taken.");
@@ -451,7 +418,7 @@ CubicSolution LineCubicIntersection(LTXCubicBezier curve, LTXParaline line)
         a.y-ycubic[0], b.y-ycubic[1], c.y-ycubic[2], d.y-ycubic[3]
     };
 
-    CubicSolution x = cubicsolve(xcubic[0], xcubic[1], xcubic[2], xcubic[3]);
+    CubicSolution x = cubicSolve(xcubic[0], xcubic[1], xcubic[2], xcubic[3]);
 
     std::cout << std::endl << "Beginning of solutions" << std::endl;
 
@@ -544,7 +511,7 @@ int main()
     double b = 12.0;
     double c = 14.0;
     double d = 4.0;
-    CubicSolution sol = cubicsolve(a, b, c, d);
+    //CubicSolution sol = cubicsolve(a, b, c, d);
     //sol.Read();    
 
 

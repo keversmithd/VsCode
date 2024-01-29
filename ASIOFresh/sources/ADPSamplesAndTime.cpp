@@ -15,6 +15,7 @@ ADPSamplesAndTime::ADPSamplesAndTime()
 int ADPSamplesAndTime::GetSampleRate()
 {
     ASIOError SampleRateError = ASIOGetSampleRate(&sampleRate);
+    _sampleRate = sampleRate;
     if(SampleRateError != ASE_OK)
     {
         return 0;

@@ -21,6 +21,7 @@ struct AECTreeNode
     AECTreeNode* left = nullptr;
     AECTreeNode* right = nullptr;
 
+
 };
 
 
@@ -231,11 +232,11 @@ public:
                 }
             }
         }
+    
     }
 
-    
-
-    std::string isOperator(std::string value, int i)
+    std::string isOperator(std::string
+    value, int i)
     {
         std::string OperatorExtraction = "";
 

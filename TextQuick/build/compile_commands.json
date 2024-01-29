@@ -1,0 +1,22 @@
+[
+{
+  "directory": "X:/1.4 C++/Vscode/TextQuick/build",
+  "command": "X:\\IncludePathPackages\\mingw64\\bin\\g++.exe  @CMakeFiles/CLASS_TEMPLATE.dir/includes_CXX.rsp -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui.cpp\"",
+  "file": "X:/1.4 C++/Vscode/Dependencies/vendor/imgui/imgui.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/TextQuick/build",
+  "command": "X:\\IncludePathPackages\\mingw64\\bin\\g++.exe  @CMakeFiles/CLASS_TEMPLATE.dir/includes_CXX.rsp -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui_draw.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui_draw.cpp\"",
+  "file": "X:/1.4 C++/Vscode/Dependencies/vendor/imgui/imgui_draw.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/TextQuick/build",
+  "command": "X:\\IncludePathPackages\\mingw64\\bin\\g++.exe  @CMakeFiles/CLASS_TEMPLATE.dir/includes_CXX.rsp -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\X_\\1.4_C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui_impl_glfw_gl3.cpp.obj -c \"X:\\1.4 C++\\Vscode\\Dependencies\\vendor\\imgui\\imgui_impl_glfw_gl3.cpp\"",
+  "file": "X:/1.4 C++/Vscode/Dependencies/vendor/imgui/imgui_impl_glfw_gl3.cpp"
+},
+{
+  "directory": "X:/1.4 C++/Vscode/TextQuick/build",
+  "command": "X:\\IncludePathPackages\\mingw64\\bin\\g++.exe  @CMakeFiles/CLASS_TEMPLATE.dir/includes_CXX.rsp -g -flto -fno-fat-lto-objects -std=gnu++17 -o CMakeFiles\\CLASS_TEMPLATE.dir\\TextQuickRendering.cpp.obj -c \"X:\\1.4 C++\\Vscode\\TextQuick\\TextQuickRendering.cpp\"",
+  "file": "X:/1.4 C++/Vscode/TextQuick/TextQuickRendering.cpp"
+}
+]

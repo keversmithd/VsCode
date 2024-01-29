@@ -396,9 +396,7 @@ LTXRect CubicBounding(LTXCubicBezier curve)
         MaxY = (Sample.y > MaxY) ? Sample.y : MaxY;
     }
 
-
-    return {{MinX, MinY}, {MaxX, MaxY}};
-
+    return {{(float)MinX, (float)MinY}, {(float)MaxX, (float)MaxY}};
 }
 
 

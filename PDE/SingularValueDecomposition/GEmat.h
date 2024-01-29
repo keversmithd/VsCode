@@ -94,6 +94,16 @@ struct GEmat
         }
     }
 
+    void operator=(std::initializer_list<double> L)
+    {
+        //memcpy(data, L.begin(), L.size()*sizeof(float));
+
+        for(int i = 0; i < L.size(); i++)
+        {
+            data[i] = *(L.begin() + i);
+        }
+    }
+
     void operator=(std::initializer_list<int> L)
     {
         for(int i = 0; i < L.size(); i++)
@@ -144,6 +154,7 @@ struct GEmat
         return data[(j * MATRIX_DIMENSION_X) + i];
     }
 
+
     float& operator()(int i)
     {
         if(i > MATRIX_END_INDEX)
@@ -174,8 +185,6 @@ struct GEmat
 
         return CopyNonDestructable;
     }
-
-    
 
     void equate(GEspan rows, GEspan columns, GEmat& other, GEspan orows, GEspan ocolumns)
     {
@@ -225,6 +234,44 @@ struct GEmat
         }
     }
 
+    void equate(GEmat& other, GEspan orows, GEspan ocolumns)
+    {
+        orows.SetLimits(other.MATRIX_DIMENSION_Y);
+        ocolumns.SetLimits(other.MATRIX_DIMENSION_X);
+        int k = 0;
+        int l = 0;
+
+        for(int i = (orows.from-1); i <= (orows.to-1); i++)
+        {
+            for(int j = (ocolumns.from-1); j <= (ocolumns.to-1); j++)
+            {
+                data[(k*MATRIX_DIMENSION_X) + l] = other.data[(i*other.MATRIX_DIMENSION_X) + j];
+                if(l >= MATRIX_DIMENSION_X-1)
+                {
+                    l = 0;
+                    k++;
+                }else
+                {
+                    l++;
+                }
+                
+            }
+        }
+        
+    }
+
+    void equateIndex(GEmat& other, GEmat& index)
+    {
+        int I = index.MATRIX_SIZE;
+
+        for(int i = 0; i < I; i++)
+        {
+            int Index = index[i];
+            data[i] = other[Index];
+        }
+    }
+
+
     void trigDown(float a, float b, float c)
     {
 
@@ -253,7 +300,8 @@ struct GEmat
             for(int j = 0; j < MATRIX_DIMENSION_X; j++)
             {
                 ij = (i*MATRIX_DIMENSION_X)+j;
-                printf("%.3e ", data[ij]);
+                //printf("%.3e ", data[ij]);
+                printf("%f", data[ij]);
             }
             printf("|\n");
         }
@@ -861,7 +909,7 @@ struct GEmat
             throw std::range_error("Incorrect spans in resize");
         }
 
-        if(rows * columns < MATRIX_SIZE)
+        if(rows * columns <= MATRIX_SIZE)
         {
             MATRIX_DIMENSION_X = columns;
             MATRIX_DIMENSION_Y = rows;

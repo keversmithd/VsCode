@@ -2,6 +2,8 @@
 
 //externals set from context.
 
+
+
 ADPSamplesAndTime* g_adp_samplesandtime;
 ADPAsioBuffers*    g_adp_buffers;
 ADPAsioChannels*   g_adp_channels;
@@ -53,6 +55,7 @@ ASIOTime *bufferSwitchTimeInfo_i(ASIOTime *timeInfo, long index, ASIOBool proces
     {
         return 0L;
     }
+
     // the actual processing callback.
 	// Beware that this is normally in a seperate thread, hence be sure that you take care
 	// about thread synchronization. This is omitted here for simplicity.
@@ -79,6 +82,7 @@ ASIOTime *bufferSwitchTimeInfo_i(ASIOTime *timeInfo, long index, ASIOBool proces
 	// get the system reference time
 	g_adp_samplesandtime->sysRefTime = get_sys_reference_time_i();
 
+
 #if WINDOWS && _DEBUG
 	// a few debug messages for the Windows device driver developer
 	// tells you the time when driver got its interrupt and the delay until the app receives
@@ -94,6 +98,11 @@ ASIOTime *bufferSwitchTimeInfo_i(ASIOTime *timeInfo, long index, ASIOBool proces
 
 	// buffer size in samples
 	long buffSize = g_adp_buffers->preferredSize;
+	long maxSize = g_adp_buffers->maxSize;
+
+	float sampleRate = g_adp_samplesandtime->sampleRate;
+	float processedBySample = processedSamples / sampleRate;
+	float parameter = processedBySample/3;
 
 	// perform the processing
 	for (int i = 0; i < g_adp_buffers->inputBuffers + g_adp_buffers->outputBuffers; i++)
@@ -110,7 +119,7 @@ ASIOTime *bufferSwitchTimeInfo_i(ASIOTime *timeInfo, long index, ASIOBool proces
 				memset (g_adp_buffers->bufferInfos[i].buffers[index], 0, buffSize * 3);
 				break;
 			case ASIOSTInt32LSB:
-				memset (g_adp_buffers->bufferInfos[i].buffers[index], 50*sin(processedSamples)*sin(processedSamples), buffSize * 4);
+				memset(g_adp_buffers->bufferInfos[i].buffers[index], 5*cos(processedSamples/10), buffSize * 4);
 				break;
 			case ASIOSTFloat32LSB:		// IEEE 754 32 bit float, as found on Intel x86 architecture
 				memset (g_adp_buffers->bufferInfos[i].buffers[index], 0, buffSize * 4);
@@ -160,10 +169,13 @@ ASIOTime *bufferSwitchTimeInfo_i(ASIOTime *timeInfo, long index, ASIOBool proces
 	if (g_adp_samplesandtime->postOutput)
 		ASIOOutputReady();
 
-	if (processedSamples >= g_adp_samplesandtime->sampleRate * TEST_RUN_TIME)	// roughly measured
-		g_adp_samplesandtime->stopped = false;
-	else
-		processedSamples += buffSize;
+	processedSamples += buffSize;
+	// if (processedSamples >= g_adp_samplesandtime->sampleRate * 3){	// roughly measured
+	// 	//g_adp_samplesandtime->stopped = true;
+	// }
+	// else
+		
+
 
 	return 0L;
 }

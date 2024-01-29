@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\CLASS_TEMPLATE.dir/objects.a
+X:\IncludePathPackages\mingw64\bin\ar.exe qc CMakeFiles\CLASS_TEMPLATE.dir/objects.a @CMakeFiles\CLASS_TEMPLATE.dir\objects1.rsp
+X:\IncludePathPackages\mingw64\bin\g++.exe -g -flto -fno-fat-lto-objects -Wl,--whole-archive CMakeFiles\CLASS_TEMPLATE.dir/objects.a -Wl,--no-whole-archive -o ..\CLASS_TEMPLATE.exe -Wl,--out-implib,..\libCLASS_TEMPLATE.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\CLASS_TEMPLATE.dir\linklibs.rsp

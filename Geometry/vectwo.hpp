@@ -60,6 +60,12 @@ struct vec2
         y /= m;
     }
 
+    vec2 operator /(const float a)
+    {
+        return vec2(x/a, y/a);
+    }
+
+    
 
     float distance(const vec2& other)
     {
@@ -83,6 +89,11 @@ struct vec2
     }
 };
 
+
+vec2 operator*(double a, vec2 v)
+{
+    return vec2(a*v.x, a*v.y);
+}
 
 bool operator ==(const vec2 c, const vec2 d)
 {
@@ -117,7 +128,7 @@ double cross(const vec2 a, const vec2 b)
 
 double mag(const vec2 a)
 {
-    return sqrt(pow(a.x,2) + pow(a.y, 2));
+    return sqrt((a.x*a.x) + (a.y*a.y));
 }
 
 bool operator <(const vec2 a, const vec2 b)
@@ -133,7 +144,34 @@ vec2 normalize(const vec2 a)
 
 double dot(const vec2 a, const vec2 b)
 {
-    return (a.x * b.x + a.y * b.y);
+    return ((a.x * b.x) + (a.y * b.y));
+}
+
+vec2 ProjectOnto(vec2 P, vec2 AX, vec2 AY)
+{
+    vec2 axis = AY-AX;
+    vec2 T = {P.x,P.y};
+    vec2 V = AX-T;
+
+    float am = mag(axis);
+    float Vd = -(dot(V,axis))/(am*am);
+
+    Vd = (Vd < 0) ? 0 : (Vd > 1) ? 1 : Vd;
+    
+    return AX + (axis*Vd);
+}
+
+
+float AngleRadians(vec2 A, vec2 B)
+{
+    return acosf(dot(A,B)/(mag(A)*mag(B)));
+}
+
+float AngleArea(vec2 a, vec2 b, vec2 c)
+{
+    //i guess it isn't bad but might need to account for orientation.
+    int area=(b.x-a.x)*(c.y-a.y)-(c.x-a.x)*(b.y-a.y);
+    return area>=0;
 }
 
 struct vec2Hash {
@@ -305,21 +343,38 @@ bool lineIntersection(const line A, const line B, vec2& intersection)
     return false;
 }
 
-
+//A-B is the query and C-D is the edge of the polygon.
 bool lineIntersection2(const vec2 A, const vec2 B, const vec2 C, const vec2 D, vec2& intersection)
 {
     const vec2 AB = {B.x - A.x, B.y - A.y};
     const vec2 CD = {D.x - C.x, D.y - C.y};
 
+    float ABm = sqrt(AB.x*AB.x + AB.y*AB.y);
+    float CDm = sqrt(CD.x*CD.x + CD.y*CD.y);
+
+    
+    vec2 dc = vec2(C.x-A.x,C.y-A.y);
+    vec2 dd = vec2(D.x-B.x, D.y-B.y);
+
+    float mdc = mag(dc);
+    float mdd = mag(dd);
+
+    double meep = 0.1;
+
+    if(mdc <= meep && mdd <= meep)
+    {
+        return true;
+    }
+    
     const double epsilon = 3e-6; // Tolerance threshold for floating-point comparisons
 
-    //double determinant = (DA.x * DB.y) - (DA.y * DB.x);
+    double determinant = (AB.x * CD.y) - (AB.y * CD.x);
 
-    // if (std::abs(determinant) < epsilon)
-    // {
-    //     // Lines are parallel or coincident
-    //     return false;
-    // }
+    if (std::abs(determinant) < epsilon && std::abs(determinant) != 0)
+    {
+        // Lines are parallel or coincident
+        return true;
+    }
 
     double G = CD.y - ((AB.y)*(CD.x)/AB.x);
 
@@ -327,7 +382,7 @@ bool lineIntersection2(const vec2 A, const vec2 B, const vec2 C, const vec2 D, v
 
     double T = (-A.x + C.x + CD.x * S)/AB.x;
 
-    if (T > epsilon && S > epsilon && T < 1-epsilon && S < 1-epsilon)
+    if ((T > epsilon || S > epsilon) && (T < 1-epsilon || S < 1-epsilon))
     {
         intersection.x = A.x + AB.x * T;
         intersection.y = A.y + AB.y * T;
@@ -337,6 +392,42 @@ bool lineIntersection2(const vec2 A, const vec2 B, const vec2 C, const vec2 D, v
     return false;
 }
 
+bool linePointIntersection(const vec2 A, const vec2 B, const vec2 P, vec2& intersection)
+{
+    vec2 delta = vec2(B.x-A.x, B.y-A.y);
+    if(delta.x == 0 || delta.y == 0)
+    {
+        return false;
+    }
 
+    float tx = (P.x-A.x)/delta.x;
+    float ty = (P.y-A.y)/delta.y;
+
+    if(tx >= 0 && tx <= 1)
+    {
+        return true;
+
+    }else if(ty >= 0 && ty <= 1)
+    {
+        return true;
+    }else
+    {
+        return false;
+    }
+
+
+
+
+}
+
+int orientation(const vec2 A, const vec2 B, const vec2 C)
+{
+    //negative == counter clockwise
+    const vec2 deltaA = vec2(B.x-A.x,B.y-A.y);
+    const vec2 deltaB = vec2(C.x-B.x, C.y-B.y);
+
+    return ((deltaA.x*deltaB.y) - (deltaA.y*deltaB.x)) >= 0;
+
+}
 
 #endif

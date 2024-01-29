@@ -31,9 +31,9 @@ int main()
     LTXCubicBezier Curve2 = {EndPoint1, ControlPoint2, ControlPoint3, EndPoint2, CenterMountWorkspace};
 
 
-
     curveList.append(Curve1);
     curveList.append(Curve2);
+    
     curveList.RadiallyThickenCurrentCurve(90, 3);
     curveList.RadiallyThickenCurrentCurve(360, 10);
     curveList.ReflectThickenPath({0,1});

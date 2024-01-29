@@ -126,6 +126,8 @@ DeconstructedEdge DeconstructEdge(DCELEdge* node)
         ret.UpperEndPoint = node->twin->origin->vertex;
         ret.LowerEndPoint = node->origin->vertex;
     }
+
+    return {{0,0},{0,0}};
 }
 
 #endif

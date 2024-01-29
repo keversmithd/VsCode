@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 #include "AECTree.h"
-#include "viewtree.hpp"
 #include "POPFix.h"
+#include "viewtree.hpp"
 
 
 int main()
@@ -11,20 +11,11 @@ int main()
     // std::cout << "Welcome to interactive inter expression reader parser." << std::endl;
     // std::cout << "Parsing A Simple Function Test 1" << std::endl;
 
-    // std::string Ux =  "512x^4+3 + sin(2x * 12) + cos(3x * 12)";
-    
-    // AECTree U(Ux);
+    std::string Ux =  "cos(processedSamples)";
 
-    // view_tree<AECTreeNode*, AECTreeNode*>7(U.root.top(), U.Elements);
-       std::string Ux = "y^2 + 48"; 
-       std::string Uy = "512/(12y^(2x + 48)) + cos(cos(415x))";
+    POPExpression function;
+    function.Parse("5*cos(2)");
+    double _multiVal = function.multival({{"processedSamples", 22}, {"sampleRate", 0}});
 
-       POPExpression U(Ux);
-       U.evaluate('y', 2);
-       U.readExpression();
-
-    
-
-    
-
+    printf("_multiVal%f\n", _multiVal);
 }

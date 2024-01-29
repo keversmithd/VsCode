@@ -70,7 +70,7 @@ int combineHashCodes(int h1, int h2)
 int hash(int x)
 {
     int w = sizeof(x)*8;
-    int tw = pow(2,32);
+    int tw = (int)pow(2,32);
     uint64_t z = (x * 2654435761);
     int hc = z % tw;
     return  hc;
@@ -79,7 +79,7 @@ int hash(int x)
 int hashCoded(double value)
 {
     long bits = static_cast<long>(value);
-    int high = (int)(bits >> 32);
+    int high = (int)(bits >> 31);
     int low = (int)bits;
     return combineHashCodes(high, low);
 }

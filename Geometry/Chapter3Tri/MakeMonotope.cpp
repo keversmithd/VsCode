@@ -1,107 +1,68 @@
 #include "MakeMonotope.h"
 #include "TriangulateMonotone.h"
+
+
+
 int main()
 {
-    DCEL Polygon;
-    std::vector<vec2> vertices = {
-        {55.000000,494.000000},       
-        {59.400005,445.776001},       
-        {75.320000,399.328033},       
-        {106.839996,359.791992},      
-        {158.040009,332.304016},
-        {233.000000,322.000000},
-        {233.000000,322.000000},
-        {363.000000,322.000000},
-        {363.000000,322.000000},
-        {396.592010,317.280029},
-        {420.296021,303.920013},
-        {435.503967,283.119995},
-        {443.608032,256.080017},
-        {446.000000,224.000000},
-        {446.000000,224.000000},
-        {446.000000,156.000000},
-        {446.000000,156.000000},
-        {436.520050,114.768005},
-        {412.400024,88.464005},
-        {380.119995,73.776001},
-        {346.160004,67.391998},
-        {317.000000,66.000000},
-        {317.000000,66.000000},
-        {260.272003,66.624001},
-        {204.216034,68.112007},
-        {152.623993,69.888000},
-        {109.287994,71.376007},
-        {78.000000,72.000000},
-        {78.000000,72.000000},
-        {78.000000,17.000000},
-        {78.000000,17.000000},
-        {99.200012,14.440001},
-        {129.520004,10.680001},
-        {165.839996,6.199999},
-        {205.040009,1.480000},
-        {244.000000,-3.000000},
-        {244.000000,-3.000000},
-        {244.000000,-90.000000},
-        {244.000000,-90.000000},
-        {302.000000,-90.000000},
-        {302.000000,-90.000000},
-        {302.000000,-8.000000},
-        {302.000000,-8.000000},
-        {365.760040,-6.496000},
-        {424.960022,7.392000},
-        {474.079987,36.928001},
-        {507.600037,85.375999},
-        {520.000000,156.000000},
-        {520.000000,156.000000},
-        {520.000000,224.000000},
-        {520.000000,224.000000},
-        {516.920044,273.376007},
-        {504.480042,319.968018},
-        {477.880005,359.071991},
-        {432.320007,385.984009},
-        {363.000000,396.000000},
-        {363.000000,396.000000},
-        {233.000000,396.000000},
-        {233.000000,396.000000},
-        {202.984009,398.512054},
-        {174.792007,407.456024},
-        {151.207993,424.944000},
-        {135.016006,453.088013},
-        {129.000000,494.000000},
-        {129.000000,494.000000},
-        {129.000000,560.000000},
-        {129.000000,560.000000},
-        {135.176010,607.687988},
-        {152.488007,638.864075},
-        {179.112000,656.695984},
-        {213.224014,664.351990},
-        {253.000000,665.000000},
-        {253.000000,665.000000},
-        {273.160034,664.064026},
-        {323.080017,661.832031},
-        {386.920013,659.167969},
-        {448.840027,656.936035},
-        {493.000000,656.000000},
-        {493.000000,656.000000},
-        {493.000000,714.000000},
-        {493.000000,714.000000},
-        {463.824036,717.240051},
-        {426.632019,721.679993},
-        {384.927979,726.599976},
-        {342.216003,731.280029},
-        {302.000000,735.000000},
-        {302.000000,824.000000},
-        {244.000000,824.000000},
-        {244.000000,738.000000},
-        {244.000000,738.000000},
-        {183.448013,732.256042},
-        {131.824020,715.088074},
-        {91.575989,682.992004},
-        {65.152000,632.463989},
-        {55.000000,560.000000},
-        {55.000000,560.000000},
-        {55.000000,494.000000},
+    std::vector<vec2> MeshWithInnerFace = {
+        {4,0},
+        {4,30},
+        {15,30},
+        {56,36},
+        {75,45},
+        {327,665},
+        {312,707},
+        {394,737},
+        {645,46},
+        {665,36},
+        {709,30},
+        {721,30},
+        {721,0},
+        {464,0},
+        {464,30},
+        {478,30},
+        {530,36},
+        {552,46},
+        {478,249},
+        {216,249},
+        {133,46},
+        {156,36},
+        {207,30},
+        {221,30},
+        {221,0},
+        {4,0},
+        {-69,-69},
+        {237,300},
+        {460,300},
+        {355,589},
     };
+
+    // std::vector<vec2> MeshWithInnerFace = {
+    //     {0,0},
+    //     {100,-50},
+    //     {98, 20},
+    //     {150,15},
+    //     {160,40},
+    //     {115,35},
+    //     {110,65},
+    //     {0, 55},
+    //     {-98, 20},
+    //     {-150,15},
+    //     {-160,40},
+    //     {-115,35},
+    //     {-110,65},
+    //     {-180,65},
+    //     {-180,-20},
+    //     {0,0},
+    // };
+
+
+
+
+    printf("Update DCEL implementation to contain access to inner faces, distinguish between interior and exterior boundaries.");
+
+    //Iterate through 12 vertice | Test topology viewer.
 
     vec2 bottomLeftMost = {(float)INT_MAX, (float)INT_MAX};
     DCELVec* bottomLeftMostPointer = nullptr;
@@ -109,30 +70,47 @@ int main()
 
     std::cout << "\n\n\n\n\n\n\n\n new Entry \n\n\n\n\n\n\n\n" << std::endl;
     
-    // Add edges based on the vertices to form the polygon
-    for(size_t i = 0; i < vertices.size(); i++)
+    DCEL Polygon;
+
+    for(int i = 0; i < MeshWithInnerFace.size(); i++)
     {
-        vec2 a = vertices[i];
+        vec2 a = MeshWithInnerFace[i];
+        Polygon.FaceExtraAppendPoint(a);
         
-        //BoundingContainer.IncrementBound(a);
-
+        Polygon.BoundingContainer.IncrementBound(a);
         
-
-        Polygon.AppendPoint(a);
-
-        // if(a.x < bottomLeftMost.x)
-        // {   
-        //     bottomLeftMost = a;
-        //     bottomLeftMostPointer = Polygon.verticies.back();
-        // }
 
     }
 
-    Polygon.MakeLoop();
+    float xmin = Polygon.BoundingContainer.bottomLeft.x;
+    float ymin = Polygon.BoundingContainer.bottomLeft.y; 
+    float rectWidth = Polygon.BoundingContainer.topRight.x-Polygon.BoundingContainer.bottomLeft.x;
+    float rectHeight = Polygon.BoundingContainer.topRight.y-Polygon.BoundingContainer.bottomLeft.y;
+    printf("std::vector<Point> MeshWithInnerFace {\n\t");
+    for(int i = 0; i < MeshWithInnerFace.size(); i++)
+    {
+        vec2 pt = MeshWithInnerFace[i];
+        vec2 nc = vec2((pt.x-xmin)/rectWidth, (pt.y-ymin)/rectHeight);
+
+        printf("\t{%f,%f},\n",nc.x,nc.y);
+
+    }
+    printf("};\n");
+
+    o = Polygon.BoundingContainer.center();
+
+    currentOrientation = orientation(Polygon.edges[0]->origin->vertex, Polygon.edges[0]->next->origin->vertex, Polygon.edges[0]->next->next->origin->vertex);
+
+    Polygon.CounterClockwise = !(currentOrientation);
+    Polygon.Origin = Polygon.BoundingContainer.center();
+
+    Polygon.MakeLoopOnActiveFace();
 
     DCEL TriangulatedEdges;
-    TriangulateMonotonePolygon(Polygon, TriangulatedEdges);
-    MakeMonotone(Polygon);
+    DisplayVertexTypes(Polygon);
+    //MakeMonotone(Polygon);
+    //TriangulateMonotonePolygon2(Polygon, TriangulatedEdges);
+    
 
 
 
